@@ -6,5 +6,5 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(MIDI_ParserSynthesizer main.cpp
         MidiParser.cpp
         MidiParser.h
-        MidiFile.cpp
-        MidiFile.h)
+        File.cpp
+        File.h)

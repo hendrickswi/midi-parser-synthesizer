@@ -5,16 +5,16 @@
 #include <string>
 #include <cstdint>
 
-class MidiFile {
+class File {
 
 private:
     std::string file_path;
     std::vector<std::uint8_t> data;
 
 public:
-    MidiFile();
-    MidiFile(const std::string& file_path);
-    MidiFile(const MidiFile& other);
+    File();
+    File(const std::string& file_path);
+    File(const File& other);
 
     // Accessor and mutator methods
     std::vector<std::uint8_t>& get_data();
@@ -23,9 +23,7 @@ public:
     void set_file_path(const std::string& file_path);
 
     // Other methods
-    bool load_midi_file();
+    bool load_file();
 };
-
-bool is_midi_file(const std::vector<uint8_t>& midi_data);
 
 #endif //MIDI_PARSERSYNTHESIZER_MIDIFILE_H
