@@ -24,8 +24,8 @@ public:
 
     // Other methods
     bool load_midi_file();
-    friend bool is_midi_file(const std::vector<uint8_t>& midi_data);
 };
 
+bool is_midi_file(const std::vector<uint8_t>& midi_data);
 
 #endif //MIDI_PARSERSYNTHESIZER_MIDIFILE_H
