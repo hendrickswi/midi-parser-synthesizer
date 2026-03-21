@@ -1,4 +1,4 @@
-#include "MidiFile.h"
+#include "File.h"
 
 #include <iostream>
 #include <fstream>
@@ -6,36 +6,36 @@
 using namespace std;
 
 // Constructors
-MidiFile::MidiFile() = default;
+File::File() = default;
 
-MidiFile::MidiFile(const string& file_path) {
+File::File(const string& file_path) {
     this->file_path = file_path;
 }
 
-MidiFile::MidiFile(const MidiFile& other) {
+File::File(const File& other) {
     this->data = other.data;
     this->file_path = other.file_path;
 }
 
 // Accessor and mutator methods
-std::vector<uint8_t>& MidiFile::get_data() {
+std::vector<uint8_t>& File::get_data() {
     return data;
 }
 
-void MidiFile::set_data(const vector<uint8_t>& data) {
+void File::set_data(const vector<uint8_t>& data) {
     this->data = data;
 }
 
-std::string MidiFile::get_file_path() {
+std::string File::get_file_path() {
     return file_path;
 }
 
-void MidiFile::set_file_path(const string& file_path) {
+void File::set_file_path(const string& file_path) {
     this->file_path = file_path;
 }
 
 // Other methods
-bool MidiFile::load_midi_file() {
+bool File::load_file() {
     data.clear();
 
     // Open file with instance variable file_path, return false if unable to open
@@ -60,14 +60,4 @@ bool MidiFile::load_midi_file() {
 
     fin.close();
     return true;
-}
-
-bool is_midi_file(const vector<uint8_t>& midi_data) {
-    if (midi_data.size() < 4) {
-        return false;
-    }
-
-    // Check that the midi file has the proper start
-    return midi_data.at(0) == 'M' && midi_data.at(1) == 'T' &&
-        midi_data.at(2) == 'h' && midi_data.at(3) == 'd';
 }

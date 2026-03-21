@@ -1,12 +1,16 @@
 #include "MidiParser.h"
-#include "MidiFile.h"
+
+#include <iostream>
+#include <ostream>
+
+#include "File.h"
 
 using namespace std;
 
 // Constructors
 MidiParser::MidiParser() = default;
 
-MidiParser::MidiParser(const MidiFile& file) {
+MidiParser::MidiParser(const File& file) {
     this->file = file;
 }
 MidiParser::MidiParser(const MidiParser& other) {
@@ -38,19 +42,54 @@ uint32_t MidiParser::read_uint32() {
 }
 
 std::string MidiParser::read_string(std::size_t length) {
+    const auto& data = file.get_data();
+    if (cursor + length > data.size()) {
+        return "";
+    }
 
+    // Range (iterator) constructor
+    string result(data.begin() + cursor, data.begin() + cursor + length);
+    cursor += length;
+    return result;
 }
 
 bool MidiParser::parse() {
-    bool load = this->file.load_midi_file();
+    // Attempt to load the file into memory
+    bool load = file.load_file();
     if (!load) {
+        cerr << "Error: Unable to load the file " << file.get_file_path() << endl;
         return false;
     }
 
-    bool result = is_midi_file(this->file.get_data());
-    if (!result) {
+    // Determine if the file has the first MThd signature
+    string first_signature = read_string(4);
+    if (first_signature != "MThd") {
+        cerr << "Error: The file is not a valid MIDI file. Does not have the first MThd signature" << endl;
         return false;
     }
+
+    // Get the header length (size of the next three fields)
+    uint32_t header_length = read_uint32();
+    if (header_length != 6) {
+        cerr << "Error: Header length is " << header_length <<
+            " bytes, not the normal 6 bytes. This program only supports 6 byte headers." << endl;
+        return false;
+    }
+
+    format = read_uint16();
+    num_tracks = read_uint16();
+    division = read_uint16();
+    if (format != 0 && format != 1) {
+        cerr << "Error: format is " << format <<
+            ". This program only supports formats 0 and 1 (single track and multiple track).";
+    }
+    if (division <= 0) {
+        cerr << "Error: delta timing is " << division <<
+                " ticks per beat. This program does not support SMPTE-compatible units.";
+        return false;
+    }
+
+    // TODO: write while-loop for parsing track chunks
 
     return true;
 }

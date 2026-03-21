@@ -4,12 +4,12 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "MidiFile.h"
+#include "File.h"
 
 
 class MidiParser {
 private:
-    MidiFile file;
+    File file;
 
     // Header data:
     // format--0 for single track, 1 for multi-track sync, 2 for multi-track async
@@ -29,11 +29,10 @@ private:
 
 public:
     MidiParser();
-    MidiParser(const MidiFile& file);
+    MidiParser(const File& file);
     MidiParser(const MidiParser& other);
 
     bool parse();
 };
-
 
 #endif //MIDI_PARSERSYNTHESIZER_MIDIPARSER_H

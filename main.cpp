@@ -16,7 +16,7 @@ int main() {
     cout << endl;
 
     // Load the midi file
-    MidiParser parser = MidiParser(MidiFile(file_name));
+    MidiParser parser = MidiParser(File(file_name));
 
     return 0;
 }
