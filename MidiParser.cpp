@@ -9,13 +9,17 @@
 using namespace std;
 
 // Constructors
-MidiParser::MidiParser() = default;
+MidiParser::MidiParser() {
+    this->cursor = 0;
+}
 
 MidiParser::MidiParser(const File& file) {
     this->file = file;
+    this->cursor = 0;
 }
 MidiParser::MidiParser(const MidiParser& other) {
     this->file = other.file;
+    this->cursor = other.cursor;
 }
 
 uint16_t MidiParser::read_uint16() {
@@ -143,7 +147,7 @@ bool MidiParser::parse(TrackSequence& sequence) {
 
     // Header data (to be used to edit the given sequence):
     // format--0 for single track, 1 for multi-track sync, 2 for multi-track async
-    // uint16_t format = 0;
+    uint16_t format = 0;
     // number of tracks
     uint16_t num_tracks = 0;
     // ticks per quarter note
@@ -172,7 +176,7 @@ bool MidiParser::parse(TrackSequence& sequence) {
     }
 
     // Get information about this MIDI file
-    // format = read_uint16();
+    format = read_uint16();
     num_tracks = read_uint16();
     sequence.set_division(read_uint16());
     if (format != 0 && format != 1) {
