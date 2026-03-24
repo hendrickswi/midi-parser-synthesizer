@@ -27,6 +27,9 @@ private:
     uint32_t read_uint32();
     std::string read_string(std::size_t length);
 
+    // Helper function for parsing a singular track chunk
+    bool parse_track_chunk(long num_bytes);
+
 public:
     MidiParser();
     MidiParser(const File& file);
