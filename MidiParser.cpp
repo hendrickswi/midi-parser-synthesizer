@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include "File.h"
+#include "TrackSequence.h"
 
 using namespace std;
 
@@ -55,11 +56,97 @@ std::string MidiParser::read_string(std::size_t length) {
     return result;
 }
 
-bool MidiParser::parse_track_chunk(long num_bytes) {
+uint32_t MidiParser::read_vlq() {
+    uint32_t value = 0;
+    uint8_t byte;
+    const auto& data = file.get_data();
 
+    do {
+        // Prevent out-of-bounds
+        if (cursor >= data.size()) return 0;
+
+        byte = data.at(cursor);
+        cursor++;
+
+        // Shift previous bits left by 7, and merge the bottom 7 bits of the current byte
+        value = (value << 7) | (byte & 0x7F);
+    }
+    // Continue if the top bit is 1 (escape bit)
+    while (byte & 0x80);
+
+    return value;
 }
 
-bool MidiParser::parse() {
+bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time) {
+    // TODO: implement this
+}
+
+bool MidiParser::parse_meta_event(Track& track, const uint32_t& current_time) {
+    // TODO: implement this
+}
+
+bool MidiParser::parse_sysex_event(Track& track, const uint32_t& current_time) {
+    // TODO: implement this
+}
+
+bool MidiParser::parse_track_event(Track& track, uint32_t& current_time, uint8_t& running_status) {
+    // Every track event starts with a delta time
+    // Add it to the total time to allow events to be instantiated with absolute time
+    uint32_t delta_time = read_vlq();
+    current_time += delta_time;
+
+    // Account for "running status"
+    uint8_t peek_byte = file.get_data().at(cursor);
+    if (peek_byte >= 0x80) {
+        // New status
+        running_status = peek_byte;
+        cursor++;
+    }
+
+    // Dispatch to the correct event parser method
+    if (peek_byte == 0xFF) {
+        // Meta event
+        cursor++;
+        return parse_meta_event(track, current_time);
+    }
+    else if (peek_byte == 0xF0 || peek_byte == 0xF7) {
+        // Sysex event
+        cursor++;
+        return parse_sysex_event(track, current_time);
+    }
+    else if (peek_byte >= 0x80 && peek_byte <= 0xEF) {
+        // Midi event
+        // Do not do cursor++ here, parse_midi_event needs to know how many data bytes to read
+        parse_midi_event(track, current_time);
+    }
+    else {
+        return false;
+    }
+}
+
+bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
+    uint32_t current_time = 0;
+    uint8_t running_status = 0;
+
+    while (cursor < cursor + num_bytes) {
+        bool success = parse_track_event(track, current_time, running_status);
+        if (!success) {
+            cerr << "Error: Unable to parse track event at byte " << cursor << endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+bool MidiParser::parse(TrackSequence& sequence) {
+    // Header data (to be used to edit the given sequence):
+    // format--0 for single track, 1 for multi-track sync, 2 for multi-track async
+    uint16_t format = 0;
+    // number of tracks
+    uint16_t num_tracks = 0;
+    // ticks per quarter note
+    uint16_t division = 0;
+
     // Attempt to load the file into memory
     bool load = file.load_file();
     if (!load) {
@@ -105,9 +192,9 @@ bool MidiParser::parse() {
             return false;
         }
 
-        string chunk_length = read_string(4);
-        long chunk_length_int = stol(chunk_length);
-        parse_track_chunk(chunk_length_int);
+        Track track = Track();
+        uint32_t chunk_length = read_uint32();
+        parse_track_chunk(track, chunk_length);
     }
 
     // Check that there are no extra track chunks (i.e., num_tracks < actual number of tracks)
@@ -125,6 +212,11 @@ bool MidiParser::parse() {
             cerr << "Warning: Not reading additional track chunks after track number " << num_tracks << endl;
         }
     }
+
+    // "Instantiate" the given sequence
+    sequence.clear_tracks();
+
+
 
     return true;
 }

@@ -7,4 +7,10 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         MidiParser.cpp
         MidiParser.h
         File.cpp
-        File.h)
+        File.h
+        Track.cpp
+        Track.h
+        Note.h
+        MidiEvent.h
+        TrackSequence.cpp
+        TrackSequence.h)
