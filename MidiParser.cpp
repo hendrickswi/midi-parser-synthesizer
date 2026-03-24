@@ -143,7 +143,7 @@ bool MidiParser::parse(TrackSequence& sequence) {
 
     // Header data (to be used to edit the given sequence):
     // format--0 for single track, 1 for multi-track sync, 2 for multi-track async
-    uint16_t format = 0;
+    // uint16_t format = 0;
     // number of tracks
     uint16_t num_tracks = 0;
     // ticks per quarter note
@@ -172,9 +172,9 @@ bool MidiParser::parse(TrackSequence& sequence) {
     }
 
     // Get information about this MIDI file
-    format = read_uint16();
+    // format = read_uint16();
     num_tracks = read_uint16();
-    division = read_uint16();
+    sequence.set_division(read_uint16());
     if (format != 0 && format != 1) {
         cerr << "Error: format is " << format <<
             ". This program only supports formats 0 and 1 (single track and multiple track)." << endl;
