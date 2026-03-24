@@ -13,7 +13,7 @@ private:
     File file;
 
     // Current byte pos
-    std::size_t cursor = 0;
+    std::size_t cursor;
 
     // Helper functions for Big-Endian format of midi files
     uint16_t read_uint16();

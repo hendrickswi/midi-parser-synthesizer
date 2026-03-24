@@ -7,8 +7,9 @@
 
 class TrackSequence {
 private:
-    std::vector<Track> tracks;
-    uint16_t division; // Each MIDI file can only have one division but multiple tracks
+    // Each MIDI file can only have one division but multiple tracks
+    std::vector<Track> tracks = std::vector<Track>();
+    uint16_t division;
 
 public:
     TrackSequence();
