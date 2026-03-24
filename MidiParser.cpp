@@ -139,6 +139,8 @@ bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
 }
 
 bool MidiParser::parse(TrackSequence& sequence) {
+    sequence.clear_tracks();
+
     // Header data (to be used to edit the given sequence):
     // format--0 for single track, 1 for multi-track sync, 2 for multi-track async
     uint16_t format = 0;
@@ -195,6 +197,7 @@ bool MidiParser::parse(TrackSequence& sequence) {
         Track track = Track();
         uint32_t chunk_length = read_uint32();
         parse_track_chunk(track, chunk_length);
+        sequence.add_track(track);
     }
 
     // Check that there are no extra track chunks (i.e., num_tracks < actual number of tracks)
@@ -212,11 +215,6 @@ bool MidiParser::parse(TrackSequence& sequence) {
             cerr << "Warning: Not reading additional track chunks after track number " << num_tracks << endl;
         }
     }
-
-    // "Instantiate" the given sequence
-    sequence.clear_tracks();
-
-
 
     return true;
 }
