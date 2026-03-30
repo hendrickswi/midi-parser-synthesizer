@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "File.h"
-#include "TrackSequence.h"
+#include "Containers/File.h"
+#include "Containers/TrackSequence.h"
 
 
 class MidiParser {

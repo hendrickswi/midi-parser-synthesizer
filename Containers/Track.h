@@ -3,10 +3,10 @@
 
 #include <cstdint>
 #include <vector>
-#include "TrackEvents/MidiEvent.h"
-#include "TrackEvents/Note.h"
-#include "TrackEvents/SysexEvent.h"
-#include "TrackEvents/MetaEvent.h"
+#include "../TrackEvents/MidiEvent.h"
+#include "../TrackEvents/Note.h"
+#include "../TrackEvents/SysexEvent.h"
+#include "../TrackEvents/MetaEvent.h"
 
 struct SysexEvent;
 /**
