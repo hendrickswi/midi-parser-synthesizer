@@ -8,14 +8,11 @@
 
 using namespace std;
 
-// Constructors
-MidiParser::MidiParser() {
-    this->cursor = 0;
-}
-
 MidiParser::MidiParser(const File& file) {
     this->file = file;
     this->cursor = 0;
+    this->active_note_start_times = vector<uint32_t>(128, -1);
+    this->active_note_volumes = vector<uint32_t>(128, -1);
 }
 MidiParser::MidiParser(const MidiParser& other) {
     this->file = other.file;
@@ -81,15 +78,56 @@ uint32_t MidiParser::read_vlq() {
     return value;
 }
 
-bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time) {
+bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte) {
+    // Bitmasking with 11110000 (0xF0) to get the top 4 bits
+    // The top 4 bits are the command
+    uint8_t command = status_byte & 0xF0;
+
+    uint8_t data1 = file.get_data().at(cursor);
+    uint8_t data2 = 0;
+    if (!(command == 0xC0 || command == 0xD0)) {
+        data2 = file.get_data().at(cursor++);
+    }
+
+    // Special cases: Note On or Note Off
+    if (command == 0x90) {
+        if (data2 > 0) {
+            // Set a specific pitch (data1) to be active now and with data2 volume.
+            active_note_start_times[data1] = current_time;
+            active_note_volumes[data1] = data2;
+        }
+        else if (data2 == 0) {
+            const uint32_t duration = current_time - active_note_start_times[data1];
+            track.add_note(Note(current_time, duration, data1, data2));
+
+            // Reset the corresponding active note
+            active_note_start_times[data1] = -1;
+            active_note_volumes[data1] = -1;
+        }
+    }
+    else if (command == 0x80) {
+        if (active_note_start_times[data1] != -1) {
+            const uint32_t duration = current_time - active_note_start_times[data1];
+            track.add_note(Note(current_time, duration, data1, data2));
+
+            // Reset the corresponding active note
+            active_note_start_times[data1] = -1;
+            active_note_volumes[data1] = -1;
+        }
+    }
+    else {
+        // Then this is some kind of miscellaneous event like a pitch bend
+        track.add_midi_event(MidiEvent(current_time, status_byte, data1, data2));
+    }
+
+    return true;
+}
+
+bool MidiParser::parse_meta_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte) {
     // TODO: implement this
 }
 
-bool MidiParser::parse_meta_event(Track& track, const uint32_t& current_time) {
-    // TODO: implement this
-}
-
-bool MidiParser::parse_sysex_event(Track& track, const uint32_t& current_time) {
+bool MidiParser::parse_sysex_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte) {
     // TODO: implement this
 }
 
@@ -111,24 +149,29 @@ bool MidiParser::parse_track_event(Track& track, uint32_t& current_time, uint8_t
     if (peek_byte == 0xFF) {
         // Meta event
         cursor++;
-        return parse_meta_event(track, current_time);
+        return parse_meta_event(track, current_time, running_status);
     }
     else if (peek_byte == 0xF0 || peek_byte == 0xF7) {
         // Sysex event
         cursor++;
-        return parse_sysex_event(track, current_time);
+        return parse_sysex_event(track, current_time, running_status);
     }
     else if (peek_byte >= 0x80 && peek_byte <= 0xEF) {
         // Midi event
         // Do not do cursor++ here, parse_midi_event needs to know how many data bytes to read
-        parse_midi_event(track, current_time);
+        parse_midi_event(track, current_time, running_status);
     }
     else {
         return false;
     }
+
+    return true;
 }
 
 bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
+    fill(active_note_start_times.begin(), active_note_start_times.end(), -1);
+    fill(active_note_volumes.begin(), active_note_volumes.end(), -1);
+
     uint32_t current_time = 0;
     uint8_t running_status = 0;
 

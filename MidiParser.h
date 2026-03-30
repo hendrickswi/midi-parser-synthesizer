@@ -15,6 +15,12 @@ private:
     // Current byte pos
     std::size_t cursor;
 
+    // Helpers for keeping track of active notes
+    // Allows notes to be created on a rolling basis
+    // Explicitly does not allow duplicates
+    std::vector<uint32_t> active_note_start_times;
+    std::vector<uint32_t> active_note_volumes;
+
     // Helper functions for Big-Endian format of midi files
     uint16_t read_uint16();
     uint32_t read_uint32();
@@ -24,9 +30,9 @@ private:
     uint32_t read_vlq();
 
     // Helper functions for parsing the various types of events
-    bool parse_midi_event(Track& track, const uint32_t& current_time);
-    bool parse_meta_event(Track& track, const uint32_t& current_time);
-    bool parse_sysex_event(Track& track, const uint32_t& current_time);
+    bool parse_midi_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte);
+    bool parse_meta_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte);
+    bool parse_sysex_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte);
 
     // Router method for calling above specific event methods
     bool parse_track_event(Track& track, uint32_t& current_time, uint8_t& running_status);
@@ -35,7 +41,6 @@ private:
     bool parse_track_chunk(Track& track, const long& num_bytes);
 
 public:
-    MidiParser();
     MidiParser(const File& file);
     MidiParser(const MidiParser& other);
 
