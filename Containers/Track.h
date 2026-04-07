@@ -31,13 +31,15 @@ public:
         const std::vector<SysexEvent>& sysex_event, const std::vector<MetaEvent>& meta_events);
     Track(const Track& other);
 
-    void add_note(Note note);
-    void add_midi_event(MidiEvent event);
-    void add_sysex_event(SysexEvent event);
-    void add_meta_event(MetaEvent event);
+    void add_note(const Note& note);
+    void add_midi_event(const MidiEvent& event);
+    void add_sysex_event(const SysexEvent& event);
+    void add_meta_event(const MetaEvent& event);
 
-    [[nodiscard]] const std::vector<Note>& get_notes() const { return notes; }
-    [[nodiscard]] const std::vector<MidiEvent>& get_midi_events() const { return midi_events; }
+    [[nodiscard]] const std::vector<Note>& get_notes() const;
+    [[nodiscard]] const std::vector<MidiEvent>& get_midi_events() const;
+    [[nodiscard]] const std::vector<SysexEvent>& get_sysex_events() const;
+    [[nodiscard]] const std::vector<MetaEvent>& get_meta_events() const;
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_TRACK_H
