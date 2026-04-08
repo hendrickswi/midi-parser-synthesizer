@@ -1,7 +1,3 @@
-//
-// Created by williamh on 3/23/26.
-//
-
 #ifndef MIDI_PARSERSYNTHESIZER_NOTE_H
 #define MIDI_PARSERSYNTHESIZER_NOTE_H
 #include <cstdint>

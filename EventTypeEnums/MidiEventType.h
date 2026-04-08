@@ -1,7 +1,3 @@
-//
-// Created by williamh on 4/7/26.
-//
-
 #ifndef MIDI_PARSERSYNTHESIZER_MIDIEVENTTYPE_H
 #define MIDI_PARSERSYNTHESIZER_MIDIEVENTTYPE_H
 

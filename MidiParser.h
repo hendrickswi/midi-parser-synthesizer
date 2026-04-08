@@ -7,7 +7,6 @@
 #include "Containers/File.h"
 #include "Containers/TrackSequence.h"
 
-
 class MidiParser {
 private:
     File file;
