@@ -97,11 +97,13 @@ bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, co
     uint8_t channel = status_byte & 0x0F;
 
     uint8_t data1 = file.get_data().at(cursor);
+    cursor++;
     uint8_t data2 = 0;
     if (!(command == PROGRAM_CHANGE || command == CHANNEL_PRESSURE)) {
         // These events only have one byte of data,
         // so if it is not either of these, set data2.
-        data2 = file.get_data().at(cursor++);
+        data2 = file.get_data().at(cursor);
+        cursor++;
     }
 
     // Special cases: Note On or Note Off
@@ -155,6 +157,7 @@ bool MidiParser::parse_meta_event(Track& track, const uint32_t& current_time, co
 
     std::vector<uint8_t> data = std::vector<uint8_t>(raw_data.begin() + cursor, raw_data.begin() + cursor + length);
     track.add_meta_event(MetaEvent(current_time, type_byte, data));
+    cursor += length;
 
     return true;
 }
@@ -173,6 +176,7 @@ bool MidiParser::parse_sysex_event(Track& track, const uint32_t& current_time, c
 
     std::vector<uint8_t> data = std::vector<uint8_t>(raw_data.begin() + cursor, raw_data.begin() + cursor + length);
     track.add_sysex_event(SysexEvent(current_time, status_byte, data));
+    cursor += length;
 
     return true;
 }
@@ -204,17 +208,13 @@ bool MidiParser::parse_track_event(Track& track, uint32_t& current_time, uint8_t
     }
 
     // Dispatch to the correct event parser method
-    if (is_meta_event(peek_byte)) {
-        cursor++;
+    if (is_meta_event(running_status)) {
         return parse_meta_event(track, current_time, running_status);
     }
-    else if (is_sysex_event(peek_byte)) {
-        cursor++;
+    else if (is_sysex_event(running_status)) {
         return parse_sysex_event(track, current_time, running_status);
     }
-    else if (is_midi_event(peek_byte)) {
-        // Do not do cursor++ here, parse_midi_event needs to know how
-        // many data bytes to read for various differing event formats
+    else if (is_midi_event(running_status)) {
         parse_midi_event(track, current_time, running_status);
     }
     else {
@@ -236,8 +236,9 @@ bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
 
     uint32_t current_time = 0;
     uint8_t running_status = 0;
+    std::size_t end_cursor = cursor + num_bytes;
 
-    while (cursor < cursor + num_bytes) {
+    while (cursor < end_cursor) {
         bool success = parse_track_event(track, current_time, running_status);
         if (!success) {
             std::cerr << "Error: Unable to parse track event at byte " << cursor << std::endl;
@@ -283,7 +284,8 @@ bool MidiParser::parse(TrackSequence& sequence) {
     // Get information about this MIDI file
     format = read_uint16();
     num_tracks = read_uint16();
-    sequence.set_division(read_uint16());
+    division = read_uint16();
+    sequence.set_division(division);
     if (format != 0 && format != 1) {
         std::cerr << "Error: format is " << format <<
             ". This program only supports formats 0 and 1 (single track and multiple track)." << std::endl;

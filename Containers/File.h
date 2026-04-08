@@ -11,12 +11,13 @@ private:
     std::string file_path;
     std::vector<std::uint8_t> data;
 
+    void sanitize_file_path();
+
 public:
     File();
     File(const std::string& file_path);
     File(const File& other);
 
-    // Accessor and mutator methods
     std::vector<std::uint8_t>& get_data();
     void set_data(const std::vector<uint8_t>& data);
     std::string get_file_path();
