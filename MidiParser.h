@@ -15,11 +15,14 @@ private:
     // Current byte pos
     std::size_t cursor;
 
-    // Helpers for keeping track of active notes
-    // Allows notes to be created on a rolling basis
-    // Explicitly does not allow duplicates
-    std::vector<uint32_t> active_note_start_times;
-    std::vector<uint32_t> active_note_volumes;
+    /*
+     * Helper collections for keeping track of active notes.
+     * Each channel (outside vector) has 128 pitches (inside vector).
+     * Allows notes to be created on a rolling basis.
+     * Explicitly does not allow duplicates.
+     */
+    std::vector<std::vector<uint32_t>> active_note_start_times;
+    std::vector<std::vector<uint32_t>> active_note_volumes;
 
     // Helper functions for Big-Endian format of midi files
     uint16_t read_uint16();
@@ -45,8 +48,8 @@ public:
     MidiParser(const MidiParser& other);
 
     /**
-    * Parses the file given during instantiation of @code this@endcode. Puts parsed tracks in
-    * @code sequence@endcode and returns a bool indicating success.
+    * Parses the file which was given during instantiation of @code this@endcode.
+    * Puts parsed tracks in @code sequence@endcode and returns a bool indicating success.
     *
     * @param sequence the sequence to insert tracks into
     * @return a bool representing the success of parsing

@@ -15,4 +15,9 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Containers/TrackSequence.cpp
         Containers/TrackSequence.h
         TrackEvents/SysexEvent.h
-        TrackEvents/MetaEvent.h)
+        TrackEvents/MetaEvent.h
+        EventTypeEnums/MetaEventType.h
+        EventTypeEnums/EventType.h
+        EventTypeEnums/MidiEventType.h
+        EventTypeEnums/SysexEventType.h
+)
