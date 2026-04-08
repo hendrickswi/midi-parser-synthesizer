@@ -1,9 +1,8 @@
 #include "File.h"
-
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 
-// Constructors
 File::File() {
     this->file_path = "";
     this->data = std::vector<uint8_t>();
@@ -19,7 +18,14 @@ File::File(const File& other) {
     this->data = other.data;
 }
 
-// Accessor and mutator methods
+void File::sanitize_file_path() {
+#ifdef _WIN32
+    std::replace(file_path.begin(), file_path.end(), '/', '\\');
+#else
+    std::replace(file_path.begin(), file_path.end(), '\\', '/');
+#endif
+}
+
 std::vector<uint8_t>& File::get_data() {
     return data;
 }
@@ -36,11 +42,11 @@ void File::set_file_path(const std::string& file_path) {
     this->file_path = file_path;
 }
 
-// Other methods
 bool File::load_file() {
     data.clear();
 
     // Open file with instance variable file_path, return false if unable to open
+    sanitize_file_path();
     std::ifstream fin(file_path, std::ios::binary);
     if (!fin.is_open()) {
         std::cerr << "Unable to open the file " << file_path << std::endl;
