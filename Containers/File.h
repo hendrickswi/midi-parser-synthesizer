@@ -22,7 +22,11 @@ public:
     std::string get_file_path();
     void set_file_path(const std::string& file_path);
 
-    // Other methods
+    /**
+     * Loads the file from @code this.file_path@endcode and
+     * puts the bytes into @code this.data@endcode.
+     * @return bool indicating success of file loading
+     */
     bool load_file();
 };
 

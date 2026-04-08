@@ -1,12 +1,18 @@
 #include "MidiParser.h"
 
 #include <iostream>
-#include <queue>
 
 #include "EventTypeEnums/EventType.h"
 #include "Containers/File.h"
 #include "Containers/TrackSequence.h"
 #include "EventTypeEnums/MidiEventType.h"
+
+MidiParser::MidiParser() {
+    this->file = File();
+    this->cursor = 0;
+    this->active_note_start_times = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
+    this->active_note_volumes = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
+}
 
 MidiParser::MidiParser(const File& file) {
     this->file = file;
@@ -17,6 +23,8 @@ MidiParser::MidiParser(const File& file) {
 MidiParser::MidiParser(const MidiParser& other) {
     this->file = other.file;
     this->cursor = other.cursor;
+    this->active_note_start_times = other.active_note_start_times;
+    this->active_note_volumes = other.active_note_volumes;
 }
 
 uint16_t MidiParser::read_uint16() {
@@ -78,7 +86,7 @@ uint32_t MidiParser::read_vlq() {
     return value;
 }
 
-bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte) {
+bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, const uint8_t& status_byte) {
     // Bitmasking with 11110000 (0xF0) to get the top 4 bits
     // The top 4 bits are the command
     uint8_t command = status_byte & 0xF0;
@@ -129,7 +137,7 @@ bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, co
     return true;
 }
 
-bool MidiParser::parse_meta_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte) {
+bool MidiParser::parse_meta_event(Track& track, const uint32_t& current_time, const uint8_t& status_byte) {
     const auto& raw_data = file.get_data();
 
     if (cursor >= raw_data.size()) {
@@ -150,9 +158,20 @@ bool MidiParser::parse_meta_event(Track& track, const uint32_t& current_time, co
     return true;
 }
 
-bool MidiParser::parse_sysex_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte) {
+bool MidiParser::parse_sysex_event(Track& track, const uint32_t& current_time, const uint8_t& status_byte) {
+    const auto& raw_data = file.get_data();
 
-    // TODO: Implement this
+    if (cursor >= raw_data.size()) {
+        return false;
+    }
+
+    const uint32_t length = read_vlq();
+    if (cursor + length > raw_data.size()) {
+        return false;
+    }
+
+    std::vector<uint8_t> data = std::vector<uint8_t>(raw_data.begin() + cursor, raw_data.begin() + cursor + length);
+    track.add_sysex_event(SysexEvent(current_time, status_byte, data));
 
     return true;
 }
@@ -162,7 +181,7 @@ inline bool is_meta_event(const uint8_t& status_byte) {
 }
 
 inline bool is_sysex_event(const uint8_t& status_byte) {
-    return status_byte == SYSEX_EVENT_1 || status_byte == SYSEX_EVENT_2;
+    return status_byte == SYSEX_EVENT_BEGIN || status_byte == SYSEX_EVENT_END;
 }
 
 inline bool is_midi_event(const uint8_t& status_byte) {
