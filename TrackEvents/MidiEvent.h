@@ -36,6 +36,9 @@ struct MidiEvent {
     // 8-bit data points about this event, varies based on the given status.
     uint8_t data1;
     uint8_t data2;
+
+    // The channel (0-15)
+    uint8_t channel;
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_MIDIEVENT_H

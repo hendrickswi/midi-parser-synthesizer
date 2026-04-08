@@ -34,6 +34,11 @@ struct Note {
 
     std::uint8_t pitch;
     std::uint8_t volume;
+
+    // The channel (0-15)
+    std::uint8_t channel;
+
+
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_NOTE_H

@@ -5,7 +5,7 @@ TrackSequence::TrackSequence() {
 }
 
 TrackSequence::TrackSequence(const std::vector<Track>& tracks, uint16_t division) {
-    for (Track track : tracks) {
+    for (const Track& track : tracks) {
         this->tracks.push_back(track);
     }
     this->division = division;

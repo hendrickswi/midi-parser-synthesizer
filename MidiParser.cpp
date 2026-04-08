@@ -1,18 +1,18 @@
 #include "MidiParser.h"
 
 #include <iostream>
-#include <ostream>
+#include <queue>
 
+#include "EventTypeEnums/EventType.h"
 #include "Containers/File.h"
 #include "Containers/TrackSequence.h"
-
-using namespace std;
+#include "EventTypeEnums/MidiEventType.h"
 
 MidiParser::MidiParser(const File& file) {
     this->file = file;
     this->cursor = 0;
-    this->active_note_start_times = vector<uint32_t>(128, -1);
-    this->active_note_volumes = vector<uint32_t>(128, -1);
+    this->active_note_start_times = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
+    this->active_note_volumes = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
 }
 MidiParser::MidiParser(const MidiParser& other) {
     this->file = other.file;
@@ -52,7 +52,7 @@ std::string MidiParser::read_string(std::size_t length) {
     }
 
     // Range (iterator) constructor
-    string result(data.begin() + cursor, data.begin() + cursor + length);
+    std::string result(data.begin() + cursor, data.begin() + cursor + length);
     cursor += length;
     return result;
 }
@@ -83,36 +83,42 @@ bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, co
     // The top 4 bits are the command
     uint8_t command = status_byte & 0xF0;
 
+    // Bitmasking with 00001111 (0x0F) to get the bottom 4 bits
+    // The bottom 4 bits are the channel
+    uint8_t channel = status_byte & 0x0F;
+
     uint8_t data1 = file.get_data().at(cursor);
     uint8_t data2 = 0;
-    if (!(command == 0xC0 || command == 0xD0)) {
+    if (!(command == PROGRAM_CHANGE || command == CHANNEL_PRESSURE)) {
+        // These events only have one byte of data,
+        // so if it is not either of these, set data2.
         data2 = file.get_data().at(cursor++);
     }
 
     // Special cases: Note On or Note Off
-    if (command == 0x90) {
+    if (command == NOTE_ON) {
         if (data2 > 0) {
             // Set a specific pitch (data1) to be active now and with data2 volume.
-            active_note_start_times[data1] = current_time;
-            active_note_volumes[data1] = data2;
+            active_note_start_times[channel][data1] = current_time;
+            active_note_volumes[channel][data1] = data2;
         }
         else if (data2 == 0) {
-            const uint32_t duration = current_time - active_note_start_times[data1];
+            const uint32_t duration = current_time - active_note_start_times[channel][data1];
             track.add_note(Note(current_time, duration, data1, data2));
 
             // Reset the corresponding active note
-            active_note_start_times[data1] = -1;
-            active_note_volumes[data1] = -1;
+            active_note_start_times[channel][data1] = -1;
+            active_note_volumes[channel][data1] = -1;
         }
     }
-    else if (command == 0x80) {
-        if (active_note_start_times[data1] != -1) {
-            const uint32_t duration = current_time - active_note_start_times[data1];
+    else if (command == NOTE_OFF) {
+        if (active_note_start_times[channel][data1] != -1) {
+            const uint32_t duration = current_time - active_note_start_times[channel][data1];
             track.add_note(Note(current_time, duration, data1, data2));
 
             // Reset the corresponding active note
-            active_note_start_times[data1] = -1;
-            active_note_volumes[data1] = -1;
+            active_note_start_times[channel][data1] = -1;
+            active_note_volumes[channel][data1] = -1;
         }
     }
     else {
@@ -124,11 +130,43 @@ bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, co
 }
 
 bool MidiParser::parse_meta_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte) {
-    // TODO: implement this
+    const auto& raw_data = file.get_data();
+
+    if (cursor >= raw_data.size()) {
+        return false;
+    }
+
+    const uint8_t type_byte = file.get_data().at(cursor);
+    cursor++;
+    const uint32_t length = read_vlq();
+
+    if (cursor + length > raw_data.size()) {
+        return false;
+    }
+
+    std::vector<uint8_t> data = std::vector<uint8_t>(raw_data.begin() + cursor, raw_data.begin() + cursor + length);
+    track.add_meta_event(MetaEvent(current_time, type_byte, data));
+
+    return true;
 }
 
 bool MidiParser::parse_sysex_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte) {
-    // TODO: implement this
+
+    // TODO: Implement this
+
+    return true;
+}
+
+inline bool is_meta_event(const uint8_t& status_byte) {
+    return status_byte == META_EVENT;
+}
+
+inline bool is_sysex_event(const uint8_t& status_byte) {
+    return status_byte == SYSEX_EVENT_1 || status_byte == SYSEX_EVENT_2;
+}
+
+inline bool is_midi_event(const uint8_t& status_byte) {
+    return status_byte >= MIDI_EVENT_MINIMUM && status_byte <= MIDI_EVENT_MAXIMUM;
 }
 
 bool MidiParser::parse_track_event(Track& track, uint32_t& current_time, uint8_t& running_status) {
@@ -139,26 +177,24 @@ bool MidiParser::parse_track_event(Track& track, uint32_t& current_time, uint8_t
 
     // Account for "running status"
     uint8_t peek_byte = file.get_data().at(cursor);
-    if (peek_byte >= 0x80) {
+    if (peek_byte >= MIDI_EVENT_MINIMUM) {
         // New status
         running_status = peek_byte;
         cursor++;
     }
 
     // Dispatch to the correct event parser method
-    if (peek_byte == 0xFF) {
-        // Meta event
+    if (is_meta_event(peek_byte)) {
         cursor++;
         return parse_meta_event(track, current_time, running_status);
     }
-    else if (peek_byte == 0xF0 || peek_byte == 0xF7) {
-        // Sysex event
+    else if (is_sysex_event(peek_byte)) {
         cursor++;
         return parse_sysex_event(track, current_time, running_status);
     }
-    else if (peek_byte >= 0x80 && peek_byte <= 0xEF) {
-        // Midi event
-        // Do not do cursor++ here, parse_midi_event needs to know how many data bytes to read
+    else if (is_midi_event(peek_byte)) {
+        // Do not do cursor++ here, parse_midi_event needs to know how
+        // many data bytes to read for various differing event formats
         parse_midi_event(track, current_time, running_status);
     }
     else {
@@ -169,8 +205,14 @@ bool MidiParser::parse_track_event(Track& track, uint32_t& current_time, uint8_t
 }
 
 bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
-    fill(active_note_start_times.begin(), active_note_start_times.end(), -1);
-    fill(active_note_volumes.begin(), active_note_volumes.end(), -1);
+    // Clear the active note helper collections
+    for (int i = 0; i < active_note_start_times.size(); i++) {
+       fill(active_note_start_times[i].begin(), active_note_start_times[i].end(), -1);
+    }
+
+    for (int i = 0; i < active_note_volumes.size(); i++) {
+        fill(active_note_volumes[i].begin(), active_note_volumes[i].end(), -1);
+    }
 
     uint32_t current_time = 0;
     uint8_t running_status = 0;
@@ -178,7 +220,7 @@ bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
     while (cursor < cursor + num_bytes) {
         bool success = parse_track_event(track, current_time, running_status);
         if (!success) {
-            cerr << "Error: Unable to parse track event at byte " << cursor << endl;
+            std::cerr << "Error: Unable to parse track event at byte " << cursor << std::endl;
             return false;
         }
     }
@@ -199,22 +241,22 @@ bool MidiParser::parse(TrackSequence& sequence) {
     // Attempt to load the file into memory
     bool load = file.load_file();
     if (!load) {
-        cerr << "Error: Unable to load the file " << file.get_file_path() << endl;
+        std::cerr << "Error: Unable to load the file " << file.get_file_path() << std::endl;
         return false;
     }
 
     // Determine if the file has the first MThd signature
-    string first_signature = read_string(4);
+    std::string first_signature = read_string(4);
     if (first_signature != "MThd") {
-        cerr << "Error: The file is not a valid MIDI file. Does not have the first MThd signature" << endl;
+        std::cerr << "Error: The file is not a valid MIDI file. Does not have the first MThd signature" << std::endl;
         return false;
     }
 
     // Get the header length (size of the next three fields)
     uint32_t header_length = read_uint32();
     if (header_length != 6) {
-        cerr << "Error: Header length is " << header_length <<
-            " bytes, not the normal 6 bytes. This program only supports 6 byte headers." << endl;
+        std::cerr << "Error: Header length is " << header_length <<
+            " bytes, not the normal 6 bytes. This program only supports 6 byte headers." << std::endl;
         return false;
     }
 
@@ -223,21 +265,21 @@ bool MidiParser::parse(TrackSequence& sequence) {
     num_tracks = read_uint16();
     sequence.set_division(read_uint16());
     if (format != 0 && format != 1) {
-        cerr << "Error: format is " << format <<
-            ". This program only supports formats 0 and 1 (single track and multiple track)." << endl;
+        std::cerr << "Error: format is " << format <<
+            ". This program only supports formats 0 and 1 (single track and multiple track)." << std::endl;
     }
     if (division <= 0) {
-        cerr << "Error: delta timing is " << division <<
-                " ticks per beat. This program does not support SMPTE-compatible units." << endl;
+        std::cerr << "Error: delta timing is " << division <<
+                " ticks per beat. This program does not support SMPTE-compatible units." << std::endl;
         return false;
     }
 
     for (int i = 0; i < num_tracks; i++) {
-        string track_signature = read_string(4);
+        std::string track_signature = read_string(4);
         if (track_signature != "MTrk") {
-            cerr << "Error: Track " << i << " is not a valid MIDI track. "
+            std::cerr << "Error: Track " << i << " is not a valid MIDI track. "
                 << "Does not have the MTrk signature OR num_tracks from the header "
-                << "chunk is greater than the actual number of tracks in this MIDI file." << endl;
+                << "chunk is greater than the actual number of tracks in this MIDI file." << std::endl;
             return false;
         }
 
@@ -249,17 +291,17 @@ bool MidiParser::parse(TrackSequence& sequence) {
 
     // Check that there are no extra track chunks (i.e., num_tracks < actual number of tracks)
     if (cursor != file.get_data().size()) {
-        cerr << "Warning: There are " << file.get_data().size() - cursor
-            << " bytes left in " << file.get_file_path() << endl;
+        std::cerr << "Warning: There are " << file.get_data().size() - cursor
+            << " bytes left in " << file.get_file_path() << std::endl;
 
         if (read_string(4) != "MTrk") {
-            cerr << "Info: Remaining bytes do not constitute another track chunk." << endl;
-            cerr << "Error: This is not a valid MIDI file. Garbage data after last track." << endl;
+            std::cerr << "Info: Remaining bytes do not constitute another track chunk." << std::endl;
+            std::cerr << "Error: This is not a valid MIDI file. Garbage data after last track." << std::endl;
             return false;
         }
         else {
-            cerr << "Info: Remaining bytes constitute another track chunk." << endl;
-            cerr << "Warning: Not reading additional track chunks after track number " << num_tracks << endl;
+            std::cerr << "Info: Remaining bytes constitute another track chunk." << std::endl;
+            std::cerr << "Warning: Not reading additional track chunks after track number " << num_tracks << std::endl;
         }
     }
 
