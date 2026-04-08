@@ -1,6 +1,7 @@
 #include "MidiParser.h"
 
 #include <iostream>
+#include <vector>
 
 #include "EventTypeEnums/EventType.h"
 #include "Containers/File.h"

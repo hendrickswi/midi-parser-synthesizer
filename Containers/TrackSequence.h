@@ -2,7 +2,6 @@
 #define MIDI_PARSERSYNTHESIZER_TRACKSEQUENCE_H
 
 #include <vector>
-
 #include "Track.h"
 
 class TrackSequence {
