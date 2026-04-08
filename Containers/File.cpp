@@ -6,15 +6,19 @@
 using namespace std;
 
 // Constructors
-File::File() = default;
+File::File() {
+    this->file_path = "";
+    this->data = vector<uint8_t>();
+}
 
 File::File(const string& file_path) {
     this->file_path = file_path;
+    this->data = vector<uint8_t>();
 }
 
 File::File(const File& other) {
-    this->data = other.data;
     this->file_path = other.file_path;
+    this->data = other.data;
 }
 
 // Accessor and mutator methods

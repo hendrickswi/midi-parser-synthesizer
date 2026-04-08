@@ -3,8 +3,8 @@
 
 enum EventType {
     META_EVENT = 0xFF,
-    SYSEX_EVENT_1 = 0xF0,
-    SYSEX_EVENT_2 = 0xF7,
+    SYSEX_EVENT_BEGIN = 0xF0,
+    SYSEX_EVENT_END = 0xF7,
     MIDI_EVENT_MINIMUM = 0x80,
     MIDI_EVENT_MAXIMUM = 0xEF
 };

@@ -33,9 +33,9 @@ private:
     uint32_t read_vlq();
 
     // Helper functions for parsing the various types of events
-    bool parse_midi_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte);
-    bool parse_meta_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte);
-    bool parse_sysex_event(Track& track, const uint32_t& current_time, const uint32_t& status_byte);
+    bool parse_midi_event(Track& track, const uint32_t& current_time, const uint8_t& status_byte);
+    bool parse_meta_event(Track& track, const uint32_t& current_time, const uint8_t& status_byte);
+    bool parse_sysex_event(Track& track, const uint32_t& current_time, const uint8_t& status_byte);
 
     // Router method for calling above specific event methods
     bool parse_track_event(Track& track, uint32_t& current_time, uint8_t& running_status);
@@ -44,6 +44,7 @@ private:
     bool parse_track_chunk(Track& track, const long& num_bytes);
 
 public:
+    MidiParser();
     MidiParser(const File& file);
     MidiParser(const MidiParser& other);
 
