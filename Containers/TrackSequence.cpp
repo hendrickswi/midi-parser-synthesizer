@@ -16,12 +16,21 @@ TrackSequence::TrackSequence(const TrackSequence& other) {
     division = other.division;
 }
 
-void TrackSequence::clear_tracks() {
-    tracks.clear();
+
+[[nodiscard]] uint16_t TrackSequence::get_division() const {
+    return division;
 }
 
 void TrackSequence::add_track(const Track& track) {
     tracks.push_back(track);
+}
+
+void TrackSequence::clear_tracks() {
+    tracks.clear();
+}
+
+[[nodiscard]] const std::vector<Track>& TrackSequence::get_tracks() const {
+    return tracks;
 }
 
 void TrackSequence::set_division(uint16_t division) {

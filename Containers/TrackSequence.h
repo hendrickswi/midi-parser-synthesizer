@@ -15,8 +15,10 @@ public:
     TrackSequence(const std::vector<Track>& tracks, uint16_t division);
     TrackSequence(const TrackSequence& other);
 
-    void clear_tracks();
+    [[nodiscard]] const std::vector<Track>& get_tracks() const;
     void add_track(const Track& track);
+    void clear_tracks();
+    [[nodiscard]] uint16_t get_division() const;
     void set_division(uint16_t division);
 };
 
