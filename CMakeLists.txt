@@ -20,4 +20,6 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         EventTypeEnums/EventType.h
         EventTypeEnums/MidiEventType.h
         EventTypeEnums/SysexEventType.h
+        MidiSequencer.cpp
+        MidiSequencer.h
 )
