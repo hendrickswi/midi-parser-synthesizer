@@ -17,7 +17,10 @@ private:
     uint32_t micros_per_tick;
     uint32_t current_tick;
     std::chrono::high_resolution_clock::time_point prev_tick_time;
-    double micros_since_last_tick;
+    uint64_t micros_since_last_tick;
+
+    void init();
+    inline uint32_t calculate_micros_per_tick(const uint32_t& tempo) const;
 
 public:
     MidiSequencer();
@@ -29,9 +32,10 @@ public:
     void update();
     void reset();
 
-    TrackSequence& get_track_sequence();
+    [[nodiscard]] const TrackSequence& get_track_sequence() const;
+    [[nodiscard]] TrackSequence& get_track_sequence();
     void set_track_sequence(const TrackSequence& track_sequence);
-    bool get_is_playing();
+    [[nodiscard]] bool get_is_playing() const;
 };
 
 
