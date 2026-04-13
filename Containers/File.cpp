@@ -26,6 +26,10 @@ void File::sanitize_file_path() {
 #endif
 }
 
+const std::vector<uint8_t>& File::get_data() const {
+    return data;
+}
+
 std::vector<uint8_t>& File::get_data() {
     return data;
 }
@@ -34,7 +38,7 @@ void File::set_data(const std::vector<uint8_t>& data) {
     this->data = data;
 }
 
-std::string File::get_file_path() {
+const std::string& File::get_file_path() const {
     return file_path;
 }
 

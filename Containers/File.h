@@ -18,9 +18,11 @@ public:
     File(const std::string& file_path);
     File(const File& other);
 
-    std::vector<std::uint8_t>& get_data();
+    [[nodiscard]] const std::vector<std::uint8_t>& get_data() const;
+    [[nodiscard]] std::vector<std::uint8_t>& get_data();
     void set_data(const std::vector<uint8_t>& data);
-    std::string get_file_path();
+
+    [[nodiscard]] const std::string& get_file_path() const;
     void set_file_path(const std::string& file_path);
 
     /**
