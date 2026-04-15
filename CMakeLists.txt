@@ -26,4 +26,23 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Sequencer/ActiveNote.h
         FilePathSanitizer.cpp
         FilePathSanitizer.h
+        Synthesizer/Oscillators/Oscillator.cpp
+        Synthesizer/Oscillators/Oscillator.h
+        Synthesizer/Voices/Voice.cpp
+        Synthesizer/Voices/Voice.h
+        Synthesizer/VoiceManager.cpp
+        Synthesizer/VoiceManager.h
+        Synthesizer/Oscillators/SineOscillator.cpp
+        Synthesizer/Oscillators/SineOscillator.h
+        Synthesizer/Oscillators/SawtoothOscillator.cpp
+        Synthesizer/Oscillators/SawtoothOscillator.h
+        Synthesizer/Envelopes/Envelope.cpp
+        Synthesizer/Envelopes/Envelope.h
+        Synthesizer/Envelopes/Decorators/TremoloEnvelope.cpp
+        Synthesizer/Envelopes/Decorators/TremoloEnvelope.h
+        "Synthesizer/Envelopes/Base Implementations/ADSREnvelope.cpp"
+        "Synthesizer/Envelopes/Base Implementations/ADSREnvelope.h"
+        Synthesizer/Envelopes/Decorators/EnvelopeDecorator.cpp
+        Synthesizer/Envelopes/Decorators/EnvelopeDecorator.h
+        "Synthesizer/Envelopes/Base Implementations/EnvelopeState.h"
 )
