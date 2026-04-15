@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "MidiParser.h"
+#include "Parser/MidiParser.h"
 
 int main() {
     std::cout << "MIDI parser and synthesizer program" << std::endl << std::endl;

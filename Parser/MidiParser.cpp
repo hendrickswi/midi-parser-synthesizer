@@ -3,10 +3,10 @@
 #include <iostream>
 #include <vector>
 
-#include "EventTypeEnums/EventType.h"
-#include "Containers/File.h"
-#include "Containers/TrackSequence.h"
-#include "EventTypeEnums/MidiEventType.h"
+#include "../EventTypeEnums/EventType.h"
+#include "../Containers/File.h"
+#include "../Containers/TrackSequence.h"
+#include "../EventTypeEnums/MidiEventType.h"
 
 MidiParser::MidiParser() {
     this->file = File();
@@ -174,7 +174,7 @@ bool MidiParser::parse_sysex_event(Track& track, const uint32_t& current_time, c
         return false;
     }
 
-    std::vector<uint8_t> data = std::vector<uint8_t>(raw_data.begin() + cursor, raw_data.begin() + cursor + length);
+    auto data = std::vector<uint8_t>(raw_data.begin() + cursor, raw_data.begin() + cursor + length);
     track.add_sysex_event(SysexEvent(current_time, status_byte, data));
     cursor += length;
 
