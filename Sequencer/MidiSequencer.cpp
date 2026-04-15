@@ -44,6 +44,7 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         const auto& midi_event = midi_events[indices.midi_event_idx];
         indices.midi_event_idx++;
 
+        // Command synthesizer to do various things
         // TODO: Implement PROGRAM_CHANGE logic
         // TODO: Implement CONTROL_CHANGE logic
         // TODO: Implement PITCH_BEND logic
@@ -90,13 +91,13 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         if (indices.note_idx < track.get_notes().size()) {
             return true;
         }
-        else if (indices.midi_event_idx >= track.get_midi_events().size()) {
+        else if (indices.midi_event_idx < track.get_midi_events().size()) {
             return true;
         }
-        else if (indices.meta_idx >= track.get_meta_events().size()) {
+        else if (indices.meta_idx < track.get_meta_events().size()) {
             return true;
         }
-        else if (indices.sysex_idx >= track.get_sysex_events().size()) {
+        else if (indices.sysex_idx < track.get_sysex_events().size()) {
             return true;
         }
     }
