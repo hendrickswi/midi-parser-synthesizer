@@ -174,7 +174,7 @@ void MidiSequencer::set_track_sequence(const TrackSequence& track_sequence) {
     this->track_sequence = track_sequence;
 }
 
-bool MidiSequencer::get_is_playing() const {
+bool MidiSequencer::is_playing() const {
     return is_playing_flag;
 }
 

@@ -66,7 +66,7 @@ public:
      * @return A boolean value, where @c true indicates that the sequencer
      * is currently playing, and @c false indicates it is not.
      */
-    [[nodiscard]] bool get_is_playing() const;
+    [[nodiscard]] bool is_playing() const;
 
     /**
      * Indicates if the sequence has reached the end of the parsed
