@@ -27,7 +27,8 @@ private:
     bool midi_file_ended_flag;
 
     void init();
-    [[nodiscard]] inline uint32_t calculate_micros_per_tick(const uint32_t& tempo) const;
+    [[nodiscard]] inline uint32_t calculate_mpqn(const uint32_t& tempo) const;
+    [[nodiscard]] inline uint32_t calculate_mpt(const uint32_t& mpqn) const;
     void process_events(const Track& track, TrackIndices& indices);
     [[nodiscard]] bool has_more_events();
 
