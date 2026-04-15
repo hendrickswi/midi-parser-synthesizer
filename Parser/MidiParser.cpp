@@ -8,6 +8,12 @@
 #include "../Containers/TrackSequence.h"
 #include "../EventTypeEnums/MidiEventType.h"
 
+void MidiParser::init() {
+    cursor = 0;
+    active_note_start_times = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
+    active_note_volumes = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
+}
+
 MidiParser::MidiParser() {
     this->file = File();
     this->cursor = 0;
@@ -250,6 +256,7 @@ bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
 
 bool MidiParser::parse(TrackSequence& sequence) {
     sequence.clear_tracks();
+    init();
 
     // Header data (to be used to edit the given sequence):
     // format--0 for single track, 1 for multi-track sync, 2 for multi-track async
@@ -328,4 +335,12 @@ bool MidiParser::parse(TrackSequence& sequence) {
     }
 
     return true;
+}
+
+[[nodiscard]] const File& MidiParser::get_file() const {
+    return file;
+}
+
+void MidiParser::set_file(const File& file) {
+    this->file = file;
 }

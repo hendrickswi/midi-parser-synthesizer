@@ -42,6 +42,8 @@ private:
     // Helper function for parsing a singular track chunk
     bool parse_track_chunk(Track& track, const long& num_bytes);
 
+    void init();
+
 public:
     MidiParser();
     MidiParser(const File& file);
@@ -55,6 +57,9 @@ public:
     * @return a bool representing the success of parsing
     */
     bool parse(TrackSequence& sequence);
+
+    [[nodiscard]] const File& get_file() const;
+    void set_file(const File& file);
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_MIDIPARSER_H
