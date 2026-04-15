@@ -24,4 +24,6 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Sequencer/MidiSequencer.h
         Sequencer/TrackIndices.h
         Sequencer/ActiveNote.h
+        FilePathSanitizer.cpp
+        FilePathSanitizer.h
 )

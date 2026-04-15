@@ -1,7 +1,8 @@
 #include "File.h"
-#include <algorithm>
+#include "../FilePathSanitizer.h"
 #include <iostream>
 #include <fstream>
+
 
 File::File() {
     this->file_path = "";
@@ -16,14 +17,6 @@ File::File(const std::string& file_path) {
 File::File(const File& other) {
     this->file_path = other.file_path;
     this->data = other.data;
-}
-
-void File::sanitize_file_path() {
-#ifdef _WIN32
-    std::replace(file_path.begin(), file_path.end(), '/', '\\');
-#else
-    std::replace(file_path.begin(), file_path.end(), '\\', '/');
-#endif
 }
 
 const std::vector<uint8_t>& File::get_data() const {
@@ -50,7 +43,7 @@ bool File::load_file() {
     data.clear();
 
     // Open file with instance variable file_path, return false if unable to open
-    sanitize_file_path();
+    sanitize_file_path(file_path);
     std::ifstream fin(file_path, std::ios::binary);
     if (!fin.is_open()) {
         std::cerr << "Unable to open the file " << file_path << std::endl;

@@ -65,9 +65,33 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
     }
 }
 
+[[nodiscard]] bool MidiSequencer::has_more_events() {
+    bool result = false;
+    auto& tracks = track_sequence.get_tracks();
+    for (int i = 0; i < tracks.size() && result == false; i++) {
+        auto& track = tracks[i];
+        auto& indices = track_indices[i];
+
+        if (indices.note_idx >= track.get_notes().size()) {
+            result = true;
+        }
+        else if (indices.midi_event_idx >= track.get_midi_events().size()) {
+            result = true;
+        }
+        else if (indices.meta_idx >= track.get_meta_events().size()) {
+            result = true;
+        }
+        else if (indices.sysex_idx >= track.get_sysex_events().size()) {
+            result = true;
+        }
+    }
+
+    return result;
+}
+
 MidiSequencer::MidiSequencer() {
     track_sequence = TrackSequence();
-    is_playing = false;
+    is_playing_flag = false;
 
     micros_per_tick = calculate_micros_per_tick(120);
     init();
@@ -75,7 +99,7 @@ MidiSequencer::MidiSequencer() {
 
 MidiSequencer::MidiSequencer(const TrackSequence& track_sequence) {
     this->track_sequence = track_sequence;
-    is_playing = false;
+    is_playing_flag = false;
 
     micros_per_tick = calculate_micros_per_tick(120);
     init();
@@ -83,7 +107,7 @@ MidiSequencer::MidiSequencer(const TrackSequence& track_sequence) {
 
 MidiSequencer::MidiSequencer(const MidiSequencer& other) {
     track_sequence = other.track_sequence;
-    is_playing = other.is_playing;
+    is_playing_flag = other.is_playing_flag;
 
     micros_per_tick = other.micros_per_tick;
     current_tick = other.current_tick;
@@ -93,15 +117,15 @@ MidiSequencer::MidiSequencer(const MidiSequencer& other) {
 }
 
 void MidiSequencer::start() {
-    is_playing = true;
+    is_playing_flag = true;
 }
 
 void MidiSequencer::stop() {
-    is_playing = false;
+    is_playing_flag = false;
 }
 
 void MidiSequencer::update() {
-    if (!is_playing) return;
+    if (!is_playing_flag) return;
     auto current_time = std::chrono::high_resolution_clock::now();
     auto elapsed_time = std::chrono::duration_cast<std::chrono::microseconds>(current_time - prev_tick_time);
     micros_since_last_tick += elapsed_time.count();
@@ -112,6 +136,14 @@ void MidiSequencer::update() {
         active_notes.pop();
     }
 
+    // Early return if there are no more events to add.
+    // Checking this bool avoids O(n) computation every time
+    // after the first time the flag is set to true.
+    if (midi_file_ended_flag) return;
+    if (!has_more_events()) {
+        midi_file_ended_flag = true;
+        return;
+    }
 
     // Add new notes
     while (micros_since_last_tick >= micros_per_tick) {
@@ -130,7 +162,7 @@ void MidiSequencer::update() {
 }
 
 void MidiSequencer::reset() {
-    is_playing = false;
+    is_playing_flag = false;
     init();
 }
 
@@ -143,5 +175,9 @@ void MidiSequencer::set_track_sequence(const TrackSequence& track_sequence) {
 }
 
 bool MidiSequencer::get_is_playing() const {
-    return is_playing;
+    return is_playing_flag;
+}
+
+bool MidiSequencer::midi_file_ended() const {
+    return midi_file_ended_flag;
 }
