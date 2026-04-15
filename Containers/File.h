@@ -11,8 +11,6 @@ private:
     std::string file_path;
     std::vector<std::uint8_t> data;
 
-    void sanitize_file_path();
-
 public:
     File();
     File(const std::string& file_path);

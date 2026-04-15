@@ -1,7 +1,11 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+
+#include "FilePathSanitizer.h"
 #include "Parser/MidiParser.h"
+
+constexpr std::string auto_test_folder = "Testing files";
 
 int main() {
     auto file_names = std::vector<std::string>();
@@ -19,11 +23,13 @@ int main() {
         std::string file_name;
         std::getline(std::cin >> std::ws, file_name);
         std::cout << std::endl;
+
+        sanitize_file_path(file_name);
+        file_names.push_back(file_name);
     }
     else {
         // Get all the .mid file names from '/Testing files' directory
-        // TODO: Find a way to sanitize this file path (maybe making File::sanitize_file_path() a friend function?)
-        for (const auto& entry : std::filesystem::directory_iterator("../Testing files")) {
+        for (const auto& entry : std::filesystem::directory_iterator(auto_test_folder)) {
             if (entry.path().extension() == ".mid") {
                 file_names.push_back(entry.path().string());
             }
