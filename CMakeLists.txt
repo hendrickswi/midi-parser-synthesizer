@@ -4,8 +4,8 @@ project(MIDI_ParserSynthesizer)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(MIDI_ParserSynthesizer main.cpp
-        MidiParser.cpp
-        MidiParser.h
+        Parser/MidiParser.cpp
+        Parser/MidiParser.h
         Containers/File.cpp
         Containers/File.h
         Containers/Track.cpp
@@ -20,6 +20,8 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         EventTypeEnums/EventType.h
         EventTypeEnums/MidiEventType.h
         EventTypeEnums/SysexEventType.h
-        MidiSequencer.cpp
-        MidiSequencer.h
+        Sequencer/MidiSequencer.cpp
+        Sequencer/MidiSequencer.h
+        Sequencer/TrackIndices.h
+        Sequencer/ActiveNote.h
 )
