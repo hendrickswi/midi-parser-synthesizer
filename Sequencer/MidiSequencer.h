@@ -6,11 +6,13 @@
 #include "ActiveNote.h"
 #include "TrackIndices.h"
 #include "../Containers/TrackSequence.h"
+#include "../Synthesizer/VoiceManager.h"
 
 
 class MidiSequencer {
 private:
     TrackSequence track_sequence;
+    VoiceManager* synthesizer;
     bool is_playing_flag;
 
     // Helper variables for timing.
@@ -30,11 +32,11 @@ private:
     [[nodiscard]] inline uint32_t calculate_mpqn(const uint32_t& tempo) const;
     [[nodiscard]] inline uint32_t calculate_mpt(const uint32_t& mpqn) const;
     void process_events(const Track& track, TrackIndices& indices);
-    [[nodiscard]] bool has_more_events();
+    [[nodiscard]] bool has_more_events() const;
 
 public:
     MidiSequencer();
-    MidiSequencer(const TrackSequence& track_sequence);
+    MidiSequencer(const TrackSequence& track_sequence, VoiceManager* synthesizer);
     MidiSequencer(const MidiSequencer& other);
 
     void start();
@@ -60,6 +62,10 @@ public:
      * be set as the internal track sequence.
      */
     void set_track_sequence(const TrackSequence& track_sequence);
+
+    [[nodiscard]] const MidiSequencer& get_sequencer() const;
+
+    void set_sequencer(VoiceManager* sequencer);
 
     /**
      * Indicates whether the sequencer is currently in the playing state.
