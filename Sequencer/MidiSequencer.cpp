@@ -30,9 +30,7 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
 
         const auto& note = notes[indices.note_idx];
         indices.note_idx++;
-
-        // TODO: Activate note in synthesizer
-
+        synthesizer->note_on(note.channel, note.pitch, note.volume);
         active_notes.emplace(note);
     }
 
@@ -82,7 +80,7 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
     // }
 }
 
-[[nodiscard]] bool MidiSequencer::has_more_events() {
+[[nodiscard]] bool MidiSequencer::has_more_events() const {
     auto& tracks = track_sequence.get_tracks();
     for (int i = 0; i < tracks.size(); i++) {
         auto& track = tracks[i];
@@ -105,18 +103,21 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
     return false;
 }
 
-MidiSequencer::MidiSequencer() {
+MidiSequencer::MidiSequencer() { // NOLINT
     track_sequence = TrackSequence();
+    synthesizer = nullptr;
     init();
 }
 
-MidiSequencer::MidiSequencer(const TrackSequence& track_sequence) {
+MidiSequencer::MidiSequencer(const TrackSequence& track_sequence, VoiceManager* synthesizer) { // NOLINT
     this->track_sequence = track_sequence;
+    this->synthesizer = synthesizer;
     init();
 }
 
 MidiSequencer::MidiSequencer(const MidiSequencer& other) {
     track_sequence = other.track_sequence;
+    synthesizer = other.synthesizer;
     is_playing_flag = other.is_playing_flag;
     midi_file_ended_flag = other.midi_file_ended_flag;
     micros_per_tick = other.micros_per_tick;
