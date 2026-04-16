@@ -7,13 +7,11 @@
 class VoiceManager {
 private:
     static constexpr int NUM_VOICES = 16;
-    std::array<Voice, NUM_VOICES> voices;
+    std::array<std::unique_ptr<Voice>, NUM_VOICES> voices;
     std::array<uint8_t, NUM_VOICES> channel_patches;
 
     float sample_rate;
     float global_volume;
-
-    [[nodiscard]] float pitch_to_hz(uint8_t pitch);
 
 public:
     VoiceManager();
@@ -28,7 +26,7 @@ public:
 
     void note_on(uint8_t channel, uint8_t pitch, uint8_t velocity);
     void note_off(uint8_t channel, uint8_t pitch);
-    void update(float* buffer, int num_samples);
+    void process_audio_buffer(float* buffer, int num_samples);
     void stop();
 };
 
