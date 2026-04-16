@@ -27,7 +27,7 @@ public:
     void set_channel_patch(uint8_t channel, uint8_t program_number);
 
     void note_on(uint8_t channel, uint8_t pitch, uint8_t velocity);
-    void note_off(short channel, float pitch);
+    void note_off(uint8_t channel, uint8_t pitch);
     void update(float* buffer, int num_samples);
     void stop();
 };
