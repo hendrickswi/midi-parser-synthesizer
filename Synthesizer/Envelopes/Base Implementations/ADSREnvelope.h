@@ -1,7 +1,6 @@
 #ifndef MIDI_PARSERSYNTHESIZER_ADSRENVELOPE_H
 #define MIDI_PARSERSYNTHESIZER_ADSRENVELOPE_H
 #include "../Envelope.h"
-#include "EnvelopeState.h"
 
 class ADSREnvelope : public Envelope {
 private:
@@ -29,7 +28,7 @@ public:
     void on() override;
     void off() override;
     [[nodiscard]] float get_multiplier() override;
-    [[nodiscard]] bool is_finished() const override;
+    [[nodiscard]] const EnvelopeState& get_state() const override;
 
     void set_attack(float seconds);
     void set_decay(float seconds);
