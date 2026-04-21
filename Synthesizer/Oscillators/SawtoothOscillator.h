@@ -5,16 +5,16 @@
 
 class SawtoothOscillator : public Oscillator {
 private:
-    float current_phase;
-    float phase_increment;
+    double current_phase;
+    double phase_increment;
 
 public:
     SawtoothOscillator();
-    SawtoothOscillator(float hz, float sample_rate);
+    SawtoothOscillator(double hz, double sample_rate);
     SawtoothOscillator(const SawtoothOscillator& other);
 
-    void set_frequency(float hz, float sample_rate) override;
-    float get_sample() override;
+    double get_sample() override;
+    void set_frequency(double hz, double sample_rate) override;
 };
 
 
