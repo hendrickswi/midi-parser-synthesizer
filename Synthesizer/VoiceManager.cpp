@@ -57,7 +57,7 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
         voice_idx = oldest_voice_idx;
         voices[voice_idx]->note_off();
     }
-    voices[voice_idx]->note_on(pitch_to_hz(pitch), velocity);
+    voices[voice_idx]->note_on(pitch_to_hz(pitch), sample_rate, velocity);
 }
 
 void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {

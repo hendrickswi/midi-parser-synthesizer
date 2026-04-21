@@ -6,7 +6,7 @@ class Oscillator {
 public:
     virtual ~Oscillator() = default;
 
-    virtual float get_sample() = 0;
+    virtual double get_sample() = 0;
     virtual void set_frequency(float hz, float sample_rate) = 0;
 };
 

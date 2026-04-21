@@ -5,8 +5,8 @@
 
 class SineOscillator : public Oscillator {
 private:
-    float current_phase;
-    float phase_increment;
+    double current_phase;
+    double phase_increment;
 
 public:
     SineOscillator();
@@ -14,7 +14,7 @@ public:
     SineOscillator(const SineOscillator& other);
 
     void set_frequency(float hz, float sample_rate) override;
-    float get_sample() override;
+    double get_sample() override;
 };
 
 
