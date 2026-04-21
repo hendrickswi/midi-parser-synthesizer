@@ -1,8 +1,10 @@
 #ifndef MIDI_PARSERSYNTHESIZER_VOICEMANAGER_H
 #define MIDI_PARSERSYNTHESIZER_VOICEMANAGER_H
 #include <array>
-#include "Voices/Voice.h"
+#include <memory>
 
+// pimpl forward declaration
+class Voice;
 
 class VoiceManager {
 private:
