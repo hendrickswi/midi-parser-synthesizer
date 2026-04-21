@@ -1,6 +1,5 @@
 #ifndef MIDI_PARSERSYNTHESIZER_ENVELOPE_H
 #define MIDI_PARSERSYNTHESIZER_ENVELOPE_H
-#include <memory>
 
 #include "Base Implementations/EnvelopeState.h"
 
@@ -10,7 +9,7 @@ public:
 
     virtual void on() = 0;
     virtual void off() = 0;
-    [[nodiscard]] virtual float get_multiplier() = 0;
+    [[nodiscard]] virtual double get_multiplier() = 0;
     [[nodiscard]] virtual const EnvelopeState& get_state() const = 0;
 };
 

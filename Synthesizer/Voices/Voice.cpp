@@ -16,6 +16,8 @@ Voice::Voice(std::unique_ptr<Oscillator> oscillator, std::unique_ptr<Envelope> e
     note_activation_time = std::chrono::high_resolution_clock::now();
 }
 
+Voice::~Voice() = default;
+
 void Voice::set_oscillator(std::unique_ptr<Oscillator> oscillator) {
     this->oscillator = std::move(oscillator);
 }

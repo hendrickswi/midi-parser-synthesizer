@@ -1,6 +1,7 @@
 #ifndef MIDI_PARSERSYNTHESIZER_ENVELOPEDECORATOR_H
 #define MIDI_PARSERSYNTHESIZER_ENVELOPEDECORATOR_H
 #include "../Envelope.h"
+#include <memory>
 
 class EnvelopeDecorator : public Envelope {
 protected:
@@ -9,20 +10,10 @@ protected:
 public:
     EnvelopeDecorator(std::unique_ptr<Envelope> env) : base_envelope(std::move(env)) {}
 
-    void on() override {
-        base_envelope->on();
-    }
-    void off() override {
-        base_envelope->off();
-    }
-
-    // Default implementations
-    float get_multiplier() override {
-        return base_envelope->get_multiplier();
-    }
-    [[nodiscard]] bool is_finished() const override {
-        return base_envelope->is_finished();
-    }
+    void on() override;
+    void off() override;
+    double get_multiplier() override;
+    [[nodiscard]] const EnvelopeState& get_state() const override;
 };
 
 

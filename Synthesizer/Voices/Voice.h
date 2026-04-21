@@ -2,17 +2,10 @@
 #define MIDI_PARSERSYNTHESIZER_VOICE_H
 #include <memory>
 #include <chrono>
-#include "../Oscillators/Oscillator.h"
 
-
-/**
- * Represents an envelope that defines the amplitude characteristics
- * of a sound over its duration.
- *
- * This is an abstract class that provides the interface for
- * controlling the behavior of the amplitude envelope.
- */
+// pimpl forward declarations
 class Envelope;
+class Oscillator;
 
 class Voice {
 private:
@@ -29,6 +22,8 @@ public:
     Voice();
     Voice(std::unique_ptr<Oscillator> oscillator, std::unique_ptr<Envelope> envelope);
     Voice(const Voice& other) = delete;
+
+    ~Voice();
 
     Voice& operator=(const Voice& other) = delete;
 

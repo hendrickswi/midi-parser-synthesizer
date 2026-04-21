@@ -1,4 +1,5 @@
 #include "VoiceManager.h"
+#include "Voices/Voice.h"
 
 #include <cmath>
 

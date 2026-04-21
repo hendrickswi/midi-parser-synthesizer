@@ -8,8 +8,16 @@ inline double calculate_phase_increment(double hz, double sample_rate) {
 }
 
 class Oscillator {
+protected:
+    double current_phase;
+    double phase_increment;
+
+    Oscillator();
+    Oscillator(double hz, double sample_rate);
+    Oscillator(const Oscillator& other);
+
 public:
-    virtual ~Oscillator() = default;
+    virtual ~Oscillator();
 
     virtual double get_sample() = 0;
     virtual void set_frequency(double hz, double sample_rate);

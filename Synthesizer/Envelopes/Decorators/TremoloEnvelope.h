@@ -10,7 +10,7 @@ private:
 public:
     TremoloEnvelope(Envelope* env);
 
-    float get_multiplier() override;
+    double get_multiplier() override;
 };
 
 
