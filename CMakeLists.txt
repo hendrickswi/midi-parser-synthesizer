@@ -26,7 +26,6 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Sequencer/ActiveNote.h
         FilePathSanitizer.cpp
         FilePathSanitizer.h
-        Synthesizer/Oscillators/Oscillator.cpp
         Synthesizer/Oscillators/Oscillator.h
         Synthesizer/Voices/Voice.cpp
         Synthesizer/Voices/Voice.h
@@ -36,7 +35,6 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Synthesizer/Oscillators/SineOscillator.h
         Synthesizer/Oscillators/SawtoothOscillator.cpp
         Synthesizer/Oscillators/SawtoothOscillator.h
-        Synthesizer/Envelopes/Envelope.cpp
         Synthesizer/Envelopes/Envelope.h
         Synthesizer/Envelopes/Decorators/TremoloEnvelope.cpp
         Synthesizer/Envelopes/Decorators/TremoloEnvelope.h
