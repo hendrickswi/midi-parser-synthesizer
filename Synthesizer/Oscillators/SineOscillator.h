@@ -2,7 +2,6 @@
 #define MIDI_PARSERSYNTHESIZER_SINEOSCILLATOR_H
 #include "Oscillator.h"
 
-
 class SineOscillator : public Oscillator {
 private:
     double current_phase;
@@ -10,11 +9,11 @@ private:
 
 public:
     SineOscillator();
-    SineOscillator(float hz, float sample_rate);
+    SineOscillator(double hz, double sample_rate);
     SineOscillator(const SineOscillator& other);
 
-    void set_frequency(float hz, float sample_rate) override;
     double get_sample() override;
+    void set_frequency(double hz, double sample_rate) override;
 };
 
 

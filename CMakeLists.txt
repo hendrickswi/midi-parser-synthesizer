@@ -35,6 +35,8 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Synthesizer/Oscillators/SineOscillator.h
         Synthesizer/Oscillators/SawtoothOscillator.cpp
         Synthesizer/Oscillators/SawtoothOscillator.h
+        Synthesizer/Oscillators/SquareOscillator.cpp
+        Synthesizer/Oscillators/SquareOscillator.h
         Synthesizer/Envelopes/Envelope.h
         Synthesizer/Envelopes/Decorators/TremoloEnvelope.cpp
         Synthesizer/Envelopes/Decorators/TremoloEnvelope.h
