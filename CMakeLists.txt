@@ -40,10 +40,10 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Synthesizer/Envelopes/Envelope.h
         Synthesizer/Envelopes/Decorators/TremoloEnvelope.cpp
         Synthesizer/Envelopes/Decorators/TremoloEnvelope.h
-        "Synthesizer/Envelopes/Base Implementations/ADSREnvelope.cpp"
-        "Synthesizer/Envelopes/Base Implementations/ADSREnvelope.h"
+        "Synthesizer/Envelopes/Base Implementations/ADSR/ADSREnvelope.cpp"
+        "Synthesizer/Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
         Synthesizer/Envelopes/Decorators/EnvelopeDecorator.cpp
         Synthesizer/Envelopes/Decorators/EnvelopeDecorator.h
-        "Synthesizer/Envelopes/Base Implementations/EnvelopeState.h"
+        "Synthesizer/Envelopes/Base Implementations/ADSR/ADSREnvelopeState.h"
         Synthesizer/Oscillators/Oscillator.cpp
 )

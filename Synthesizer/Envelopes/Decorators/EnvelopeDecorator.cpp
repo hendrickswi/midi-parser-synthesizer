@@ -12,6 +12,10 @@ double EnvelopeDecorator::get_multiplier() {
     return base_envelope->get_multiplier();
 }
 
-const EnvelopeState& EnvelopeDecorator::get_state() const {
-    return base_envelope->get_state();
+bool EnvelopeDecorator::is_idle() const {
+    return base_envelope->is_idle();
+}
+
+bool EnvelopeDecorator::is_released() const {
+    return base_envelope->is_released();
 }

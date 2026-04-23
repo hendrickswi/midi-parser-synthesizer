@@ -1,5 +1,6 @@
 #include "Voice.h"
 #include "../Envelopes/Envelope.h"
+#include "../Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
 #include "../Oscillators/Oscillator.h"
 
 Voice::Voice() {
@@ -44,17 +45,17 @@ void Voice::note_off() {
 
 [[nodiscard]] bool Voice::is_free() const {
     if (!envelope) return true;
-    return envelope->get_state() == IDLE;
+    return envelope->is_idle();
 }
 
 [[nodiscard]] bool Voice::is_released() const {
     if (!envelope) return true;
-    return envelope->get_state() == RELEASE;
+    return envelope->is_released();
 }
 
 float Voice::process() {
     if (!(is_active && oscillator && envelope)) return 0.0f;
-    if (envelope->get_state() == IDLE) {
+    if (envelope->is_idle()) {
         is_active = false;
         return 0.0f;
     }
