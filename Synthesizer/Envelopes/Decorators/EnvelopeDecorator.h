@@ -13,7 +13,8 @@ public:
     void on() override;
     void off() override;
     double get_multiplier() override;
-    [[nodiscard]] const EnvelopeState& get_state() const override;
+    [[nodiscard]] bool is_idle() const override;
+    [[nodiscard]] bool is_released() const override;
 };
 
 
