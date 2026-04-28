@@ -46,4 +46,6 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Synthesizer/Envelopes/Decorators/EnvelopeDecorator.h
         "Synthesizer/Envelopes/Base Implementations/ADSR/ADSREnvelopeState.h"
         Synthesizer/Oscillators/Oscillator.cpp
+        Synthesizer/Envelopes/Decorators/VibratoEnvelope.cpp
+        Synthesizer/Envelopes/Decorators/VibratoEnvelope.h
 )

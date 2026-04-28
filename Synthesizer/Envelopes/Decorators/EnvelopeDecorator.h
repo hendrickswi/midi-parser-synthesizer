@@ -6,9 +6,11 @@
 class EnvelopeDecorator : public Envelope {
 protected:
     std::unique_ptr<Envelope> base_envelope;
+    double sample_rate;
 
 public:
-    EnvelopeDecorator(std::unique_ptr<Envelope> env) : base_envelope(std::move(env)) {}
+    EnvelopeDecorator(std::unique_ptr<Envelope> env, double sample_rate = 44100.0f);
+    ~EnvelopeDecorator();
 
     void on() override;
     void off() override;
