@@ -6,7 +6,7 @@
 
 
 class OscillatorDecorator : public Oscillator {
-private:
+protected:
     std::unique_ptr<Oscillator> base_oscillator;
     double sample_rate;
 

@@ -60,7 +60,7 @@ float Voice::process() {
         return 0.0f;
     }
 
-    float raw_instruction = oscillator->get_sample();
-    float multiplier = envelope->get_multiplier();
+    double raw_instruction = oscillator->get_sample();
+    double multiplier = envelope->get_multiplier();
     return raw_instruction * multiplier * current_volume;
 }
