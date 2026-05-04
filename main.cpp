@@ -28,7 +28,12 @@ int main() {
         file_names.push_back(file_name);
     }
     else {
-        // Get all the .mid file names from '/Testing files' directory
+        if (!std::filesystem::exists(auto_test_folder) || !std::filesystem::is_directory(auto_test_folder)) {
+            std::cerr << "Error: The directory " << auto_test_folder << " cannot be resolved" << std::endl;
+            return 1;
+        }
+
+        // Get all the .mid file names from the auto testing directory
         for (const auto& entry : std::filesystem::directory_iterator(auto_test_folder)) {
             if (entry.path().extension() == ".mid") {
                 file_names.push_back(entry.path().string());

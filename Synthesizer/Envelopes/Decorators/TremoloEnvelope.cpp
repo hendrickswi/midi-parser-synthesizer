@@ -3,7 +3,7 @@
 #include <cmath>
 
 TremoloEnvelope::TremoloEnvelope(std::unique_ptr<Envelope> env, double sample_rate, double speed_hz, double depth)
-        : EnvelopeDecorator(std::move(env), sample_rate) {
+: EnvelopeDecorator(std::move(env), sample_rate) {
         this->speed_hz = speed_hz;
         this->depth = depth;
         current_phase = 0;
