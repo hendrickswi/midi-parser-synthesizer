@@ -7,13 +7,16 @@ private:
     double current_phase;
     double phase_increment;
 
-    float base_hz;
-
-    float speed_hz;
-    float depth;
+    double base_hz;
+    double speed_hz;
+    double depth;
 
 public:
-    VibratoOscillator(std::unique_ptr<Oscillator> osc, double sample_rate = 44100.0f);
+    VibratoOscillator(std::unique_ptr<Oscillator> osc, double sample_rate = 44100.0f, double base_hz = 4.0, double speed_hz = 5.0, double depth = 0.5);
+    ~VibratoOscillator();
+
+    void set_frequency(double hz, double sample_rate) override;
+    double get_sample() override;
 
 };
 
