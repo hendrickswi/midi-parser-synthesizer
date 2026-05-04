@@ -1,5 +1,12 @@
 #include "EnvelopeDecorator.h"
 
+EnvelopeDecorator::EnvelopeDecorator(std::unique_ptr<Envelope> env, double sample_rate) {
+    this->base_envelope = std::move(env);
+    this->sample_rate = sample_rate;
+}
+
+EnvelopeDecorator::~EnvelopeDecorator() = default;
+
 void EnvelopeDecorator::on() {
     base_envelope->on();
 }

@@ -1,7 +1,8 @@
 ﻿#include "OscillatorDecorator.h"
 
 OscillatorDecorator::OscillatorDecorator(std::unique_ptr<Oscillator> osc, double sample_rate)
-: base_oscillator(std::move(osc)) {
+{
+    this->base_oscillator = std::move(osc);
     this->sample_rate = sample_rate;
 }
 
