@@ -1,7 +1,7 @@
 #include "Voice.h"
 #include "../Envelopes/Envelope.h"
 #include "../Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
-#include "../Oscillators/Oscillator.h"
+#include "../Oscillators/Base Implementations/Oscillator.h"
 
 Voice::Voice() {
     oscillator = nullptr;

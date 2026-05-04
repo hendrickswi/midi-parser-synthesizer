@@ -26,17 +26,17 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Sequencer/ActiveNote.h
         FilePathSanitizer.cpp
         FilePathSanitizer.h
-        Synthesizer/Oscillators/Oscillator.h
+        "Synthesizer/Oscillators/Base Implementations/Oscillator.h"
         Synthesizer/Voices/Voice.cpp
         Synthesizer/Voices/Voice.h
         Synthesizer/VoiceManager.cpp
         Synthesizer/VoiceManager.h
-        Synthesizer/Oscillators/SineOscillator.cpp
-        Synthesizer/Oscillators/SineOscillator.h
-        Synthesizer/Oscillators/SawtoothOscillator.cpp
-        Synthesizer/Oscillators/SawtoothOscillator.h
-        Synthesizer/Oscillators/SquareOscillator.cpp
-        Synthesizer/Oscillators/SquareOscillator.h
+        "Synthesizer/Oscillators/Base Implementations/SineOscillator.cpp"
+        "Synthesizer/Oscillators/Base Implementations/SineOscillator.h"
+        "Synthesizer/Oscillators/Base Implementations/SawtoothOscillator.cpp"
+        "Synthesizer/Oscillators/Base Implementations/SawtoothOscillator.h"
+        "Synthesizer/Oscillators/Base Implementations/SquareOscillator.cpp"
+        "Synthesizer/Oscillators/Base Implementations/SquareOscillator.h"
         Synthesizer/Envelopes/Envelope.h
         Synthesizer/Envelopes/Decorators/TremoloEnvelope.cpp
         Synthesizer/Envelopes/Decorators/TremoloEnvelope.h
@@ -45,7 +45,9 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Synthesizer/Envelopes/Decorators/EnvelopeDecorator.cpp
         Synthesizer/Envelopes/Decorators/EnvelopeDecorator.h
         "Synthesizer/Envelopes/Base Implementations/ADSR/ADSREnvelopeState.h"
-        Synthesizer/Oscillators/Oscillator.cpp
-        Synthesizer/Envelopes/Decorators/VibratoEnvelope.cpp
-        Synthesizer/Envelopes/Decorators/VibratoEnvelope.h
+        "Synthesizer/Oscillators/Base Implementations/Oscillator.cpp"
+        Synthesizer/Oscillators/Decorators/OscillatorDecorator.cpp
+        Synthesizer/Oscillators/Decorators/OscillatorDecorator.h
+        Synthesizer/Oscillators/Decorators/VibratoOscillator.cpp
+        Synthesizer/Oscillators/Decorators/VibratoOscillator.h
 )
