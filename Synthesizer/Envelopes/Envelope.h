@@ -7,7 +7,7 @@ public:
 
     virtual void on() = 0;
     virtual void off() = 0;
-    [[nodiscard]] virtual double get_multiplier() = 0;
+    [[nodiscard]] virtual float get_multiplier() = 0;
     [[nodiscard]] virtual bool is_idle() const = 0;
     [[nodiscard]] virtual bool is_released() const = 0;
 };

@@ -3,12 +3,12 @@
 #include <algorithm>
 
 void ADSREnvelope::recalculate_rates() {
-    attack_increment = 1.0 / (std::max(attack_time, 0.00001) * std::max(sample_rate, 0.00001));
-    decay_increment = (1.0 - sustain_level) / (std::max(decay_time, 0.00001) * std::max(sample_rate, 0.00001));
-    release_increment = sustain_level / (std::max(release_time, 0.00001) * std::max(sample_rate, 0.00001));
+    attack_increment = 1.0f / (std::max(attack_time, 0.00001f) * std::max(sample_rate, 0.00001f));
+    decay_increment = (1.0f - sustain_level) / (std::max(decay_time, 0.00001f) * std::max(sample_rate, 0.00001f));
+    release_increment = sustain_level / (std::max(release_time, 0.00001f) * std::max(sample_rate, 0.00001f));
 }
 
-void ADSREnvelope::init(double sample_rate, double attack_time, double decay_time, double sustain_level, double release_time) {
+void ADSREnvelope::init(float sample_rate, float attack_time, float decay_time, float sustain_level, float release_time) { // NOLINT
     state = IDLE;
     current_multiplier = 0.0;
     this->sample_rate = sample_rate;
@@ -23,7 +23,7 @@ ADSREnvelope::ADSREnvelope() { // NOLINT
     init();
 }
 
-ADSREnvelope::ADSREnvelope(double sample_rate, double attack_time, double decay_time, double sustain_level, double release_time) { // NOLINT
+ADSREnvelope::ADSREnvelope(float sample_rate, float attack_time, float decay_time, float sustain_level, float release_time) { // NOLINT
     init(sample_rate, attack_time, decay_time, sustain_level, release_time);
 }
 
@@ -51,10 +51,10 @@ void ADSREnvelope::off() {
 
     // Recalculate release speed based on the current volume
     // in case off() is called before attack or decay finishes
-    release_increment = current_multiplier / (std::max(release_time, 0.00001) * std::max(sample_rate, 0.00001));
+    release_increment = current_multiplier / (std::max(release_time, 0.00001f) * std::max(sample_rate, 0.00001f));
 }
 
-double ADSREnvelope::get_multiplier() {
+float ADSREnvelope::get_multiplier() {
     // Switch statement for state logic
     // Not via traditional OOP approach for performance
     switch (state) {

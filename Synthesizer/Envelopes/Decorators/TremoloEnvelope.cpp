@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-TremoloEnvelope::TremoloEnvelope(std::unique_ptr<Envelope> env, double sample_rate, double speed_hz, double depth)
+TremoloEnvelope::TremoloEnvelope(std::unique_ptr<Envelope> env, float sample_rate, float speed_hz, float depth)
 : EnvelopeDecorator(std::move(env), sample_rate) {
         this->speed_hz = speed_hz;
         this->depth = depth;
@@ -12,10 +12,10 @@ TremoloEnvelope::TremoloEnvelope(std::unique_ptr<Envelope> env, double sample_ra
 
 TremoloEnvelope::~TremoloEnvelope() = default;
 
-double TremoloEnvelope::get_multiplier() {
-        double base_multiplier = base_envelope->get_multiplier();
-        double normalized_sine = std::sin(current_phase) * 0.5 + 0.5;
-        double tremolo_modifier = 1.0 - (normalized_sine * depth);
+float TremoloEnvelope::get_multiplier() {
+        float base_multiplier = base_envelope->get_multiplier();
+        float normalized_sine = std::sin(current_phase) * 0.5f + 0.5f;
+        float tremolo_modifier = 1.0f - (normalized_sine * depth);
 
         // Wrap-around logic
         current_phase = fmod(current_phase + phase_increment, TWO_PI);

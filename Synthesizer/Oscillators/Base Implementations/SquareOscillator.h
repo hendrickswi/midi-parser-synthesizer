@@ -5,10 +5,10 @@
 class SquareOscillator : public Oscillator {
 public:
     SquareOscillator();
-    SquareOscillator(double hz, double sample_rate);
+    SquareOscillator(float hz, float sample_rate);
     SquareOscillator(const SquareOscillator& other);
 
-    double get_sample() override;
+    float get_sample() override;
 };
 
 

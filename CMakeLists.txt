@@ -3,6 +3,8 @@ project(MIDI_ParserSynthesizer)
 
 set(CMAKE_CXX_STANDARD 20)
 
+include_directories(SYSTEM /usr/include/rtaudio)
+
 add_executable(MIDI_ParserSynthesizer main.cpp
         Parser/MidiParser.cpp
         Parser/MidiParser.h

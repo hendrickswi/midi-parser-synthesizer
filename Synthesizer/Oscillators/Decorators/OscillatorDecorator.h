@@ -8,14 +8,14 @@
 class OscillatorDecorator : public Oscillator {
 protected:
     std::unique_ptr<Oscillator> base_oscillator;
-    double sample_rate;
+    float sample_rate;
 
-    OscillatorDecorator(std::unique_ptr<Oscillator> osc, double sample_rate = 44100.0f);
+    OscillatorDecorator(std::unique_ptr<Oscillator> osc, float sample_rate = 44100.0f);
     ~OscillatorDecorator();
 
 public:
-    void set_frequency(double hz, double sample_rate) override;
-    double get_sample() override;
+    void set_frequency(float hz, float sample_rate) override;
+    float get_sample() override;
 };
 
 

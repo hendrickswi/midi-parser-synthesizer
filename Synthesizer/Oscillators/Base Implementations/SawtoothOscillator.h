@@ -6,10 +6,10 @@
 class SawtoothOscillator : public Oscillator {
 public:
     SawtoothOscillator();
-    SawtoothOscillator(double hz, double sample_rate);
+    SawtoothOscillator(float hz, float sample_rate);
     SawtoothOscillator(const SawtoothOscillator& other);
 
-    double get_sample() override;
+    float get_sample() override;
 };
 
 
