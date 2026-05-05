@@ -65,7 +65,7 @@ void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
     voices[channel]->note_off();
 }
 
-void VoiceManager::process_audio_buffer(float* buffer, const int num_samples) {
+void VoiceManager::process_audio_buffer(float* buffer, const unsigned int num_samples) {
     for (int i = 0; i < num_samples; i++) {
         buffer[i] = 0.0f;
     }

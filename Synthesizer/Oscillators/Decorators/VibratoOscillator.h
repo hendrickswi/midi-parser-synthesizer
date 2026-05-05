@@ -4,19 +4,19 @@
 
 class VibratoOscillator : public OscillatorDecorator {
 private:
-    double current_phase;
-    double phase_increment;
+    float current_phase;
+    float phase_increment;
 
-    double base_hz;
-    double speed_hz;
-    double depth;
+    float base_hz;
+    float speed_hz;
+    float depth;
 
 public:
-    VibratoOscillator(std::unique_ptr<Oscillator> osc, double sample_rate = 44100.0f, double base_hz = 4.0, double speed_hz = 5.0, double depth = 0.5);
+    VibratoOscillator(std::unique_ptr<Oscillator> osc, float sample_rate = 44100.0f, float base_hz = 4.0, float speed_hz = 5.0, float depth = 0.5);
     ~VibratoOscillator();
 
-    void set_frequency(double hz, double sample_rate) override;
-    double get_sample() override;
+    void set_frequency(float hz, float sample_rate) override;
+    float get_sample() override;
 
 };
 

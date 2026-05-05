@@ -2,10 +2,19 @@
 #include <iostream>
 #include <fstream>
 
+#include "RtAudio.h"
 #include "FilePathSanitizer.h"
 #include "Parser/MidiParser.h"
+#include "Synthesizer/VoiceManager.h"
 
 constexpr std::string auto_test_folder = "Testing files";
+
+int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time, RtAudioStreamStatus status, void *user_data) {
+    float *buffer = static_cast<float *>(output_buffer);
+    VoiceManager *synth = static_cast<VoiceManager *>(user_data);
+    synth->process_audio_buffer(buffer, num_frames);
+    return 0;
+}
 
 int main() {
     auto file_names = std::vector<std::string>();

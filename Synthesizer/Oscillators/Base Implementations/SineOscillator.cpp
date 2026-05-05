@@ -3,13 +3,13 @@
 
 SineOscillator::SineOscillator() = default;
 
-SineOscillator::SineOscillator(double hz, double sample_rate)
+SineOscillator::SineOscillator(float hz, float sample_rate)
     : Oscillator(hz, sample_rate) {
 }
 
 SineOscillator::SineOscillator(const SineOscillator& other) = default;
 
-double SineOscillator::get_sample() {
+float SineOscillator::get_sample() {
     current_phase = fmod(current_phase + phase_increment, TWO_PI);
     return std::sin(current_phase);
 }

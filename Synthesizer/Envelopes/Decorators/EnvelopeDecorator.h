@@ -6,15 +6,15 @@
 class EnvelopeDecorator : public Envelope {
 protected:
     std::unique_ptr<Envelope> base_envelope;
-    double sample_rate;
+    float sample_rate;
 
-    EnvelopeDecorator(std::unique_ptr<Envelope> env, double sample_rate = 44100.0f);
+    EnvelopeDecorator(std::unique_ptr<Envelope> env, float sample_rate = 44100.0f);
     ~EnvelopeDecorator();
 
 public:
     void on() override;
     void off() override;
-    double get_multiplier() override;
+    float get_multiplier() override;
     [[nodiscard]] bool is_idle() const override;
     [[nodiscard]] bool is_released() const override;
 };
