@@ -70,7 +70,7 @@ int main() {
     std::cin >> garbage_data;
     std::cout << std::endl;
 
-    VoiceManager synth = VoiceManager(sample_rate, 0.8f);
+    VoiceManager synth = VoiceManager(sample_rate, 0.4f);
     RtAudio rt_audio;
     if (rt_audio.getDeviceCount() < 1) {
         std::cerr << "Error: No audio devices found" << std::endl;
@@ -90,9 +90,13 @@ int main() {
         std::cout << "Audio engine now running. Press Enter to quit." << std::endl;
 
         synth.note_on(0, 60, 100);
+        synth.note_on(0, 63, 100);
+        synth.note_on(0, 67, 100);
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
         synth.note_off(0, 60);
+        synth.note_off(0, 63);
+        synth.note_off(0, 67);
         std::cout << "Note released. Press Enter to exit" << std::endl;
         std::cin >> garbage_data;
         std::cout << std::endl;

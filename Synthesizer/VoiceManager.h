@@ -18,6 +18,7 @@ private:
 
     float sample_rate;
     float global_volume;
+    float headroom_attenuation;
 
     void init(float sample_rate = 44100.0f, float global_volume = 0.8f);
 
