@@ -16,7 +16,10 @@ private:
 
     bool is_active;
     std::chrono::high_resolution_clock::time_point note_activation_time;
-    float current_volume = 0.0f;
+    uint8_t channel;
+    uint8_t pitch;
+    uint8_t velocity;
+    float volume;
 
 public:
     Voice();
@@ -50,8 +53,10 @@ public:
     void set_envelope(std::unique_ptr<Envelope> envelope);
 
     [[nodiscard]] const std::chrono::high_resolution_clock::time_point& get_note_activation_time() const;
+    [[nodiscard]] const uint8_t& get_channel() const;
+    [[nodiscard]] const uint8_t& get_pitch() const;
 
-    void note_on(float hz, float sample_rate, float velocity);
+    void note_on(uint8_t channel, uint8_t pitch, uint8_t velocity, float sample_rate);
     void note_off();
     [[nodiscard]] bool is_free() const;
     [[nodiscard]] bool is_released() const;
