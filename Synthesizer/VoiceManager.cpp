@@ -11,6 +11,7 @@
 void VoiceManager::init(float sample_rate, float global_volume) {
     this->sample_rate = sample_rate;
     this->global_volume = global_volume;
+    headroom_attenuation = std::sqrt(static_cast<float>(NUM_VOICES));
 
     voices = std::array<std::unique_ptr<Voice>, NUM_VOICES>();
     channel_patches = std::array<uint8_t, NUM_VOICES>();
@@ -113,7 +114,9 @@ void VoiceManager::process_audio_buffer(float* buffer, const unsigned int num_sa
                 instruction += voice->process();
             }
         }
-        buffer[i] = std::tanh(instruction * global_volume);
+
+        float safe_mix = instruction / headroom_attenuation;
+        buffer[i] = std::tanh(safe_mix * global_volume);
     }
 }
 
