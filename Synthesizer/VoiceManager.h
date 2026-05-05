@@ -1,16 +1,20 @@
 #ifndef MIDI_PARSERSYNTHESIZER_VOICEMANAGER_H
 #define MIDI_PARSERSYNTHESIZER_VOICEMANAGER_H
 #include <array>
+#include <cstdint>
+#include <functional>
 #include <memory>
 
 // pimpl forward declaration
 class Voice;
+class Oscillator;
 
 class VoiceManager {
 private:
     static constexpr int NUM_VOICES = 16;
     std::array<std::unique_ptr<Voice>, NUM_VOICES> voices;
     std::array<uint8_t, NUM_VOICES> channel_patches;
+    std::array<std::function<std::unique_ptr<Oscillator>()>, 128> oscillator_factories;
 
     float sample_rate;
     float global_volume;

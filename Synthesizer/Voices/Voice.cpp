@@ -1,13 +1,26 @@
 #include "Voice.h"
+
+#include <cmath>
+
 #include "../Envelopes/Envelope.h"
 #include "../Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
 #include "../Oscillators/Base Implementations/Oscillator.h"
+
+static float pitch_to_hz(uint8_t pitch) {
+    return 440.0f * std::pow(2.0f, ((float)pitch - 69) / 12.0f);
+}
+
+static float velocity_to_volume(uint8_t velocity) {
+    return (float)velocity / 127.0f;
+}
 
 Voice::Voice() {
     oscillator = nullptr;
     envelope = nullptr;
     is_active = false;
     note_activation_time = std::chrono::high_resolution_clock::now();
+    velocity = 0;
+    channel = 0;
 }
 
 Voice::Voice(std::unique_ptr<Oscillator> oscillator, std::unique_ptr<Envelope> envelope) {
@@ -15,6 +28,8 @@ Voice::Voice(std::unique_ptr<Oscillator> oscillator, std::unique_ptr<Envelope> e
     this->envelope = std::move(envelope);
     is_active = false;
     note_activation_time = std::chrono::high_resolution_clock::now();
+    velocity = 0;
+    channel = 0;
 }
 
 Voice::~Voice() = default;
@@ -30,12 +45,27 @@ void Voice::set_envelope(std::unique_ptr<Envelope> envelope) {
     return note_activation_time;
 }
 
-void Voice::note_on(float hz, float sample_rate, float velocity) {
+[[nodiscard]] const uint8_t& Voice::get_channel() const {
+    return channel;
+}
+
+[[nodiscard]] const uint8_t& Voice::get_pitch() const {
+    return pitch;
+}
+
+void Voice::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity, float sample_rate) {
     if (!(oscillator && envelope)) return;
-    oscillator->set_frequency(hz, sample_rate);
+
+    this->channel = channel;
+    this->pitch = pitch;
+    this->velocity = velocity;
+    volume = velocity_to_volume(velocity);
+
+    oscillator->set_frequency(pitch_to_hz(pitch), sample_rate);
     envelope->on();
-    current_volume = velocity;
+
     is_active = true;
+    note_activation_time = std::chrono::high_resolution_clock::now();
 }
 
 void Voice::note_off() {
@@ -60,7 +90,7 @@ float Voice::process() {
         return 0.0f;
     }
 
-    double raw_instruction = oscillator->get_sample();
-    double multiplier = envelope->get_multiplier();
-    return raw_instruction * multiplier * current_volume;
+    float raw_instruction = oscillator->get_sample();
+    float multiplier = envelope->get_multiplier();
+    return raw_instruction * multiplier * volume;
 }

@@ -74,7 +74,7 @@ float ADSREnvelope::get_multiplier() {
             current_multiplier -= decay_increment;
             if (current_multiplier <= sustain_level) {
                 current_multiplier = sustain_level;
-                state = RELEASE;
+                state = SUSTAIN;
             }
             break;
         }
