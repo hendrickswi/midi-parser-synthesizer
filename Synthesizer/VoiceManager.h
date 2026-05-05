@@ -15,10 +15,14 @@ private:
     float sample_rate;
     float global_volume;
 
+    void init(float sample_rate = 44100.0f, float global_volume = 0.8f);
+
 public:
     VoiceManager();
     VoiceManager(float sample_rate, float global_volume);
     VoiceManager(const VoiceManager& other) = delete;
+
+    ~VoiceManager();
 
     VoiceManager& operator=(const VoiceManager& other) = delete;
 

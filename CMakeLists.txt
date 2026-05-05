@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 include_directories(SYSTEM /usr/include/rtaudio)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(RTAUDIO REQUIRED rtaudio)
+
 add_executable(MIDI_ParserSynthesizer main.cpp
         Parser/MidiParser.cpp
         Parser/MidiParser.h
@@ -53,3 +56,8 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Synthesizer/Oscillators/Decorators/VibratoOscillator.cpp
         Synthesizer/Oscillators/Decorators/VibratoOscillator.h
 )
+
+target_link_libraries(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_LIBRARIES})
+target_include_directories(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_INCLUDE_DIRS})
+
+

@@ -2,12 +2,16 @@
 #include <iostream>
 #include <fstream>
 
-#include "RtAudio.h"
+#include <RtAudio.h>
+#include <thread>
+
 #include "FilePathSanitizer.h"
 #include "Parser/MidiParser.h"
 #include "Synthesizer/VoiceManager.h"
 
 constexpr std::string auto_test_folder = "Testing files";
+constexpr float sample_rate = 44100.0f;
+constexpr unsigned int channels = 2;
 
 int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time, RtAudioStreamStatus status, void *user_data) {
     float *buffer = static_cast<float *>(output_buffer);
@@ -61,8 +65,45 @@ int main() {
         }
     }
 
-    // Play the parsed midi file
-    // TODO: Implement this
+    std::cout << std::endl << "Parsing completed! Press Enter to continue." << std::endl;
+    std::string garbage_data;
+    std::cin >> garbage_data;
+    std::cout << std::endl;
+
+    VoiceManager synth = VoiceManager(sample_rate, 75);
+    RtAudio rt_audio;
+    if (rt_audio.getDeviceCount() < 1) {
+        std::cerr << "Error: No audio devices found" << std::endl;
+        return 1;
+    }
+
+    RtAudio::StreamParameters parameters;
+    parameters.deviceId = rt_audio.getDefaultOutputDevice();
+    parameters.nChannels = channels;
+    parameters.firstChannel = 0;
+
+    unsigned int buffer_size = 1024;
+    try {
+        rt_audio.openStream(&parameters, nullptr,
+            RTAUDIO_FLOAT32, sample_rate, &buffer_size, &audio_callback, &synth);
+        rt_audio.startStream();
+        std::cout << "Audio engine now running. Press Enter to quit." << std::endl;
+
+        synth.note_on(0, 60, 100);
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+        synth.note_off(0, 60);
+        std::cout << "Note released. Press Enter to exit" << std::endl;
+        std::cin >> garbage_data;
+        std::cout << std::endl;
+
+        rt_audio.stopStream();
+        rt_audio.closeStream();
+    }
+    catch (const std::exception& e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+        return 1;
+    }
 
     return 0;
 }

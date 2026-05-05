@@ -3,23 +3,38 @@
 
 #include <cmath>
 
+#include "Oscillators/Base Implementations/SineOscillator.h"
+#include "Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
+
 static float pitch_to_hz(uint8_t pitch) {
     return 440.0f * std::pow(2.0f, (pitch - 69) / 12.0f);
 }
 
-VoiceManager::VoiceManager() {
-    voices = std::array<std::unique_ptr<Voice>, NUM_VOICES>();
-    channel_patches = std::array<uint8_t, NUM_VOICES>();
-    sample_rate = 44100.0f;
-    global_volume = 0.8f;
-}
-
-VoiceManager::VoiceManager(float sample_rate, float global_volume) {
-    voices = std::array<std::unique_ptr<Voice>, NUM_VOICES>();
-    channel_patches = std::array<uint8_t, NUM_VOICES>();
+void VoiceManager::init(float sample_rate, float global_volume) {
     this->sample_rate = sample_rate;
     this->global_volume = global_volume;
+
+    voices = std::array<std::unique_ptr<Voice>, NUM_VOICES>();
+    channel_patches = std::array<uint8_t, NUM_VOICES>();
+
+    for (auto& voice : voices) {
+        auto oscillator = std::make_unique<SineOscillator>();
+        auto envelope = std::make_unique<ADSREnvelope>();
+        voice = std::make_unique<Voice>(std::move(oscillator), std::move(envelope));
+    }
+
+    channel_patches.fill(0);
 }
+
+VoiceManager::VoiceManager() { // NOLINT
+    init();
+}
+
+VoiceManager::VoiceManager(float sample_rate, float global_volume) { // NOLINT
+    init(sample_rate, global_volume);
+}
+
+VoiceManager::~VoiceManager() = default;
 
 void VoiceManager::set_sample_rate(float sample_rate) {
     this->sample_rate = sample_rate;
