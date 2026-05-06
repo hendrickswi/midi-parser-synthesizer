@@ -20,6 +20,12 @@ private:
     uint8_t pitch;
     uint8_t velocity;
     float volume;
+    float cc_volume;
+    float cc_expression;
+    bool is_key_held;
+    bool is_sustained;
+
+    void init(std::unique_ptr<Oscillator> oscillator = nullptr, std::unique_ptr<Envelope> envelope = nullptr);
 
 public:
     Voice();
@@ -58,8 +64,10 @@ public:
 
     void note_on(uint8_t channel, uint8_t pitch, uint8_t velocity, float sample_rate);
     void note_off();
+    void update_cc(uint8_t cc_number, uint8_t cc_value);
     [[nodiscard]] bool is_free() const;
     [[nodiscard]] bool is_released() const;
+
     float process();
 };
 

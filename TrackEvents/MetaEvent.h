@@ -1,6 +1,9 @@
 ﻿#ifndef MIDI_PARSERSYNTHESIZER_METAEVENT_H
 #define MIDI_PARSERSYNTHESIZER_METAEVENT_H
 
+#include <vector>
+#include <cstdint>
+
 /**
  * @struct MetaEvent
  * @brief Represents a MIDI Meta Event, typically used to store non-MIDI data

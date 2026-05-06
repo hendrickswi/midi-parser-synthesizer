@@ -16,6 +16,7 @@ public:
     ~VibratoOscillator();
 
     void set_frequency(float hz, float sample_rate) override;
+    void set_modulation_depth(float depth) override;
     float get_sample() override;
 
 };

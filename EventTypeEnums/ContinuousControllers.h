@@ -1,0 +1,12 @@
+#ifndef MIDI_PARSERSYNTHESIZER_CONTINUOUSCONTROLLERS_H
+#define MIDI_PARSERSYNTHESIZER_CONTINUOUSCONTROLLERS_H
+
+enum ContinuousController {
+    SUSTAIN_PEDAL = 64,
+    MODULATION_WHEEL = 1,
+    CHANNEL_VOLUME = 7,
+    EXPRESSION = 11,
+    // Can add more here as the synthesizer implementation supports more
+};
+
+#endif //MIDI_PARSERSYNTHESIZER_CONTINUOUSCONTROLLERS_H

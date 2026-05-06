@@ -55,6 +55,7 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Synthesizer/Oscillators/Decorators/OscillatorDecorator.h
         Synthesizer/Oscillators/Decorators/VibratoOscillator.cpp
         Synthesizer/Oscillators/Decorators/VibratoOscillator.h
+        EventTypeEnums/ContinuousControllers.h
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_LIBRARIES})

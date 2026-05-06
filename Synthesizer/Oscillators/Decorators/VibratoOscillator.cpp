@@ -18,6 +18,10 @@ void VibratoOscillator::set_frequency(float hz, float sample_rate) {
     OscillatorDecorator::set_frequency(hz, sample_rate);
 }
 
+void VibratoOscillator::set_modulation_depth(float depth) {
+    this->depth = depth;
+}
+
 float VibratoOscillator::get_sample() {
     float lfo_wobble = std::sin(current_phase);
     current_phase = fmod(current_phase + phase_increment, TWO_PI);
