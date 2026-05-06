@@ -17,6 +17,9 @@ Oscillator::Oscillator(const Oscillator& other) {
 
 Oscillator::~Oscillator() = default;
 
+void Oscillator::set_modulation_depth(float depth) {
+}
+
 void Oscillator::set_frequency(float hz, float sample_rate) {
     phase_increment = calculate_phase_increment(hz, sample_rate);
 }

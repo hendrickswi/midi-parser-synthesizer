@@ -20,6 +20,7 @@ public:
     virtual ~Oscillator();
 
     virtual float get_sample() = 0;
+    virtual void set_modulation_depth(float depth);
     virtual void set_frequency(float hz, float sample_rate);
 };
 

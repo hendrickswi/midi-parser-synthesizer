@@ -1,5 +1,39 @@
 #include "MidiSequencer.h"
 #include "../EventTypeEnums/MetaEventType.h"
+#include "../EventTypeEnums/MidiEventType.h"
+
+
+[[nodiscard]] inline uint32_t calculate_mpqn(const uint32_t tempo) {
+    return 60000000 / tempo;
+}
+
+[[nodiscard]] inline uint32_t calculate_mpt(const uint32_t mpqn, const uint16_t division) {
+    return mpqn / division;
+}
+
+MidiSequencer::MidiSequencer() { // NOLINT
+    track_sequence = TrackSequence();
+    synthesizer = nullptr;
+    init();
+}
+
+MidiSequencer::MidiSequencer(const TrackSequence& track_sequence, VoiceManager* synthesizer) { // NOLINT
+    this->track_sequence = track_sequence;
+    this->synthesizer = synthesizer;
+    init();
+}
+
+MidiSequencer::MidiSequencer(const MidiSequencer& other) {
+    track_sequence = other.track_sequence;
+    synthesizer = other.synthesizer;
+    is_playing_flag = other.is_playing_flag;
+    midi_file_ended_flag = other.midi_file_ended_flag;
+    micros_per_tick = other.micros_per_tick;
+    current_tick = other.current_tick;
+    prev_tick_time = other.prev_tick_time;
+    micros_since_last_tick = other.micros_since_last_tick;
+    track_indices = other.track_indices;
+}
 
 void MidiSequencer::init() {
     is_playing_flag = false;
@@ -7,19 +41,11 @@ void MidiSequencer::init() {
     current_tick = 0;
     prev_tick_time = std::chrono::high_resolution_clock::now();
     micros_since_last_tick = 0;
-    micros_per_tick = calculate_mpt(calculate_mpqn(120));
+    micros_per_tick = calculate_mpt(calculate_mpqn(120), track_sequence.get_division());
     track_indices.clear();
 
     // This also does default instantiation of TrackIndices structs
     track_indices.resize(track_sequence.get_tracks().size());
-}
-
-[[nodiscard]] inline uint32_t MidiSequencer::calculate_mpqn(const uint32_t& tempo) const {
-    return 60000000 / tempo;
-}
-
-[[nodiscard]] inline uint32_t MidiSequencer::calculate_mpt(const uint32_t& mpqn) const {
-    return mpqn / track_sequence.get_division();
 }
 
 void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
@@ -42,11 +68,34 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         const auto& midi_event = midi_events[indices.midi_event_idx];
         indices.midi_event_idx++;
 
-        // Command synthesizer to do various things
-        // TODO: Implement PROGRAM_CHANGE logic
-        // TODO: Implement CONTROL_CHANGE logic
-        // TODO: Implement PITCH_BEND logic
-        // TODO: Implement CHANNEL_PRESSURE logic
+        uint8_t command = midi_event.status & 0xF0;
+        uint8_t channel = midi_event.status & 0x0F;
+        switch (command) {
+            case PROGRAM_CHANGE: {
+                synthesizer->set_channel_patch(channel, midi_event.data1);
+                break;
+            }
+            case CONTROL_CHANGE : {
+                synthesizer->set_channel_cc(channel, midi_event.data1, midi_event.data2);
+                break;
+            }
+
+            case PITCH_BEND : {
+                synthesizer->set_channel_pitch_bend(channel, (midi_event.data1 & 0x7F) | ((midi_event.data2 & 0x7F ) << 7));
+                break;
+            }
+
+            case CHANNEL_PRESSURE : {
+                synthesizer->set_channel_pressure(channel, midi_event.data1);
+                break;
+            }
+
+            default : {
+                break;
+            }
+        }
+
+
     }
 
     // Meta event processing
@@ -62,7 +111,7 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
             for (auto& byte : meta_event.data) {
                 mpqn = (mpqn << 8) | byte;
             }
-            micros_per_tick = calculate_mpt(mpqn);
+            micros_per_tick = calculate_mpt(mpqn, track_sequence.get_division());
         }
 
         // Other meta events largely ignored by this non-GUI program
@@ -103,30 +152,6 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
     return false;
 }
 
-MidiSequencer::MidiSequencer() { // NOLINT
-    track_sequence = TrackSequence();
-    synthesizer = nullptr;
-    init();
-}
-
-MidiSequencer::MidiSequencer(const TrackSequence& track_sequence, VoiceManager* synthesizer) { // NOLINT
-    this->track_sequence = track_sequence;
-    this->synthesizer = synthesizer;
-    init();
-}
-
-MidiSequencer::MidiSequencer(const MidiSequencer& other) {
-    track_sequence = other.track_sequence;
-    synthesizer = other.synthesizer;
-    is_playing_flag = other.is_playing_flag;
-    midi_file_ended_flag = other.midi_file_ended_flag;
-    micros_per_tick = other.micros_per_tick;
-    current_tick = other.current_tick;
-    prev_tick_time = other.prev_tick_time;
-    micros_since_last_tick = other.micros_since_last_tick;
-    track_indices = other.track_indices;
-}
-
 void MidiSequencer::start() {
     is_playing_flag = true;
 }
@@ -138,38 +163,35 @@ void MidiSequencer::stop() {
 void MidiSequencer::update() {
     if (!is_playing_flag) return;
     const auto current_time = std::chrono::high_resolution_clock::now();
-    const auto elapsed_time = std::chrono::duration_cast<std::chrono::microseconds>(current_time - prev_tick_time);
-    micros_since_last_tick += elapsed_time.count();
+    auto elapsed_micros = std::chrono::duration_cast<std::chrono::microseconds>(current_time - prev_tick_time).count();
+
+    if (midi_file_ended_flag) return;
 
     // Remove expired notes
     while (!active_notes.empty() && active_notes.top().end_time <= current_tick) {
-        // TODO: Deactivate note in synthesizer
+        auto& note = active_notes.top();
+        synthesizer->note_off(note.channel, note.pitch);
         active_notes.pop();
     }
 
-    // Early return if there are no more events to add.
-    // Checking this bool avoids O(n) computation every time
-    // after the first time the flag is set to true.
-    if (midi_file_ended_flag) return;
-    if (!has_more_events()) {
-        midi_file_ended_flag = true;
-        return;
-    }
-
-    // Add new notes
-    while (micros_since_last_tick >= micros_per_tick) {
-        const auto& tracks = track_sequence.get_tracks();
-        // Trigger events registered to the current tick
-        micros_since_last_tick -= micros_per_tick;
+    // Add new notes by triggering events registered to the current tick
+    while (elapsed_micros >= micros_per_tick) {
+        prev_tick_time += std::chrono::microseconds(micros_per_tick);
         current_tick++;
-        prev_tick_time = current_time;
+        elapsed_micros -= micros_per_tick;
 
         // Go through each "track" (each instrument/part)
+        const auto& tracks = track_sequence.get_tracks();
         for (int i = 0; i < tracks.size(); i++) {
             const auto& track = tracks[i];
             auto& indices = track_indices[i];
             process_events(track, indices);
         }
+    }
+
+    // Allow early return if the song is over
+    if (!has_more_events() && active_notes.empty()) {
+        midi_file_ended_flag = true;
     }
 }
 
