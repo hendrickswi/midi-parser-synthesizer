@@ -11,7 +11,7 @@
 
 class MidiSequencer {
 private:
-    TrackSequence track_sequence;
+    TrackSequence* track_sequence;
     VoiceManager* synthesizer;
     bool is_playing_flag;
 
@@ -34,7 +34,7 @@ private:
 
 public:
     MidiSequencer();
-    MidiSequencer(const TrackSequence& track_sequence, VoiceManager* synthesizer);
+    MidiSequencer(TrackSequence* track_sequence, VoiceManager* synthesizer);
     MidiSequencer(const MidiSequencer& other);
 
     void start();
@@ -43,27 +43,28 @@ public:
     void reset();
 
     /**
-     * Retrieves the internal @c TrackSequence object.
-     *
-     * @return A constant reference to the internal @c TrackSequence object.
+     * Retrieves the current @code TrackSequence@endcode being read by @code this@endcode.
+     * @return A constant pointer to a constant @code TrackSequence@endcode.
      */
-    [[nodiscard]] const TrackSequence& get_track_sequence() const;
+    [[nodiscard]] const TrackSequence* const get_track_sequence() const;
 
     /**
-     * Sets the internal @c TrackSequence object to the given
-     * @code track_sequence@endcode.
-     *
-     * @details @code this.reset()@endcode should be called immediately
-     * after this method executes, else unexpected behavior may occur.
-     *
-     * @param track_sequence the @c TrackSequence object to
-     * be set as the internal track sequence.
+     * Sets the track sequence to be invoked by @code this@endcode.
+     * @param sequence the new @code TrackSequence@endcode to be used by @code this@endcode.
      */
-    void set_track_sequence(const TrackSequence& track_sequence);
+    void set_track_sequence(TrackSequence* sequence);
 
-    [[nodiscard]] const MidiSequencer& get_sequencer() const;
+    /**
+     * Retrieves the current @code VoiceManager@endcode being used by @code this@endcode.
+     * @return A constant pointer to a constant @code VoiceManager@endcode.
+     */
+    [[nodiscard]] const VoiceManager* const get_synthesizer() const;
 
-    void set_sequencer(VoiceManager* sequencer);
+    /**
+     * Sets the synthesizer to be invoked by @code this@endcode.
+     * @param synth the new @code VoiceManager@endcode to be used by @code this@endcode.
+     */
+    void set_synthesizer(VoiceManager* synth);
 
     /**
      * Indicates whether the sequencer is currently in the playing state.

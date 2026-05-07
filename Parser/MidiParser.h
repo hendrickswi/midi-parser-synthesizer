@@ -50,8 +50,9 @@ public:
     MidiParser(const MidiParser& other);
 
     /**
-    * Parses the file which was given during instantiation of @code this@endcode.
-    * Puts parsed tracks in @code sequence@endcode and returns a bool indicating success.
+    * Parses the file which was given during instantiation of @code this@endcode
+    * or by @code set_file()@endcode. Puts parsed tracks in the given @code TrackSequence&@endcode
+    * and returns a bool indicating success.
     *
     * @param sequence the sequence to insert tracks into
     * @return a bool representing the success of parsing

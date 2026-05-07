@@ -12,12 +12,13 @@
 }
 
 MidiSequencer::MidiSequencer() { // NOLINT
-    track_sequence = TrackSequence();
+    track_sequence = nullptr;
     synthesizer = nullptr;
-    init();
+
+    // Defer init() call until set_track_sequence() in this case
 }
 
-MidiSequencer::MidiSequencer(const TrackSequence& track_sequence, VoiceManager* synthesizer) { // NOLINT
+MidiSequencer::MidiSequencer(TrackSequence* track_sequence, VoiceManager* synthesizer) { // NOLINT
     this->track_sequence = track_sequence;
     this->synthesizer = synthesizer;
     init();
@@ -41,11 +42,11 @@ void MidiSequencer::init() {
     current_tick = 0;
     prev_tick_time = std::chrono::high_resolution_clock::now();
     micros_since_last_tick = 0;
-    micros_per_tick = calculate_mpt(calculate_mpqn(120), track_sequence.get_division());
+    micros_per_tick = calculate_mpt(calculate_mpqn(120), track_sequence->get_division());
     track_indices.clear();
 
     // This also does default instantiation of TrackIndices structs
-    track_indices.resize(track_sequence.get_tracks().size());
+    track_indices.resize(track_sequence->get_tracks().size());
 }
 
 void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
@@ -111,7 +112,7 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
             for (auto& byte : meta_event.data) {
                 mpqn = (mpqn << 8) | byte;
             }
-            micros_per_tick = calculate_mpt(mpqn, track_sequence.get_division());
+            micros_per_tick = calculate_mpt(mpqn, track_sequence->get_division());
         }
 
         // Other meta events largely ignored by this non-GUI program
@@ -130,7 +131,7 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
 }
 
 [[nodiscard]] bool MidiSequencer::has_more_events() const {
-    auto& tracks = track_sequence.get_tracks();
+    auto& tracks = track_sequence->get_tracks();
     for (int i = 0; i < tracks.size(); i++) {
         auto& track = tracks[i];
         auto& indices = track_indices[i];
@@ -153,15 +154,17 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
 }
 
 void MidiSequencer::start() {
+    if (!synthesizer || !track_sequence) return;
     is_playing_flag = true;
 }
 
 void MidiSequencer::stop() {
+    if (!synthesizer || !track_sequence) return;
     is_playing_flag = false;
 }
 
 void MidiSequencer::update() {
-    if (!is_playing_flag) return;
+    if (!is_playing_flag || !synthesizer || !track_sequence) return;
     const auto current_time = std::chrono::high_resolution_clock::now();
     auto elapsed_micros = std::chrono::duration_cast<std::chrono::microseconds>(current_time - prev_tick_time).count();
 
@@ -181,7 +184,7 @@ void MidiSequencer::update() {
         elapsed_micros -= micros_per_tick;
 
         // Go through each "track" (each instrument/part)
-        const auto& tracks = track_sequence.get_tracks();
+        const auto& tracks = track_sequence->get_tracks();
         for (int i = 0; i < tracks.size(); i++) {
             const auto& track = tracks[i];
             auto& indices = track_indices[i];
@@ -196,16 +199,26 @@ void MidiSequencer::update() {
 }
 
 void MidiSequencer::reset() {
+    if (!synthesizer || !track_sequence) return;
     is_playing_flag = false;
     init();
 }
 
-const TrackSequence& MidiSequencer::get_track_sequence() const {
+const TrackSequence* const MidiSequencer::get_track_sequence() const {
     return track_sequence;
 }
 
-void MidiSequencer::set_track_sequence(const TrackSequence& track_sequence) {
-    this->track_sequence = track_sequence;
+void MidiSequencer::set_track_sequence(TrackSequence* sequence) {
+    track_sequence = sequence;
+    init();
+}
+
+const VoiceManager* const MidiSequencer::get_synthesizer() const {
+    return synthesizer;
+}
+
+void MidiSequencer::set_synthesizer(VoiceManager* synth) {
+    synthesizer = synth;
 }
 
 bool MidiSequencer::is_playing() const {

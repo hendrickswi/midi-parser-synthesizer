@@ -7,6 +7,7 @@
 
 #include "FilePathSanitizer.h"
 #include "Parser/MidiParser.h"
+#include "Sequencer/MidiSequencer.h"
 #include "Synthesizer/VoiceManager.h"
 
 constexpr std::string auto_test_folder = "Testing files";
@@ -55,19 +56,21 @@ int main() {
     }
 
     MidiParser parser = MidiParser();
-    for (int i = 0; i < file_names.size(); i++) {
-        parser.set_file(file_names[i]);
-        std::cout << "Parsing file: " << file_names[i] << std::endl;
+    auto sequences = std::vector<TrackSequence>();
+    for (auto& file : file_names) {
+        parser.set_file(file);
+        std::cout << "Parsing file: " << file << std::endl;
         auto sequence = TrackSequence();
         if (!parser.parse(sequence)) {
             std::cerr << "Error: Unable to parse the file" << std::endl;
             return 1;
         }
+        sequences.push_back(sequence);
     }
 
     std::cout << std::endl << "Parsing completed! Press Enter to continue." << std::endl;
-    std::string garbage_data;
-    std::cin >> garbage_data;
+    std::cin.ignore();
+    std::cin.get();
     std::cout << std::endl;
 
     VoiceManager synth = VoiceManager(sample_rate, 0.4f);
@@ -82,24 +85,49 @@ int main() {
     parameters.nChannels = channels;
     parameters.firstChannel = 0;
 
+    MidiSequencer sequencer = MidiSequencer();
+    sequencer.set_synthesizer(&synth);
     unsigned int buffer_size = 1024;
     try {
         rt_audio.openStream(&parameters, nullptr,
             RTAUDIO_FLOAT32, sample_rate, &buffer_size, &audio_callback, &synth);
         rt_audio.startStream();
-        std::cout << "Audio engine now running. Press Enter to quit." << std::endl;
 
-        synth.note_on(0, 60, 100);
-        synth.note_on(0, 63, 100);
-        synth.note_on(0, 67, 100);
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        std::cout << "Audio engine now running." << std::endl;
 
-        synth.note_off(0, 60);
-        synth.note_off(0, 63);
-        synth.note_off(0, 67);
-        std::cout << "Note released. Press Enter to exit" << std::endl;
-        std::cin >> garbage_data;
-        std::cout << std::endl;
+        while (rt_audio.isStreamRunning()) {
+            std::cout << "Which track would you like to listen to?" << std::endl << std::endl;
+            for (int i = 0; i < sequences.size(); i++) {
+                std::cout << i << ". " << file_names[i] << std::endl;
+            }
+
+            int track_idx;
+            bool picked = false;
+            while (!picked) {
+                std::cout << "Choose a number from the list above: " << std::endl;
+                std::cin >> track_idx;
+                if (track_idx >= 0 && track_idx < sequences.size()) {
+                    picked = true;
+                    sequencer.set_track_sequence(&sequences[track_idx]);
+                }
+            }
+
+            sequencer.start();
+            std::cout << "Now playing: " << file_names[track_idx] << std::endl << std::endl;
+            while (sequencer.is_playing()) {
+                sequencer.update();
+            }
+            sequencer.stop();
+            synth.stop();
+
+            std::cout << "\"" << file_names[track_idx] << "\" has finished playing." << std::endl << std::endl;
+            std::cout << "Press q to quit, or any other character key to continue." << std::endl;
+            char c;
+            std::cin >> c;
+            if (c == 'q') {
+                break;
+            }
+        }
 
         rt_audio.stopStream();
         rt_audio.closeStream();
