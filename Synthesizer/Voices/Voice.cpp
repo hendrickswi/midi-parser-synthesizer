@@ -89,15 +89,15 @@ void Voice::update_cc(uint8_t cc_number, uint8_t cc_value) {
             break;
         }
         case MODULATION_WHEEL : {
-            oscillator->set_modulation_depth(pitch_to_hz(cc_value));
+            oscillator->set_modulation_depth(byte_to_scale_float(cc_value) * 10.0f);
             break;
         }
         case CHANNEL_VOLUME : {
-            cc_volume = pitch_to_hz(cc_value);
+            cc_volume = byte_to_scale_float(cc_value);
             break;
         }
         case EXPRESSION : {
-            cc_expression = pitch_to_hz(cc_value);
+            cc_expression = byte_to_scale_float(cc_value);
             break;
         }
         default : {

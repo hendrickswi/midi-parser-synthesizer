@@ -95,8 +95,6 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
                 break;
             }
         }
-
-
     }
 
     // Meta event processing

@@ -2,6 +2,7 @@
 #include "Voices/Voice.h"
 
 #include <cmath>
+#include <iostream>
 
 #include "Oscillators/Base Implementations/SineOscillator.h"
 #include "Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
@@ -105,6 +106,7 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
     if (channel >= NUM_VOICES) return;
     if (velocity == 0) {
         note_off(channel, pitch);
+        std::cout << "note on with 0 velocity = note off" << std::endl; // debug
         return;
     }
 

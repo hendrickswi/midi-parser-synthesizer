@@ -73,7 +73,7 @@ int main() {
     std::cin.get();
     std::cout << std::endl;
 
-    VoiceManager synth = VoiceManager(sample_rate, 0.4f);
+    VoiceManager synth = VoiceManager(sample_rate, 0.5f);
     RtAudio rt_audio;
     if (rt_audio.getDeviceCount() < 1) {
         std::cerr << "Error: No audio devices found" << std::endl;

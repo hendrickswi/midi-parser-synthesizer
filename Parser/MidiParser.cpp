@@ -14,18 +14,14 @@ void MidiParser::init() {
     active_note_volumes = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
 }
 
-MidiParser::MidiParser() {
+MidiParser::MidiParser() { // NOLINT
     this->file = File();
-    this->cursor = 0;
-    this->active_note_start_times = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
-    this->active_note_volumes = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
+    init();
 }
 
-MidiParser::MidiParser(const File& file) {
+MidiParser::MidiParser(const File& file) { // NOLINT
     this->file = file;
-    this->cursor = 0;
-    this->active_note_start_times = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
-    this->active_note_volumes = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
+    init();
 }
 MidiParser::MidiParser(const MidiParser& other) {
     this->file = other.file;
@@ -120,18 +116,30 @@ bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, co
             active_note_volumes[channel][data1] = data2;
         }
         else if (data2 == 0) {
-            const uint32_t duration = current_time - active_note_start_times[channel][data1];
-            track.add_note(Note(current_time, duration, data1, data2));
+            // A Note On with 0 velocity is a Note Off
+            const uint32_t start_time = active_note_start_times[channel][data1];
 
-            // Reset the corresponding active note
-            active_note_start_times[channel][data1] = -1;
-            active_note_volumes[channel][data1] = -1;
+            // Safety check to prevent ghost notes
+            if (start_time != -1) {
+                const uint32_t duration = current_time - start_time;
+                const uint32_t attack_velocity = active_note_volumes[channel][data1];
+
+                // FIXED: Passing start_time, channel, and attack_velocity
+                track.add_note(Note(start_time, duration, data1, attack_velocity, channel));
+
+                // Reset the corresponding active note
+                active_note_start_times[channel][data1] = -1;
+                active_note_volumes[channel][data1] = -1;
+            }
         }
     }
     else if (command == NOTE_OFF) {
-        if (active_note_start_times[channel][data1] != -1) {
-            const uint32_t duration = current_time - active_note_start_times[channel][data1];
-            track.add_note(Note(current_time, duration, data1, data2));
+        const uint32_t start_time = active_note_start_times[channel][data1];
+
+        if (start_time != -1) {
+            const uint32_t duration = current_time - start_time;
+            const uint32_t attack_velocity = active_note_volumes[channel][data1];
+            track.add_note(Note(start_time, duration, data1, attack_velocity, channel));
 
             // Reset the corresponding active note
             active_note_start_times[channel][data1] = -1;
