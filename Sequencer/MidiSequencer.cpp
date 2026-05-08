@@ -193,6 +193,7 @@ void MidiSequencer::update() {
     // Allow early return if the song is over
     if (!has_more_events() && active_notes.empty()) {
         midi_file_ended_flag = true;
+        is_playing_flag = false;
     }
 }
 

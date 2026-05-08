@@ -19,15 +19,13 @@ void VoiceManager::init(float sample_rate, float global_volume) {
     headroom_attenuation = std::sqrt(static_cast<float>(NUM_VOICES));
 
     voices = std::array<std::unique_ptr<Voice>, NUM_VOICES>();
-    channel_patches = std::array<uint8_t, NUM_VOICES>();
+    channel_patches = std::array<uint8_t, NUM_CHANNELS>();
     oscillator_factories = std::array<std::function<std::unique_ptr<Oscillator>()>, 128>();
 
     // Midi event specific data
-    channel_pitch_bends = std::array<uint16_t, NUM_VOICES>();
-    channel_pitch_bends.fill(8192);
-
-    channel_pressures = std::array<uint8_t, NUM_VOICES>();
-    channel_pressures.fill(64);
+    channel_pitch_bends = std::array<uint16_t, NUM_CHANNELS>();
+    channel_pressures = std::array<uint8_t, NUM_CHANNELS>();
+    channel_cc_states = std::array<std::array<uint8_t, 128>, NUM_CHANNELS>();
 
     // Creating all the voices
     for (auto& voice : voices) {
@@ -50,6 +48,16 @@ void VoiceManager::init(float sample_rate, float global_volume) {
     }
 
     channel_patches.fill(0);
+
+    for (auto& channel_state : channel_cc_states) {
+        channel_state.fill(0);
+    }
+
+    for (int i = 0; i < 16; i++) {
+        channel_cc_states[i][7] = 100;  // Channel volume defaults to 100
+        channel_cc_states[i][11] = 127; // Expression defaults to max
+        channel_cc_states[i][10] = 64;  // Pan defaults to center
+    }
 }
 
 VoiceManager::VoiceManager() { // NOLINT
@@ -76,22 +84,22 @@ void VoiceManager::set_global_volume(float global_volume) {
 }
 
 void VoiceManager::set_channel_patch(const uint8_t channel, const uint8_t program_number) {
-    if (channel >= NUM_VOICES) return;
+    if (channel >= NUM_CHANNELS) return;
     channel_patches[channel] = program_number;
 }
 
 void VoiceManager::set_channel_pitch_bend(const uint8_t channel, const uint16_t pitch_bend) {
-    if (channel >= NUM_VOICES) return;
+    if (channel >= NUM_CHANNELS) return;
     channel_pitch_bends[channel] = pitch_bend;
 }
 
 void VoiceManager::set_channel_pressure(const uint8_t channel, const uint8_t pressure) {
-    if (channel >= NUM_VOICES) return;
+    if (channel >= NUM_CHANNELS) return;
     channel_pressures[channel] = pressure;
 }
 
 void VoiceManager::set_channel_cc(uint8_t channel, uint8_t cc_number, uint8_t cc_value) {
-    if (channel >= NUM_VOICES) return;
+    if (channel >= NUM_CHANNELS) return;
     channel_cc_states[channel][cc_number] = cc_value;
 
     // Push changes down to only active voices (for performance)
@@ -103,10 +111,9 @@ void VoiceManager::set_channel_cc(uint8_t channel, uint8_t cc_number, uint8_t cc
 }
 
 void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
-    if (channel >= NUM_VOICES) return;
+    if (channel >= NUM_CHANNELS) return;
     if (velocity == 0) {
         note_off(channel, pitch);
-        std::cout << "note on with 0 velocity = note off" << std::endl; // debug
         return;
     }
 
@@ -159,7 +166,7 @@ void VoiceManager::process_audio_buffer(float* buffer, const unsigned int num_sa
         float instruction = 0.0f;
         for (const auto& voice : voices) {
             if (!voice->is_free()) {
-                instruction += voice->process() * byte_to_scale_float(channel_pressures[voice->get_channel()]);
+                instruction += voice->process();
             }
         }
 

@@ -1,5 +1,7 @@
 #include "Track.h"
 
+#include <algorithm>
+
 Track::Track() {
     notes = std::vector<Note>();
     midi_events = std::vector<MidiEvent>();
@@ -52,4 +54,10 @@ void Track::add_meta_event(const MetaEvent& event) {
 
 [[nodiscard]] const std::vector<MetaEvent>& Track::get_meta_events() const {
     return meta_events;
+}
+
+void Track::sort_notes() {
+    std::sort(notes.begin(), notes.end(), [](const Note& a, const Note& b) {
+        return a.absolute_time < b.absolute_time;
+    });
 }

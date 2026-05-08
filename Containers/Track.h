@@ -40,6 +40,8 @@ public:
     [[nodiscard]] const std::vector<MidiEvent>& get_midi_events() const;
     [[nodiscard]] const std::vector<SysexEvent>& get_sysex_events() const;
     [[nodiscard]] const std::vector<MetaEvent>& get_meta_events() const;
+
+    void sort_notes();
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_TRACK_H

@@ -213,22 +213,24 @@ bool MidiParser::parse_track_event(Track& track, uint32_t& current_time, uint8_t
     uint32_t delta_time = read_vlq();
     current_time += delta_time;
 
-    // Account for "running status"
+    uint8_t current_status = running_status;
     uint8_t peek_byte = file.get_data().at(cursor);
     if (peek_byte >= MIDI_EVENT_MINIMUM) {
-        // New status
-        running_status = peek_byte;
+        current_status = peek_byte;
+        if (peek_byte < SYSEX_EVENT_BEGIN) {
+            running_status = peek_byte;
+        }
         cursor++;
     }
 
     // Dispatch to the correct event parser method
-    if (is_meta_event(running_status)) {
+    if (is_meta_event(current_status)) {
         return parse_meta_event(track, current_time, running_status);
     }
-    else if (is_sysex_event(running_status)) {
+    else if (is_sysex_event(current_status)) {
         return parse_sysex_event(track, current_time, running_status);
     }
-    else if (is_midi_event(running_status)) {
+    else if (is_midi_event(current_status)) {
         parse_midi_event(track, current_time, running_status);
     }
     else {
@@ -259,6 +261,8 @@ bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
             return false;
         }
     }
+
+    track.sort_notes();
     return true;
 }
 

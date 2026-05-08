@@ -3,6 +3,7 @@
 #include "../Oscillators/Base Implementations/Oscillator.h"
 #include "../../EventTypeEnums/ContinuousControllers.h"
 #include <cmath>
+#include <iostream>
 
 static float pitch_to_hz(uint8_t pitch) {
     return 440.0f * std::pow(2.0f, ((float)pitch - 69) / 12.0f);
