@@ -16,6 +16,7 @@ private:
     std::array<std::unique_ptr<Voice>, NUM_VOICES> voices;
     std::array<uint8_t, NUM_CHANNELS> channel_patches;
     std::array<std::function<std::unique_ptr<Oscillator>()>, 128> oscillator_factories;
+    std::array<std::function<std::unique_ptr<Oscillator>()>, 128> drum_oscillator_factories;
 
     // Midi-event specific data
     std::array<uint16_t, NUM_CHANNELS> channel_pitch_bends;

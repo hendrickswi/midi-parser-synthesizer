@@ -56,6 +56,13 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Synthesizer/Oscillators/Decorators/VibratoOscillator.cpp
         Synthesizer/Oscillators/Decorators/VibratoOscillator.h
         EventTypeEnums/ContinuousControllers.h
+        "Synthesizer/Oscillators/Base Implementations/TriangleOscillator.cpp"
+        "Synthesizer/Oscillators/Base Implementations/TriangleOscillator.h"
+        "Synthesizer/Oscillators/Base Implementations/NoiseOscillator.cpp"
+        "Synthesizer/Oscillators/Base Implementations/NoiseOscillator.h"
+        "Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelope.cpp"
+        "Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelope.h"
+        "Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelopeState.h"
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_LIBRARIES})

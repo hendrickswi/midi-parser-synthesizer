@@ -6,8 +6,10 @@
 
 #include "Oscillators/Base Implementations/SineOscillator.h"
 #include "Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
+#include "Oscillators/Base Implementations/NoiseOscillator.h"
 #include "Oscillators/Base Implementations/SawtoothOscillator.h"
 #include "Oscillators/Base Implementations/SquareOscillator.h"
+#include "Oscillators/Base Implementations/TriangleOscillator.h"
 
 static float byte_to_scale_float(uint8_t velocity) {
     return (float)velocity / 127.0f;
@@ -21,6 +23,7 @@ void VoiceManager::init(float sample_rate, float global_volume) {
     voices = std::array<std::unique_ptr<Voice>, NUM_VOICES>();
     channel_patches = std::array<uint8_t, NUM_CHANNELS>();
     oscillator_factories = std::array<std::function<std::unique_ptr<Oscillator>()>, 128>();
+    drum_oscillator_factories = std::array<std::function<std::unique_ptr<Oscillator>()>, 128>();
 
     // Midi event specific data
     channel_pitch_bends = std::array<uint16_t, NUM_CHANNELS>();
@@ -35,10 +38,14 @@ void VoiceManager::init(float sample_rate, float global_volume) {
     }
 
     // Creating all the factories
-    oscillator_factories[0] = []() { return std::make_unique<SineOscillator>(); };
-    oscillator_factories[81] = []() { return std::make_unique<SquareOscillator>(); };
-    oscillator_factories[82] = []() { return std::make_unique<SawtoothOscillator>(); };
-    // TODO: Flesh out this list more
+    oscillator_factories[80] = []() { return std::make_unique<SquareOscillator>(); };
+    oscillator_factories[81] = []() { return std::make_unique<SawtoothOscillator>(); };
+    oscillator_factories[82] = []() { return std::make_unique<TriangleOscillator>(); };
+    oscillator_factories[122] = []() { return std::make_unique<NoiseOscillator>(); };
+    oscillator_factories[127] = []() { return std::make_unique<NoiseOscillator>(); };
+
+    // Special factory for drums
+    drum_kit_factorie
 
     // Fill any remaining null factories with the default SineOscillator
     for (int i = 0; i < 128; i++) {
@@ -142,9 +149,15 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
     }
 
     // Ensure the voice has the correct oscillator
-    uint8_t patch_id = channel_patches[channel];
-    auto new_oscillator = oscillator_factories[patch_id]();
-    voices[voice_idx]->set_oscillator(std::move(new_oscillator));
+    if (channel == 9) {
+        voices[voice_idx]->set_oscillator(drum_oscillator_factory());
+    }
+    else {
+        uint8_t patch_id = channel_patches[channel];
+        auto new_oscillator = oscillator_factories[patch_id]();
+        voices[voice_idx]->set_oscillator(std::move(new_oscillator));
+    }
+
     voices[voice_idx]->note_on(channel, pitch, velocity, sample_rate);
 }
 

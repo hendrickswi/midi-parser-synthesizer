@@ -11,21 +11,25 @@ private:
     float current_multiplier;
 
     float attack_time;
+    float attack_max_level;
     float decay_time;
     float sustain_level;
     float release_time;
+    float release_min_level;
 
     float attack_increment;
     float decay_increment;
     float sustain_increment;
     float release_increment;
 
-    void recalculate_rates();
-    void init(float sample_rate = 44100.0, float attack_time = 0.1, float decay_time = 0.1, float sustain_level = 0.5, float release_time = 0.1);
+    void calculate_increments();
+    void init(float sample_rate = 44100.0f, float attack_time = 0.1f, float attack_max_level = 1.0f,
+        float decay_time = 0.1f, float sustain_level = 0.5f, float release_time = 0.1f, float release_min_level = 0.0f);
 
 public:
     ADSREnvelope();
-    ADSREnvelope(float sample_rate, float attack_time, float decay_time, float sustain_level, float release_time);
+    ADSREnvelope(float sample_rate, float attack_time, float attack_max_level, float decay_time,
+        float sustain_level, float release_time, float release_min_level);
     ADSREnvelope(const ADSREnvelope& other);
 
     void on() override;
