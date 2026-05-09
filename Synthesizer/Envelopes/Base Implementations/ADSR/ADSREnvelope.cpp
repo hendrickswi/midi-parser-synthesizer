@@ -64,8 +64,6 @@ void ADSREnvelope::off() {
 }
 
 float ADSREnvelope::get_multiplier() {
-    // Switch statement for state logic
-    // Not via traditional OOP approach for performance
     switch (state) {
         case IDLE: {
             current_multiplier = 0.0;
@@ -73,8 +71,8 @@ float ADSREnvelope::get_multiplier() {
         }
         case ATTACK: {
             current_multiplier += attack_increment;
-            if (current_multiplier >= 1.0) {
-                current_multiplier = 1.0;
+            if (current_multiplier >= attack_max_level) {
+                current_multiplier = attack_max_level;
                 state = DECAY;
             }
             break;
@@ -93,16 +91,10 @@ float ADSREnvelope::get_multiplier() {
         }
         case RELEASE : {
             current_multiplier -= release_increment;
-            if (current_multiplier <= 0.0) {
-                current_multiplier = 0.0;
+            if (current_multiplier <= release_min_level) {
+                current_multiplier = release_min_level;
                 state = IDLE;
             }
-            break;
-        }
-
-        // For safety in case ADSREnvelopeState enum is changed
-        default : {
-            current_multiplier = 0.0;
             break;
         }
     }

@@ -44,9 +44,6 @@ void VoiceManager::init(float sample_rate, float global_volume) {
     oscillator_factories[122] = []() { return std::make_unique<NoiseOscillator>(); };
     oscillator_factories[127] = []() { return std::make_unique<NoiseOscillator>(); };
 
-    // Special factory for drums
-    drum_kit_factorie
-
     // Fill any remaining null factories with the default SineOscillator
     for (int i = 0; i < 128; i++) {
         if (oscillator_factories[i] == nullptr) {
@@ -150,7 +147,7 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
 
     // Ensure the voice has the correct oscillator
     if (channel == 9) {
-        voices[voice_idx]->set_oscillator(drum_oscillator_factory());
+        voices[voice_idx]->set_oscillator();
     }
     else {
         uint8_t patch_id = channel_patches[channel];
