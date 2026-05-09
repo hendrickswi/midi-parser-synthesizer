@@ -1,7 +1,7 @@
 #ifndef MIDI_PARSERSYNTHESIZER_ADRENVELOPESTATE_H
 #define MIDI_PARSERSYNTHESIZER_ADRENVELOPESTATE_H
 
-enum ADREnvelopeState {
+enum class ADREnvelopeState {
     IDLE,
     ATTACK,
     DECAY,

@@ -9,7 +9,7 @@ void ADSREnvelope::calculate_increments() {
 }
 
 void ADSREnvelope::init(float sample_rate, float attack_time, float attack_max_level, float decay_time, float sustain_level, float release_time, float release_min_level) { // NOLINT
-    state = IDLE;
+    state = ADSREnvelopeState::IDLE;
     current_multiplier = 0.0;
     this->sample_rate = sample_rate;
 
@@ -51,12 +51,12 @@ ADSREnvelope::ADSREnvelope(const ADSREnvelope& other) {
 }
 
 void ADSREnvelope::on() {
-    state = ATTACK;
+    state = ADSREnvelopeState::ATTACK;
 }
 
 void ADSREnvelope::off() {
-    if (state == IDLE) return;
-    state = RELEASE;
+    if (state == ADSREnvelopeState::IDLE) return;
+    state = ADSREnvelopeState::RELEASE;
 
     // Recalculate release speed based on the current volume
     // in case off() is called before attack or decay finishes
@@ -65,35 +65,35 @@ void ADSREnvelope::off() {
 
 float ADSREnvelope::get_multiplier() {
     switch (state) {
-        case IDLE: {
+        case ADSREnvelopeState::IDLE: {
             current_multiplier = 0.0;
             break;
         }
-        case ATTACK: {
+        case ADSREnvelopeState::ATTACK: {
             current_multiplier += attack_increment;
             if (current_multiplier >= attack_max_level) {
                 current_multiplier = attack_max_level;
-                state = DECAY;
+                state = ADSREnvelopeState::DECAY;
             }
             break;
         }
-        case DECAY: {
+        case ADSREnvelopeState::DECAY: {
             current_multiplier -= decay_increment;
             if (current_multiplier <= sustain_level) {
                 current_multiplier = sustain_level;
-                state = SUSTAIN;
+                state = ADSREnvelopeState::SUSTAIN;
             }
             break;
         }
-        case SUSTAIN: {
+        case ADSREnvelopeState::SUSTAIN: {
             current_multiplier = sustain_level;
             break;
         }
-        case RELEASE : {
+        case ADSREnvelopeState::RELEASE : {
             current_multiplier -= release_increment;
             if (current_multiplier <= release_min_level) {
                 current_multiplier = release_min_level;
-                state = IDLE;
+                state = ADSREnvelopeState::IDLE;
             }
             break;
         }
@@ -103,11 +103,11 @@ float ADSREnvelope::get_multiplier() {
 }
 
 bool ADSREnvelope::is_idle() const {
-    return state == IDLE;
+    return state == ADSREnvelopeState::IDLE;
 }
 
 bool ADSREnvelope::is_released() const {
-    return state == RELEASE;
+    return state == ADSREnvelopeState::RELEASE;
 }
 
 

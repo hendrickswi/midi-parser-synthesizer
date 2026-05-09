@@ -10,7 +10,7 @@ void ADREnvelope::calculate_rates() {
 
 void ADREnvelope::init(float sample_rate, float attack_time, float attack_max_level, float decay_time, // NOLINT
     float release_time, float release_max_level, float release_min_level) {
-    state = IDLE;
+    state = ADREnvelopeState::IDLE;
     current_multiplier = 0.0;
     this->sample_rate = sample_rate;
 
@@ -51,12 +51,12 @@ ADREnvelope::ADREnvelope(const ADREnvelope& other) {
 }
 
 void ADREnvelope::on() {
-    state = ATTACK;
+    state = ADREnvelopeState::ATTACK;
 }
 
 void ADREnvelope::off() {
-    if (state == IDLE) return;
-    state = RELEASE;
+    if (state == ADREnvelopeState::IDLE) return;
+    state = ADREnvelopeState::RELEASE;
 
     // In case off() is called before attack or decay finishes
     release_increment = current_multiplier / (std::max(release_time, 0.00001f) * std::max(sample_rate, 0.00001f));
@@ -64,31 +64,31 @@ void ADREnvelope::off() {
 
 float ADREnvelope::get_multiplier() {
     switch (state) {
-        case IDLE : {
+        case ADREnvelopeState::IDLE : {
             current_multiplier = 0.0;
             break;
         }
-        case ATTACK : {
+        case ADREnvelopeState::ATTACK : {
             current_multiplier += attack_increment;
             if (current_multiplier >= attack_max_level) {
                 current_multiplier = attack_max_level;
-                state = DECAY;
+                state = ADREnvelopeState::DECAY;
             }
             break;
         }
-        case DECAY : {
+        case ADREnvelopeState::DECAY : {
             current_multiplier -= decay_increment;
             if (current_multiplier <= release_min_level) {
                 current_multiplier = release_min_level;
-                state = IDLE;
+                state = ADREnvelopeState::IDLE;
             }
             break;
         }
-        case RELEASE : {
+        case ADREnvelopeState::RELEASE : {
             current_multiplier -= release_increment;
             if (current_multiplier <= release_min_level) {
                 current_multiplier = release_min_level;
-                state = IDLE;
+                state = ADREnvelopeState::IDLE;
             }
             break;
         }
@@ -98,9 +98,9 @@ float ADREnvelope::get_multiplier() {
 }
 
 bool ADREnvelope::is_idle() const {
-    return state == IDLE;
+    return state == ADREnvelopeState::IDLE;
 }
 
 bool ADREnvelope::is_released() const {
-    return state == RELEASE;
+    return state == ADREnvelopeState::RELEASE;
 }

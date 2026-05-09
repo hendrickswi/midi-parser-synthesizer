@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "Envelopes/Base Implementations/ADR/ADREnvelope.h"
 #include "Oscillators/Base Implementations/SineOscillator.h"
 #include "Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
 #include "Oscillators/Base Implementations/NoiseOscillator.h"
@@ -24,6 +25,7 @@ void VoiceManager::init(float sample_rate, float global_volume) {
     channel_patches = std::array<uint8_t, NUM_CHANNELS>();
     oscillator_factories = std::array<std::function<std::unique_ptr<Oscillator>()>, 128>();
     drum_oscillator_factories = std::array<std::function<std::unique_ptr<Oscillator>()>, 128>();
+    drum_envelope_factories = std::array<std::function<std::unique_ptr<Envelope>()>, 128>();
 
     // Midi event specific data
     channel_pitch_bends = std::array<uint16_t, NUM_CHANNELS>();
@@ -50,6 +52,47 @@ void VoiceManager::init(float sample_rate, float global_volume) {
             oscillator_factories[i] = []() { return std::make_unique<SineOscillator>(); };
         }
     }
+
+    // Creating all of the drum factories
+    // Kick drum
+    drum_oscillator_factories[35] = [sample_rate]() {
+        return std::make_unique<SineOscillator>(55.0f, sample_rate);
+    };
+    drum_envelope_factories[35] = [sample_rate]() {
+        return std::make_unique<ADREnvelope>(sample_rate, 0.005f, 1.0f, 0.1f,
+            0.1f, 0.1f, 0.0f);
+    };
+    drum_oscillator_factories[36] = drum_oscillator_factories[35];
+    drum_envelope_factories[36] = drum_envelope_factories[35];
+
+    // Snare drum
+    drum_oscillator_factories[38] = []() {
+        return std::make_unique<NoiseOscillator>();
+    };
+    drum_envelope_factories[38] = [sample_rate]() {
+        return std::make_unique<ADREnvelope>(sample_rate, 0.005f, 1.0f, 0.2f,
+            0.25f, 0.1f, 0.0f);
+    };
+    drum_oscillator_factories[40] = drum_oscillator_factories[38];
+    drum_envelope_factories[40] = drum_envelope_factories[38];
+
+    // Closed hi-hat
+    drum_oscillator_factories[42] = []() {
+        return std::make_unique<NoiseOscillator>();
+    };
+    drum_envelope_factories[42] = [sample_rate]() {
+        return std::make_unique<ADREnvelope>(sample_rate, 0.002f, 0.7f, 0.05f,
+             0.05f, 0.0f, 0.0f);
+    };
+
+    // Open hi-hat
+    drum_oscillator_factories[46] = []() {
+        return std::make_unique<NoiseOscillator>();
+    };
+    drum_envelope_factories[46] = [sample_rate]() {
+        return std::make_unique<ADREnvelope>(sample_rate, 0.005f, 0.7f, 0.4f, 0.1f, 0.0f, 0.0f);
+    };
+
 
     channel_patches.fill(0);
 
@@ -145,14 +188,24 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
         voices[voice_idx]->update_cc(i, channel_cc_states[channel][i]);
     }
 
-    // Ensure the voice has the correct oscillator
+    // Ensure the voice has the correct oscillator/envelope
     if (channel == 9) {
-        voices[voice_idx]->set_oscillator();
+        // Channel 9 (10-1) is traditionally used for drums
+        if (drum_oscillator_factories[pitch] == nullptr || drum_envelope_factories[pitch] == nullptr) {
+            // Fallback: short blip of noise
+            voices[voice_idx]->set_oscillator(std::make_unique<NoiseOscillator>());
+            voices[voice_idx]->set_envelope(std::make_unique<ADREnvelope>(sample_rate, 0.005f, 0.75f, 0.1f,
+                 0.1f, 0.1f, 0.0f));
+        }
+        else {
+            voices[voice_idx]->set_oscillator(drum_oscillator_factories[pitch]());
+            voices[voice_idx]->set_envelope(drum_envelope_factories[pitch]());
+        }
     }
     else {
         uint8_t patch_id = channel_patches[channel];
-        auto new_oscillator = oscillator_factories[patch_id]();
-        voices[voice_idx]->set_oscillator(std::move(new_oscillator));
+        voices[voice_idx]->set_oscillator(oscillator_factories[patch_id]());
+        voices[voice_idx]->set_envelope(std::make_unique<ADSREnvelope>());
     }
 
     voices[voice_idx]->note_on(channel, pitch, velocity, sample_rate);

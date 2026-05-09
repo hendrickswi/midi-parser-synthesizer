@@ -1,7 +1,7 @@
 #ifndef MIDI_PARSERSYNTHESIZER_ENVELOPESTATE_H
 #define MIDI_PARSERSYNTHESIZER_ENVELOPESTATE_H
 
-enum ADSREnvelopeState {
+enum class ADSREnvelopeState {
     IDLE,
     ATTACK,
     DECAY,

@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 
+class Envelope;
 // pimpl forward declaration
 class Voice;
 class Oscillator;
@@ -17,6 +18,7 @@ private:
     std::array<uint8_t, NUM_CHANNELS> channel_patches;
     std::array<std::function<std::unique_ptr<Oscillator>()>, 128> oscillator_factories;
     std::array<std::function<std::unique_ptr<Oscillator>()>, 128> drum_oscillator_factories;
+    std::array<std::function<std::unique_ptr<Envelope>()>, 128> drum_envelope_factories;
 
     // Midi-event specific data
     std::array<uint16_t, NUM_CHANNELS> channel_pitch_bends;
