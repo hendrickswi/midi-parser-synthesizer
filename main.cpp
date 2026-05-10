@@ -98,7 +98,7 @@ int main() {
         while (rt_audio.isStreamRunning()) {
             std::cout << "Which track would you like to listen to?" << std::endl << std::endl;
             for (int i = 0; i < sequences.size(); i++) {
-                std::cout << i << ". " << file_names[i] << std::endl;
+                std::cout << i + 1 << ". " << file_names[i] << std::endl;
             }
 
             int track_idx;
@@ -106,6 +106,7 @@ int main() {
             while (!picked) {
                 std::cout << "Choose a number from the list above: " << std::endl;
                 std::cin >> track_idx;
+                track_idx--;
                 if (track_idx >= 0 && track_idx < sequences.size()) {
                     picked = true;
                     sequencer.set_track_sequence(&sequences[track_idx]);

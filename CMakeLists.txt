@@ -63,6 +63,8 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelope.cpp"
         "Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelope.h"
         "Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelopeState.h"
+        Synthesizer/InstrumentRegistry.cpp
+        Synthesizer/InstrumentRegistry.h
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_LIBRARIES})

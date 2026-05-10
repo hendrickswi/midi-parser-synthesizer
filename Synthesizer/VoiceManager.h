@@ -5,20 +5,18 @@
 #include <functional>
 #include <memory>
 
+class InstrumentRegistry;
 class Envelope;
-// pimpl forward declaration
 class Voice;
 class Oscillator;
 
 class VoiceManager {
 private:
-    static constexpr int NUM_VOICES = 16;
+    static constexpr int NUM_VOICES = 32;
     static constexpr int NUM_CHANNELS = 16;
     std::array<std::unique_ptr<Voice>, NUM_VOICES> voices;
     std::array<uint8_t, NUM_CHANNELS> channel_patches;
-    std::array<std::function<std::unique_ptr<Oscillator>()>, 128> oscillator_factories;
-    std::array<std::function<std::unique_ptr<Oscillator>()>, 128> drum_oscillator_factories;
-    std::array<std::function<std::unique_ptr<Envelope>()>, 128> drum_envelope_factories;
+    std::unique_ptr<InstrumentRegistry> registry;
 
     // Midi-event specific data
     std::array<uint16_t, NUM_CHANNELS> channel_pitch_bends;
