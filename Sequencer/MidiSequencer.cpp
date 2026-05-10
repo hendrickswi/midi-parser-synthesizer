@@ -227,3 +227,23 @@ bool MidiSequencer::is_playing() const {
 bool MidiSequencer::midi_file_ended() const {
     return midi_file_ended_flag;
 }
+
+float MidiSequencer::get_total_duration_seconds() const {
+    if (!track_sequence) return 0.0f;
+
+    // Find the end time farthest away from the start
+    uint32_t greatest_end_time = 0;
+    for (const auto& track : track_sequence->get_tracks()) {
+        const auto& notes = track.get_notes();
+        if (notes.empty()) continue;
+
+        for (const auto& note : notes) {
+            uint32_t end_time = note.absolute_time + note.duration;
+            if (end_time > greatest_end_time) {
+                greatest_end_time = end_time;
+            }
+        }
+    }
+
+    return greatest_end_time * micros_per_tick / 1000000.0f;
+}

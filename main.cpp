@@ -13,12 +13,18 @@
 constexpr std::string auto_test_folder = "Testing files";
 constexpr float sample_rate = 44100.0f;
 constexpr unsigned int channels = 1;
+constexpr unsigned int print_interval_ms = 100;
 
 int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time, RtAudioStreamStatus status, void *user_data) {
     float *buffer = static_cast<float *>(output_buffer);
     VoiceManager *synth = static_cast<VoiceManager *>(user_data);
     synth->process_audio_buffer(buffer, num_frames);
     return 0;
+}
+
+void print_timer(std::chrono::high_resolution_clock::time_point start_time, std::chrono::high_resolution_clock::time_point current_time, float end_time) {
+    std::chrono::duration<float> elapsed = current_time - start_time;
+    std::cout << "\r" << elapsed.count() << " / " << end_time << " s" << std::flush;
 }
 
 int main() {
@@ -114,10 +120,24 @@ int main() {
             }
 
             sequencer.start();
-            std::cout << "Now playing: " << file_names[track_idx] << std::endl << std::endl;
+            std::cout << std::endl << "Now playing: " << file_names[track_idx] << std::endl << std::endl;
+
+            // Timing stuff
+            std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+            float end_time = sequencer.get_total_duration_seconds();
+            auto last_print_time = start_time;
+
             while (sequencer.is_playing()) {
                 sequencer.update();
+
+                auto current_time = std::chrono::high_resolution_clock::now();
+                auto ms_since_print = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_print_time).count();
+                if (ms_since_print > print_interval_ms) {
+                    print_timer(start_time, current_time, end_time);
+                    last_print_time = current_time;
+                }
             }
+            std::cout << std::endl << std::endl;
             sequencer.stop();
             synth.stop();
 

@@ -83,6 +83,8 @@ public:
      * @c false indicates the opposite.
      */
     [[nodiscard]] bool midi_file_ended() const;
+
+    [[nodiscard]] float get_total_duration_seconds() const;
 };
 
 
