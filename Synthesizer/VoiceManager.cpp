@@ -144,7 +144,6 @@ void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
     for (auto& voice : voices) {
         if (voice->get_channel() == channel && voice->get_pitch() == pitch) {
             voice->note_off();
-            return;
         }
     }
 }
