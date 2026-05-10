@@ -115,17 +115,6 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
 
         // Other meta events largely ignored by this non-GUI program
     }
-
-    // // Sysex event processing
-    // const auto& sysex_events = track.get_sysex_events();
-    // while (indices.sysex_idx < sysex_events.size()
-    //     && sysex_events[indices.sysex_idx].absolute_time <= current_tick) {
-    //
-    //     const auto& sysex_event = sysex_events[indices.sysex_idx];
-    //     indices.sysex_idx++;
-    //
-    //     // sysex events ignored by sequencer?
-    // }
 }
 
 [[nodiscard]] bool MidiSequencer::has_more_events() const {
@@ -245,5 +234,28 @@ float MidiSequencer::get_total_duration_seconds() const {
         }
     }
 
-    return greatest_end_time * micros_per_tick / 1000000.0f;
+    // Calculate duration by accumulating based on the current tempo (mpt)
+    float duration_seconds = 0.0f;
+    const Track& track = track_sequence->get_tracks().front();
+    uint32_t prev_tempo_event_time = 0;
+    uint32_t prev_mpt = 0;
+    for (const auto& meta_event : track.get_meta_events()) {
+        if (meta_event.type == TEMPO_SETTING) {
+            // Accumulator
+            duration_seconds += (meta_event.absolute_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
+
+            // Set up for next iteration
+            prev_tempo_event_time = meta_event.absolute_time;
+            uint32_t mpqn = 0;
+            for (auto& byte : meta_event.data) {
+                mpqn = (mpqn << 8) | byte;
+            }
+            prev_mpt = calculate_mpt(mpqn, track_sequence->get_division());
+        }
+    }
+
+    // Remaining amount of track calculation
+    duration_seconds += (greatest_end_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
+
+    return duration_seconds;
 }

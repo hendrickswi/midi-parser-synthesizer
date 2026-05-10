@@ -24,6 +24,9 @@ int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_fra
 
 void print_timer(std::chrono::high_resolution_clock::time_point start_time, std::chrono::high_resolution_clock::time_point current_time, float end_time) {
     std::chrono::duration<float> elapsed = current_time - start_time;
+    if (elapsed.count() > end_time) {
+        elapsed = std::chrono::duration<float>(end_time);
+    }
     std::cout << "\r" << elapsed.count() << " / " << end_time << " s" << std::flush;
 }
 
