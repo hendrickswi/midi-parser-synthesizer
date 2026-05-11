@@ -234,28 +234,41 @@ float MidiSequencer::get_total_duration_seconds() const {
         }
     }
 
-    // Calculate duration by accumulating based on the current tempo (mpt)
-    float duration_seconds = 0.0f;
-    const Track& track = track_sequence->get_tracks().front();
-    uint32_t prev_tempo_event_time = 0;
-    uint32_t prev_mpt = micros_per_tick;
-    for (const auto& meta_event : track.get_meta_events()) {
-        if (meta_event.type == TEMPO_SETTING) {
-            // Accumulator
-            duration_seconds += (meta_event.absolute_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
-
-            // Set up for next iteration
-            prev_tempo_event_time = meta_event.absolute_time;
-            uint32_t mpqn = 0;
-            for (auto& byte : meta_event.data) {
-                mpqn = (mpqn << 8) | byte;
+    // Get all of the tempo events and sort
+    std::vector<MetaEvent> tempo_events;
+    for (const auto& track : track_sequence->get_tracks()) {
+        for (const auto& meta_event : track.get_meta_events()) {
+            if (meta_event.type == TEMPO_SETTING) {
+                tempo_events.push_back(meta_event);
             }
-            prev_mpt = calculate_mpt(mpqn, track_sequence->get_division());
         }
     }
+    std::sort(tempo_events.begin(), tempo_events.end(), [](const MetaEvent& a, const MetaEvent& b) {
+        return a.absolute_time < b.absolute_time;
+    });
 
-    // Remaining amount of track calculation
-    duration_seconds += (greatest_end_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
+    // Calculate duration by accumulating based on the current tempo (mpt)
+    float duration_seconds = 0.0f;
+    uint32_t prev_tempo_event_time = 0;
+    uint32_t prev_mpt = micros_per_tick;
+    for (const auto& meta_event : tempo_events) {
+        if (meta_event.absolute_time > prev_tempo_event_time) {
+            duration_seconds += (meta_event.absolute_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
+        }
+
+        // Set up for next iteration
+        prev_tempo_event_time = meta_event.absolute_time;
+        uint32_t mpqn = 0;
+        for (auto& byte : meta_event.data) {
+            mpqn = (mpqn << 8) | byte;
+        }
+        prev_mpt = calculate_mpt(mpqn, track_sequence->get_division());
+    }
+
+    // Final accumulation
+    if (prev_tempo_event_time < greatest_end_time) {
+        duration_seconds += (greatest_end_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
+    }
 
     return duration_seconds;
 }
