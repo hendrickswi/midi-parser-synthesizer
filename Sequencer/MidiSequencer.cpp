@@ -238,7 +238,7 @@ float MidiSequencer::get_total_duration_seconds() const {
     float duration_seconds = 0.0f;
     const Track& track = track_sequence->get_tracks().front();
     uint32_t prev_tempo_event_time = 0;
-    uint32_t prev_mpt = 0;
+    uint32_t prev_mpt = micros_per_tick;
     for (const auto& meta_event : track.get_meta_events()) {
         if (meta_event.type == TEMPO_SETTING) {
             // Accumulator
