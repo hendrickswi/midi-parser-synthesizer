@@ -8,6 +8,7 @@ struct ActiveNote {
     std::uint32_t end_time;
     std::uint8_t pitch;
     std::uint8_t channel;
+    std::uint8_t volume;
 
     ActiveNote() = default;
 
@@ -15,6 +16,7 @@ struct ActiveNote {
         end_time = note.absolute_time + note.duration;
         pitch = note.pitch;
         channel = note.channel;
+        volume = note.volume;
     }
 
     // The note with the sooner starting time should be "greater"

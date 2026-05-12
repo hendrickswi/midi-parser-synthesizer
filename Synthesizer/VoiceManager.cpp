@@ -6,6 +6,7 @@
 #include "InstrumentRegistry.h"
 #include "Oscillators/Base Implementations/SineOscillator.h"
 #include "Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
+#include "../EventTypeEnums/ContinuousControllers.h"
 
 static float byte_to_scale_float(uint8_t velocity) {
     return (float)velocity / 127.0f;
@@ -168,6 +169,10 @@ void VoiceManager::process_audio_buffer(float* buffer, const unsigned int num_sa
 
 void VoiceManager::stop() {
     for (auto& voice : voices) {
+        // Force sustain pedal up
+        voice->update_cc(SUSTAIN_PEDAL, 0);
+
+        // Then turn off the note
         voice->note_off();
     }
 }

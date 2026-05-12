@@ -59,6 +59,8 @@ void MidiSequencer::init() {
     // This also does default instantiation of TrackIndices structs
     track_indices.resize(track_sequence->get_tracks().size());
 
+    while (!active_notes.empty()) active_notes.pop();
+
     // Cache all tempo change events in order for later usage in multiple methods
     tempo_events = std::vector<MetaEvent>();
     for (const auto& track : track_sequence->get_tracks()) {
@@ -151,6 +153,11 @@ void MidiSequencer::skip_microseconds(uint64_t micros_to_skip) {
         micros_to_skip -= micros_per_tick;
         total_elapsed_micros += micros_per_tick;
 
+        // Cull notes that finish playing during skipping
+        while (!active_notes.empty() && active_notes.top().end_time <= current_tick) {
+            active_notes.pop();
+        }
+
         for (int i = 0; i < tracks.size(); i++) {
             process_events(tracks[i], track_indices[i]);
         }
@@ -184,6 +191,18 @@ void MidiSequencer::start() {
     if (!synthesizer || !track_sequence) return;
     is_playing_flag = true;
 
+    // "Wake up" all suspended notes
+    std::vector<ActiveNote> suspended_notes;
+    while (!active_notes.empty()) {
+        auto note = active_notes.top();
+        active_notes.pop();
+        synthesizer->note_on(note.channel, note.pitch, note.volume);
+        suspended_notes.push_back(note);
+    }
+    for (const auto& note : suspended_notes) {
+        active_notes.push(note);
+    }
+
     // Reanchor
     prev_tick_time = std::chrono::high_resolution_clock::now();
 }
@@ -196,8 +215,6 @@ void MidiSequencer::stop() {
 void MidiSequencer::skip_forward(float seconds) {
     if (!synthesizer || !track_sequence || seconds <= 0) return;
 
-    synthesizer->stop();
-    while (!active_notes.empty()) active_notes.pop();
     is_skipping_flag = true;
 
     skip_microseconds(static_cast<uint64_t>(seconds * seconds_to_micros));
@@ -211,7 +228,6 @@ void MidiSequencer::skip_backward(float seconds) {
 
     uint64_t skip_amount = static_cast<uint64_t>(seconds * seconds_to_micros);
     uint64_t target_micros = (total_elapsed_micros - skip_amount) ? (total_elapsed_micros - skip_amount) : 0;
-    bool was_playing = is_playing_flag;
 
     // Wipe everything and start from the beginning
     init();
