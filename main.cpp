@@ -5,6 +5,7 @@
 #include <RtAudio.h>
 #include <thread>
 
+#include "AudioEngine.h"
 #include "FilePathSanitizer.h"
 #include "Parser/MidiParser.h"
 #include "Sequencer/MidiSequencer.h"
@@ -12,7 +13,7 @@
 
 constexpr std::string auto_test_folder = "Testing files";
 constexpr float sample_rate = 44100.0f;
-constexpr unsigned int channels = 1;
+constexpr unsigned int num_channels = 1;
 constexpr unsigned int print_interval_ms = 100;
 
 int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time, RtAudioStreamStatus status, void *user_data) {
@@ -22,12 +23,12 @@ int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_fra
     return 0;
 }
 
-void print_timer(std::chrono::high_resolution_clock::time_point start_time, std::chrono::high_resolution_clock::time_point current_time, float end_time) {
-    std::chrono::duration<float> elapsed = current_time - start_time;
-    if (elapsed.count() > end_time) {
-        elapsed = std::chrono::duration<float>(end_time);
+void print_timer(float current_time, float total_time) {
+    float elapsed_time = current_time;
+    if (elapsed_time > total_time) {
+        elapsed_time = total_time;
     }
-    std::cout << "\r" << elapsed.count() << " / " << end_time << " s" << std::flush;
+    std::cout << "\r" << elapsed_time << " / " << total_time << " s" << std::flush;
 }
 
 int main() {
@@ -64,102 +65,31 @@ int main() {
         }
     }
 
-    MidiParser parser = MidiParser();
-    auto sequences = std::vector<TrackSequence>();
-    for (auto& file : file_names) {
-        parser.set_file(file);
-        std::cout << "Parsing file: " << file << std::endl;
-        auto sequence = TrackSequence();
-        if (!parser.parse(sequence)) {
-            std::cerr << "Error: Unable to parse the file" << std::endl;
-            return 1;
-        }
-        sequences.push_back(sequence);
+    AudioEngine engine = AudioEngine(sample_rate, num_channels, 0.5f);
+    std::cout << "Loading MIDI files..." << std::endl;
+    for (int i = 0; i < file_names.size(); i++) {
+        engine.load_midi_file(file_names[i]);
+        std::cout << i + 1 << ". " << file_names[i] << std::endl;
     }
-
-    std::cout << std::endl << "Parsing completed! Press Enter to continue." << std::endl;
-    std::cin.ignore();
-    std::cin.get();
     std::cout << std::endl;
 
-    VoiceManager synth = VoiceManager(sample_rate, 0.5f);
-    RtAudio rt_audio;
-    if (rt_audio.getDeviceCount() < 1) {
-        std::cerr << "Error: No audio devices found" << std::endl;
+    std::cout << "Which file would you like to listen to? (1-" + std::to_string(file_names.size()) + ")";
+    int raw_file_index;
+    std::cin >> raw_file_index;
+    int file_index = raw_file_index - 1;
+    if (file_index < 0 || file_index >= file_names.size()) {
+        std::cerr << "Error: Invalid file index" << std::endl;
         return 1;
     }
 
-    RtAudio::StreamParameters parameters;
-    parameters.deviceId = rt_audio.getDefaultOutputDevice();
-    parameters.nChannels = channels;
-    parameters.firstChannel = 0;
+    engine.set_track_sequence(file_index);
+    engine.play();
 
-    MidiSequencer sequencer = MidiSequencer();
-    sequencer.set_synthesizer(&synth);
-    unsigned int buffer_size = 1024;
-    try {
-        rt_audio.openStream(&parameters, nullptr,
-            RTAUDIO_FLOAT32, sample_rate, &buffer_size, &audio_callback, &synth);
-        rt_audio.startStream();
-
-        std::cout << "Audio engine now running." << std::endl;
-
-        while (rt_audio.isStreamRunning()) {
-            std::cout << "Which track would you like to listen to?" << std::endl << std::endl;
-            for (int i = 0; i < sequences.size(); i++) {
-                std::cout << i + 1 << ". " << file_names[i] << std::endl;
-            }
-
-            int track_idx;
-            bool picked = false;
-            while (!picked) {
-                std::cout << "Choose a number from the list above: " << std::endl;
-                std::cin >> track_idx;
-                track_idx--;
-                if (track_idx >= 0 && track_idx < sequences.size()) {
-                    picked = true;
-                    sequencer.set_track_sequence(&sequences[track_idx]);
-                }
-            }
-
-            sequencer.start();
-            std::cout << std::endl << "Now playing: " << file_names[track_idx] << std::endl << std::endl;
-
-            // Timing stuff
-            std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-            float end_time = sequencer.get_total_duration_seconds();
-            auto last_print_time = start_time;
-
-            while (sequencer.is_playing()) {
-                sequencer.update();
-
-                auto current_time = std::chrono::high_resolution_clock::now();
-                auto ms_since_print = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_print_time).count();
-                if (ms_since_print > print_interval_ms) {
-                    print_timer(start_time, current_time, end_time);
-                    last_print_time = current_time;
-                }
-            }
-            std::cout << std::endl << std::endl;
-            sequencer.stop();
-            synth.stop();
-
-            std::cout << "\"" << file_names[track_idx] << "\" has finished playing." << std::endl << std::endl;
-            std::cout << "Press q to quit, or any other character key to continue." << std::endl;
-            char c;
-            std::cin >> c;
-            if (c == 'q') {
-                break;
-            }
-        }
-
-        rt_audio.stopStream();
-        rt_audio.closeStream();
-    }
-    catch (const std::exception& e) {
-        std::cerr << "An error occurred: " << e.what() << std::endl;
-        return 1;
+    while (engine.is_playing()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(print_interval_ms));
+        print_timer(engine.get_track_sequence_current_time_seconds(), engine.get_track_sequence_length_seconds());
     }
 
+    engine.stop();
     return 0;
 }

@@ -2,13 +2,22 @@
 #include "../EventTypeEnums/MetaEventType.h"
 #include "../EventTypeEnums/MidiEventType.h"
 
-
 [[nodiscard]] inline uint32_t calculate_mpqn(const uint32_t tempo) {
     return 60000000 / tempo;
 }
 
 [[nodiscard]] inline uint32_t calculate_mpt(const uint32_t mpqn, const uint16_t division) {
     return mpqn / division;
+}
+
+uint32_t parse_mpt_from_tempo_event(const MetaEvent& tempo_event, uint16_t division) {
+    if (tempo_event.type != TEMPO_SETTING) return 0;
+
+    uint32_t mpqn = 0;
+    for (auto& byte : tempo_event.data) {
+        mpqn = (mpqn << 8) | byte;
+    }
+    return calculate_mpt(mpqn, division);
 }
 
 MidiSequencer::MidiSequencer() { // NOLINT
@@ -27,7 +36,7 @@ MidiSequencer::MidiSequencer(TrackSequence* track_sequence, VoiceManager* synthe
 MidiSequencer::MidiSequencer(const MidiSequencer& other) {
     track_sequence = other.track_sequence;
     synthesizer = other.synthesizer;
-    is_playing_flag = other.is_playing_flag;
+    is_playing_flag = other.is_playing(); // Assignment operator '=' is removed for std::atomic
     midi_file_ended_flag = other.midi_file_ended_flag;
     micros_per_tick = other.micros_per_tick;
     current_tick = other.current_tick;
@@ -47,6 +56,19 @@ void MidiSequencer::init() {
 
     // This also does default instantiation of TrackIndices structs
     track_indices.resize(track_sequence->get_tracks().size());
+
+    // Cache all tempo change events in order for later usage in multiple methods
+    tempo_events = std::vector<MetaEvent>();
+    for (const auto& track : track_sequence->get_tracks()) {
+        for (const auto& meta_event : track.get_meta_events()) {
+            if (meta_event.type == TEMPO_SETTING) {
+                tempo_events.push_back(meta_event);
+            }
+        }
+    }
+    std::sort(tempo_events.begin(), tempo_events.end(), [](const MetaEvent& a, const MetaEvent& b) {
+        return a.absolute_time < b.absolute_time;
+    });
 }
 
 void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
@@ -150,6 +172,25 @@ void MidiSequencer::stop() {
     is_playing_flag = false;
 }
 
+void MidiSequencer::skip_forward(float seconds) {
+//     if (!synthesizer || !track_sequence) return;
+//
+//     // Stop all playing
+//     synthesizer->stop();
+//     while (!active_notes.empty()) active_notes.pop();
+//
+//     uint32_t micros_to_skip = std::abs(seconds) * 1000000.0f;
+//
+//     uint32_t target_tick = current_tick;
+//     uint32_t current_mpt = micros_per_tick;
+//
+//     // TODO: Implement this
+}
+
+void MidiSequencer::skip_backward(float seconds) {
+    // TODO: Implement this
+}
+
 void MidiSequencer::update() {
     if (!is_playing_flag || !synthesizer || !track_sequence) return;
     const auto current_time = std::chrono::high_resolution_clock::now();
@@ -217,6 +258,34 @@ bool MidiSequencer::midi_file_ended() const {
     return midi_file_ended_flag;
 }
 
+float MidiSequencer::get_current_time_seconds() const {
+    if (!track_sequence || current_tick == 0) return 0.0f;
+
+    // Calculate duration by accumulating based on the current tempo (mpt)
+    // Slightly modified version of the algorithm from get_total_duration_seconds--
+    // only go until the last event before current_tick
+    float elapsed_seconds = 0.0f;
+    uint32_t prev_tempo_event_time = 0;
+    uint32_t prev_mpt = micros_per_tick;
+    for (const auto& tempo_event : tempo_events) {
+        if (tempo_event.absolute_time >= current_tick) break;
+        if (tempo_event.absolute_time > prev_tempo_event_time) {
+            elapsed_seconds += (tempo_event.absolute_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
+        }
+
+        // Setup for next iteration
+        prev_tempo_event_time = tempo_event.absolute_time;
+        prev_mpt = parse_mpt_from_tempo_event(tempo_event, track_sequence->get_division());
+    }
+
+    // Final accumulation
+    if (current_tick > prev_tempo_event_time) {
+        elapsed_seconds += (current_tick - prev_tempo_event_time) * prev_mpt / 1000000.0f;
+    }
+
+    return elapsed_seconds;
+}
+
 float MidiSequencer::get_total_duration_seconds() const {
     if (!track_sequence) return 0.0f;
 
@@ -234,35 +303,18 @@ float MidiSequencer::get_total_duration_seconds() const {
         }
     }
 
-    // Get all of the tempo events and sort
-    std::vector<MetaEvent> tempo_events;
-    for (const auto& track : track_sequence->get_tracks()) {
-        for (const auto& meta_event : track.get_meta_events()) {
-            if (meta_event.type == TEMPO_SETTING) {
-                tempo_events.push_back(meta_event);
-            }
-        }
-    }
-    std::sort(tempo_events.begin(), tempo_events.end(), [](const MetaEvent& a, const MetaEvent& b) {
-        return a.absolute_time < b.absolute_time;
-    });
-
     // Calculate duration by accumulating based on the current tempo (mpt)
     float duration_seconds = 0.0f;
     uint32_t prev_tempo_event_time = 0;
     uint32_t prev_mpt = micros_per_tick;
-    for (const auto& meta_event : tempo_events) {
-        if (meta_event.absolute_time > prev_tempo_event_time) {
-            duration_seconds += (meta_event.absolute_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
+    for (const auto& tempo_event : tempo_events) {
+        if (tempo_event.absolute_time > prev_tempo_event_time) {
+            duration_seconds += (tempo_event.absolute_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
         }
 
         // Set up for next iteration
-        prev_tempo_event_time = meta_event.absolute_time;
-        uint32_t mpqn = 0;
-        for (auto& byte : meta_event.data) {
-            mpqn = (mpqn << 8) | byte;
-        }
-        prev_mpt = calculate_mpt(mpqn, track_sequence->get_division());
+        prev_tempo_event_time = tempo_event.absolute_time;
+        prev_mpt = parse_mpt_from_tempo_event(tempo_event, track_sequence->get_division());
     }
 
     // Final accumulation

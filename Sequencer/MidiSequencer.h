@@ -1,5 +1,6 @@
 #ifndef MIDI_PARSERSYNTHESIZER_MIDISEQUENCER_H
 #define MIDI_PARSERSYNTHESIZER_MIDISEQUENCER_H
+#include <atomic>
 #include <chrono>
 #include <queue>
 
@@ -13,7 +14,8 @@ class MidiSequencer {
 private:
     TrackSequence* track_sequence;
     VoiceManager* synthesizer;
-    bool is_playing_flag;
+    std::atomic<bool> is_playing_flag;
+    bool midi_file_ended_flag;
 
     // Helper variables for timing.
     uint32_t micros_per_tick;
@@ -26,7 +28,8 @@ private:
     std::vector<TrackIndices> track_indices;
     std::priority_queue<ActiveNote, std::vector<ActiveNote>, std::greater<>> active_notes;
 
-    bool midi_file_ended_flag;
+    // Cached tempo change events
+    std::vector<MetaEvent> tempo_events;
 
     void init();
     void process_events(const Track& track, TrackIndices& indices);
@@ -39,6 +42,8 @@ public:
 
     void start();
     void stop();
+    void skip_forward(float seconds);
+    void skip_backward(float seconds);
     void update();
     void reset();
 
@@ -84,6 +89,7 @@ public:
      */
     [[nodiscard]] bool midi_file_ended() const;
 
+    [[nodiscard]] float get_current_time_seconds() const;
     [[nodiscard]] float get_total_duration_seconds() const;
 };
 

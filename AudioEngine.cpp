@@ -1,0 +1,138 @@
+#include "AudioEngine.h"
+
+void AudioEngine::init(float sample_rate, unsigned int num_channels, float global_volume) {
+    sequencer.set_synthesizer(&synth);
+
+    // RtAudio setup
+    if (rt_audio.getDeviceCount() < 1) {
+        std::cerr << "Warning: No audio devices found" << std::endl;
+    }
+
+    RtAudio::StreamParameters parameters;
+    parameters.deviceId = rt_audio.getDefaultOutputDevice();
+    parameters.nChannels = num_channels;
+    parameters.firstChannel = 0;
+    unsigned int buffer_size = 1024;
+    try {
+        rt_audio.openStream(&parameters, nullptr,
+            RTAUDIO_FLOAT32, sample_rate, &buffer_size, &audio_callback, &synth);
+        rt_audio.startStream();
+
+        std::cout << "Audio engine now running." << std::endl << std::endl;
+    }
+    catch (const std::exception& e) {
+        throw std::runtime_error(std::string("AudioEngine::init() failed during RtAudio stream opening/starting. Error:") += e.what());
+    }
+
+    // Other instance variables
+    loaded_track_sequences = std::vector<TrackSequence>();
+    loaded_file_names = std::vector<std::string>();
+    current_track = -1;
+    file_has_switched = false;
+    // Do not spawn a sequencer thread here; it will join instantly because the sequencer is not playing yet
+}
+
+int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,
+        RtAudioStreamStatus status, void *user_data) {
+    float *buffer = static_cast<float *>(output_buffer);
+    VoiceManager *synth = static_cast<VoiceManager *>(user_data);
+    synth->process_audio_buffer(buffer, num_frames);
+    return 0;
+}
+
+void AudioEngine::sequencer_thread_loop() {
+    while (sequencer.is_playing()) {
+        sequencer.update();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
+AudioEngine::AudioEngine() : parser(), sequencer(), synth() {
+    init();
+}
+
+AudioEngine::AudioEngine(float sample_rate, unsigned int num_channels, float global_volume)
+: parser(), sequencer(), synth(sample_rate, global_volume) {
+    init(sample_rate, num_channels, global_volume);
+}
+
+AudioEngine::~AudioEngine() {
+    stop();
+    if (!rt_audio.isStreamOpen()) return;
+    if (rt_audio.isStreamRunning()) rt_audio.stopStream();
+    rt_audio.closeStream();
+}
+
+bool AudioEngine::load_midi_file(const std::string& file_path) {
+    if (std::find(loaded_file_names.begin(), loaded_file_names.end(), file_path) != loaded_file_names.end()) return false;
+    parser.set_file(file_path);
+    TrackSequence sequence;
+
+    if (!parser.parse(sequence)) return false;
+    loaded_track_sequences.push_back(sequence);
+    loaded_file_names.push_back(file_path);
+    return true;
+}
+
+std::vector<std::string> AudioEngine::get_loaded_file_names() const {
+    return loaded_file_names;
+}
+
+void AudioEngine::play() {
+    if (current_track < 0 || current_track >= loaded_track_sequences.size()) return;
+    if (file_has_switched) {
+        sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
+        file_has_switched = false;
+    }
+
+    sequencer.start();
+    sequencer_thread = std::thread(&AudioEngine::sequencer_thread_loop, this);
+}
+
+void AudioEngine::stop() {
+    sequencer.stop();
+    if (sequencer_thread.joinable()) {
+        sequencer_thread.join();
+    }
+    synth.stop();
+}
+
+void AudioEngine::skip_seconds(float seconds) {
+    if (seconds < 0) {
+        sequencer.skip_backward(seconds);
+    }
+    else {
+        sequencer.skip_forward(seconds);
+    }
+}
+
+void AudioEngine::set_track_sequence(std::size_t index) {
+    if (index >= loaded_track_sequences.size()) return;
+    current_track = index;
+    file_has_switched = true;
+}
+
+void AudioEngine::set_global_volume(float volume) {
+    synth.set_global_volume(volume);
+}
+
+bool AudioEngine::is_playing() const {
+    return sequencer.is_playing();
+}
+
+float AudioEngine::get_track_sequence_current_time_seconds() const {
+    if (current_track < 0 || current_track >= loaded_track_sequences.size()) return 0.0f;
+    return sequencer.get_current_time_seconds();
+}
+
+float AudioEngine::get_track_sequence_length_seconds() const {
+    if (current_track < 0 || current_track >= loaded_track_sequences.size()) return 0.0f;
+    return sequencer.get_total_duration_seconds();
+}
+
+
+
+
+
+

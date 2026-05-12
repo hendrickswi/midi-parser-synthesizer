@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 4.1)
 project(MIDI_ParserSynthesizer)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Qt auto compilers
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
 include_directories(SYSTEM /usr/include/rtaudio)
 
@@ -65,9 +73,11 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelopeState.h"
         Synthesizer/InstrumentRegistry.cpp
         Synthesizer/InstrumentRegistry.h
+        AudioEngine.cpp
+        AudioEngine.h
 )
 
-target_link_libraries(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_LIBRARIES})
+target_link_libraries(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_LIBRARIES} Qt6::Widgets)
 target_include_directories(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_INCLUDE_DIRS})
 
 
