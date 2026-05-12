@@ -75,7 +75,7 @@ bool AudioEngine::load_midi_file(const std::string& file_path) {
     return true;
 }
 
-std::vector<std::string> AudioEngine::get_loaded_file_names() const {
+const std::vector<std::string>& AudioEngine::get_loaded_file_names() const {
     return loaded_file_names;
 }
 
@@ -130,9 +130,3 @@ float AudioEngine::get_track_sequence_length_seconds() const {
     if (current_track < 0 || current_track >= loaded_track_sequences.size()) return 0.0f;
     return sequencer.get_total_duration_seconds();
 }
-
-
-
-
-
-

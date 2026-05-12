@@ -36,7 +36,7 @@ public:
     ~AudioEngine();
 
     bool load_midi_file(const std::string& file_path);
-    [[nodiscard]] std::vector<std::string> get_loaded_file_names() const;
+    [[nodiscard]] const std::vector<std::string>& get_loaded_file_names() const;
 
     void play();
     void stop();
