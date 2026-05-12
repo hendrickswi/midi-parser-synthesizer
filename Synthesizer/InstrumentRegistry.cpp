@@ -47,7 +47,7 @@ void InstrumentRegistry::init_pianos() {
 
             // Sustain level at 0.05f and decay time at 3.0f to emulate a real piano
             v->set_envelope(std::make_unique<ADSREnvelope>(sample_rate, 0.005f, 1.0f,
-                3.0f, 0.025f, 0.25f, 0.0f));
+                3.0f, 0.025f, 0.2f, 0.0f));
         };
     }
 }

@@ -49,12 +49,13 @@ void MidiSequencer::init() {
     is_playing_flag = false;
     is_skipping_flag = false;
     midi_file_ended_flag = false;
+    micros_per_tick = calculate_mpt(calculate_mpqn(120), track_sequence->get_division());
     current_tick = 0;
     prev_tick_time = std::chrono::high_resolution_clock::now();
     micros_since_last_tick = 0;
-    micros_per_tick = calculate_mpt(calculate_mpqn(120), track_sequence->get_division());
-    track_indices.clear();
+    total_elapsed_micros = 0;
 
+    track_indices.clear();
     // This also does default instantiation of TrackIndices structs
     track_indices.resize(track_sequence->get_tracks().size());
 
@@ -73,14 +74,15 @@ void MidiSequencer::init() {
 }
 
 void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
-    if (!is_skipping_flag) {
-        // Note processing
-        const auto& notes = track.get_notes();
-        while (indices.note_idx < notes.size()
-            && notes[indices.note_idx].absolute_time <= current_tick) {
+    // Note processing
+    const auto& notes = track.get_notes();
+    while (indices.note_idx < notes.size()
+        && notes[indices.note_idx].absolute_time <= current_tick) {
 
-            const auto& note = notes[indices.note_idx];
-            indices.note_idx++;
+        const auto& note = notes[indices.note_idx];
+        indices.note_idx++;
+
+        if (!is_skipping_flag) {
             synthesizer->note_on(note.channel, note.pitch, note.volume);
             active_notes.emplace(note);
         }
@@ -142,6 +144,19 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
     }
 }
 
+void MidiSequencer::skip_microseconds(uint64_t micros_to_skip) {
+    const auto& tracks = track_sequence->get_tracks();
+    while (micros_to_skip >= micros_per_tick) {
+        current_tick++;
+        micros_to_skip -= micros_per_tick;
+        total_elapsed_micros += micros_per_tick;
+
+        for (int i = 0; i < tracks.size(); i++) {
+            process_events(tracks[i], track_indices[i]);
+        }
+    }
+}
+
 [[nodiscard]] bool MidiSequencer::has_more_events() const {
     auto& tracks = track_sequence->get_tracks();
     for (int i = 0; i < tracks.size(); i++) {
@@ -179,37 +194,40 @@ void MidiSequencer::stop() {
 }
 
 void MidiSequencer::skip_forward(float seconds) {
-    // Instead of complex state-rebuilding logic, just simulate the passage of time
+    if (!synthesizer || !track_sequence || seconds <= 0) return;
 
     synthesizer->stop();
     while (!active_notes.empty()) active_notes.pop();
     is_skipping_flag = true;
 
-    const auto& tracks = track_sequence->get_tracks();
-    uint32_t micros_to_skip = seconds * 1000000.0f;
-    while (micros_to_skip >= micros_per_tick) {
-        current_tick++;
-        micros_to_skip -= micros_per_tick;
-
-        for (int i = 0; i < tracks.size(); i++) {
-            process_events(tracks[i], track_indices[i]);
-        }
-    }
+    skip_microseconds(static_cast<uint64_t>(seconds * seconds_to_micros));
 
     is_skipping_flag = false;
     prev_tick_time = std::chrono::high_resolution_clock::now();
 }
 
 void MidiSequencer::skip_backward(float seconds) {
-    // TODO: Implement this
+    if (!synthesizer || !track_sequence || seconds <= 0) return;
+
+    uint64_t skip_amount = static_cast<uint64_t>(seconds * seconds_to_micros);
+    uint64_t target_micros = (total_elapsed_micros - skip_amount) ? (total_elapsed_micros - skip_amount) : 0;
+    bool was_playing = is_playing_flag;
+
+    // Wipe everything and start from the beginning
+    init();
+    is_skipping_flag = true;
+
+    skip_microseconds(target_micros);
+
+    is_skipping_flag = false;
+    prev_tick_time = std::chrono::high_resolution_clock::now();
 }
 
 void MidiSequencer::update() {
-    if (!is_playing_flag || !synthesizer || !track_sequence) return;
-    const auto current_time = std::chrono::high_resolution_clock::now();
-    auto elapsed_micros = std::chrono::duration_cast<std::chrono::microseconds>(current_time - prev_tick_time).count();
+    if (!is_playing_flag || !synthesizer || !track_sequence || midi_file_ended_flag) return;
 
-    if (midi_file_ended_flag) return;
+    auto elapsed_micros = std::chrono::duration_cast<std::chrono::microseconds>(
+        std::chrono::high_resolution_clock::now() - prev_tick_time).count();
 
     // Remove expired notes
     while (!active_notes.empty() && active_notes.top().end_time <= current_tick) {
@@ -223,6 +241,7 @@ void MidiSequencer::update() {
         prev_tick_time += std::chrono::microseconds(micros_per_tick);
         current_tick++;
         elapsed_micros -= micros_per_tick;
+        total_elapsed_micros += micros_per_tick;
 
         // Go through each "track" (each instrument/part)
         const auto& tracks = track_sequence->get_tracks();
@@ -274,29 +293,7 @@ bool MidiSequencer::midi_file_ended() const {
 float MidiSequencer::get_current_time_seconds() const {
     if (!track_sequence || current_tick == 0) return 0.0f;
 
-    // Calculate duration by accumulating based on the current tempo (mpt)
-    // Slightly modified version of the algorithm from get_total_duration_seconds--
-    // only go until the last event before current_tick
-    float elapsed_seconds = 0.0f;
-    uint32_t prev_tempo_event_time = 0;
-    uint32_t prev_mpt = micros_per_tick;
-    for (const auto& tempo_event : tempo_events) {
-        if (tempo_event.absolute_time >= current_tick) break;
-        if (tempo_event.absolute_time > prev_tempo_event_time) {
-            elapsed_seconds += (tempo_event.absolute_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
-        }
-
-        // Setup for next iteration
-        prev_tempo_event_time = tempo_event.absolute_time;
-        prev_mpt = parse_mpt_from_tempo_event(tempo_event, track_sequence->get_division());
-    }
-
-    // Final accumulation
-    if (current_tick > prev_tempo_event_time) {
-        elapsed_seconds += (current_tick - prev_tempo_event_time) * prev_mpt / 1000000.0f;
-    }
-
-    return elapsed_seconds;
+    return total_elapsed_micros * micros_to_seconds;
 }
 
 float MidiSequencer::get_total_duration_seconds() const {
@@ -322,7 +319,7 @@ float MidiSequencer::get_total_duration_seconds() const {
     uint32_t prev_mpt = micros_per_tick;
     for (const auto& tempo_event : tempo_events) {
         if (tempo_event.absolute_time > prev_tempo_event_time) {
-            duration_seconds += (tempo_event.absolute_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
+            duration_seconds += (tempo_event.absolute_time - prev_tempo_event_time) * prev_mpt * micros_to_seconds;
         }
 
         // Set up for next iteration
@@ -332,7 +329,7 @@ float MidiSequencer::get_total_duration_seconds() const {
 
     // Final accumulation
     if (prev_tempo_event_time < greatest_end_time) {
-        duration_seconds += (greatest_end_time - prev_tempo_event_time) * prev_mpt / 1000000.0f;
+        duration_seconds += (greatest_end_time - prev_tempo_event_time) * prev_mpt * micros_to_seconds;
     }
 
     return duration_seconds;

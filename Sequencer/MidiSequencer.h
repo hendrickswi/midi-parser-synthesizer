@@ -9,6 +9,8 @@
 #include "../Containers/TrackSequence.h"
 #include "../Synthesizer/VoiceManager.h"
 
+constexpr float micros_to_seconds = 1.0f / 1000000.0f;
+constexpr float seconds_to_micros = 1000000.0f;
 
 class MidiSequencer {
 private:
@@ -23,6 +25,7 @@ private:
     uint32_t current_tick;
     std::chrono::high_resolution_clock::time_point prev_tick_time;
     uint64_t micros_since_last_tick;
+    uint64_t total_elapsed_micros;
 
     // Helper variables for tracking.
     // Should never be modified with external mutator methods.
@@ -34,6 +37,7 @@ private:
 
     void init();
     void process_events(const Track& track, TrackIndices& indices);
+    void skip_microseconds(uint64_t micros_to_skip);
     [[nodiscard]] bool has_more_events() const;
 
 public:

@@ -99,12 +99,17 @@ void AudioEngine::stop() {
 }
 
 void AudioEngine::skip_seconds(float seconds) {
+    bool was_playing = sequencer.is_playing();
+    stop(); // Prevent any seg faults caused by race conditions and sequencer thread
+
     if (seconds < 0) {
-        sequencer.skip_backward(seconds);
+        sequencer.skip_backward(-seconds);
     }
     else {
         sequencer.skip_forward(seconds);
     }
+
+    if (was_playing) play();
 }
 
 void AudioEngine::set_track_sequence(std::size_t index) {
