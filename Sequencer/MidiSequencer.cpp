@@ -47,6 +47,7 @@ MidiSequencer::MidiSequencer(const MidiSequencer& other) {
 
 void MidiSequencer::init() {
     is_playing_flag = false;
+    is_skipping_flag = false;
     midi_file_ended_flag = false;
     current_tick = 0;
     prev_tick_time = std::chrono::high_resolution_clock::now();
@@ -72,15 +73,17 @@ void MidiSequencer::init() {
 }
 
 void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
-    // Note processing
-    const auto& notes = track.get_notes();
-    while (indices.note_idx < notes.size()
-        && notes[indices.note_idx].absolute_time <= current_tick) {
+    if (!is_skipping_flag) {
+        // Note processing
+        const auto& notes = track.get_notes();
+        while (indices.note_idx < notes.size()
+            && notes[indices.note_idx].absolute_time <= current_tick) {
 
-        const auto& note = notes[indices.note_idx];
-        indices.note_idx++;
-        synthesizer->note_on(note.channel, note.pitch, note.volume);
-        active_notes.emplace(note);
+            const auto& note = notes[indices.note_idx];
+            indices.note_idx++;
+            synthesizer->note_on(note.channel, note.pitch, note.volume);
+            active_notes.emplace(note);
+        }
     }
 
     // Midi event processing
@@ -165,6 +168,9 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
 void MidiSequencer::start() {
     if (!synthesizer || !track_sequence) return;
     is_playing_flag = true;
+
+    // Reanchor
+    prev_tick_time = std::chrono::high_resolution_clock::now();
 }
 
 void MidiSequencer::stop() {
@@ -173,18 +179,25 @@ void MidiSequencer::stop() {
 }
 
 void MidiSequencer::skip_forward(float seconds) {
-//     if (!synthesizer || !track_sequence) return;
-//
-//     // Stop all playing
-//     synthesizer->stop();
-//     while (!active_notes.empty()) active_notes.pop();
-//
-//     uint32_t micros_to_skip = std::abs(seconds) * 1000000.0f;
-//
-//     uint32_t target_tick = current_tick;
-//     uint32_t current_mpt = micros_per_tick;
-//
-//     // TODO: Implement this
+    // Instead of complex state-rebuilding logic, just simulate the passage of time
+
+    synthesizer->stop();
+    while (!active_notes.empty()) active_notes.pop();
+    is_skipping_flag = true;
+
+    const auto& tracks = track_sequence->get_tracks();
+    uint32_t micros_to_skip = seconds * 1000000.0f;
+    while (micros_to_skip >= micros_per_tick) {
+        current_tick++;
+        micros_to_skip -= micros_per_tick;
+
+        for (int i = 0; i < tracks.size(); i++) {
+            process_events(tracks[i], track_indices[i]);
+        }
+    }
+
+    is_skipping_flag = false;
+    prev_tick_time = std::chrono::high_resolution_clock::now();
 }
 
 void MidiSequencer::skip_backward(float seconds) {

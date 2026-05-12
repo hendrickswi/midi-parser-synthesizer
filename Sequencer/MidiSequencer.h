@@ -15,6 +15,7 @@ private:
     TrackSequence* track_sequence;
     VoiceManager* synthesizer;
     std::atomic<bool> is_playing_flag;
+    bool is_skipping_flag;
     bool midi_file_ended_flag;
 
     // Helper variables for timing.

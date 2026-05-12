@@ -54,6 +54,7 @@ MainWindow::MainWindow(AudioEngine* engine, QWidget *parent)
 MainWindow::~MainWindow() = default;
 
 void MainWindow::on_play_button_clicked() {
+    if (engine->is_playing()) return;
     engine->play();
 
     // Update every 33 ms (~30 per sec)
@@ -61,6 +62,7 @@ void MainWindow::on_play_button_clicked() {
 }
 
 void MainWindow::on_stop_button_clicked() {
+    if (!engine->is_playing()) return;
     engine->stop();
     timer->stop();
 }
