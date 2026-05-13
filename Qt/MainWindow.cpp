@@ -1,6 +1,8 @@
 #include "MainWindow.h"
 #include <QHBoxLayout>
+#include <QFileDialog>
 #include "../AudioEngine.h"
+#include "../DirectoryManipulator.h"
 
 MainWindow::MainWindow(AudioEngine* engine, QWidget *parent)
     : QMainWindow(parent), engine(engine) {
@@ -22,17 +24,21 @@ MainWindow::MainWindow(AudioEngine* engine, QWidget *parent)
     mainLayout->addWidget(track_sequence_length_label);
 
     // creating playback buttons
-    QHBoxLayout* controlsLayout = new QHBoxLayout();
+    QHBoxLayout* controls_layout = new QHBoxLayout();
     skip_back_button = new QPushButton("<< 5s", this);
     play_button = new QPushButton("Play", this);
     stop_button = new QPushButton("Stop", this);
     skip_fwd_button = new QPushButton("5s >>", this);
 
-    controlsLayout->addWidget(skip_back_button);
-    controlsLayout->addWidget(play_button);
-    controlsLayout->addWidget(stop_button);
-    controlsLayout->addWidget(skip_fwd_button);
-    mainLayout->addLayout(controlsLayout);
+    // Add directory button
+    add_directory_button = new QPushButton("Add Directory", this);
+
+    controls_layout->addWidget(add_directory_button);
+    controls_layout->addWidget(skip_back_button);
+    controls_layout->addWidget(play_button);
+    controls_layout->addWidget(stop_button);
+    controls_layout->addWidget(skip_fwd_button);
+    mainLayout->addLayout(controls_layout);
     setCentralWidget(centralWidget);
 
     // button to action mapping
@@ -41,6 +47,7 @@ MainWindow::MainWindow(AudioEngine* engine, QWidget *parent)
     connect(skip_fwd_button, &QPushButton::clicked, this, &MainWindow::on_skip_fwd_button_clicked);
     connect(skip_back_button, &QPushButton::clicked, this, &MainWindow::on_skip_back_button_clicked);
     connect(track_selector, &QComboBox::currentIndexChanged, this, &MainWindow::on_track_selection_changed);
+    connect(add_directory_button, &QPushButton::clicked, this, &MainWindow::on_add_directory_button_clicked);
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::update_timer);
@@ -82,6 +89,31 @@ void MainWindow::on_track_selection_changed(int index) {
     engine->stop();
     engine->set_track_sequence(index);
     update_timer();
+}
+
+void MainWindow::on_add_directory_button_clicked() {
+    QString directory = QFileDialog::getExistingDirectory(this, "Select Directory");
+    if (directory.isEmpty()) return;
+
+    bool was_empty = track_selector->count() == 0;
+    bool added_new_files = false;
+
+    DirectoryManipulator directory_manipulator = DirectoryManipulator(directory.toStdString());
+    auto midi_files = directory_manipulator.get_midi_files_in_directory();
+    for (const auto& file : midi_files) {
+        std::string file_path = file.get_file_path();
+        if (engine->load_midi_file(file_path)) {
+            track_selector->addItem(QString::fromStdString(file_path));
+            added_new_files = true;
+        }
+    }
+
+    // Automatically update dropdown if went from 0 to ( > 0) amount of files.
+    if (was_empty && added_new_files) {
+        track_selector->setCurrentIndex(0);
+        engine->set_track_sequence(0);
+        update_timer();
+    }
 }
 
 void MainWindow::update_timer() {

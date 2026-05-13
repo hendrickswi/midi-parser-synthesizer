@@ -19,6 +19,7 @@ private:
     QPushButton* stop_button;
     QPushButton* skip_fwd_button;
     QPushButton* skip_back_button;
+    QPushButton* add_directory_button;
     QComboBox* track_selector;
     QLabel* track_sequence_length_label;
     QTimer* timer;
@@ -28,6 +29,7 @@ private slots:
     void on_stop_button_clicked();
     void on_skip_fwd_button_clicked();
     void on_skip_back_button_clicked();
+    void on_add_directory_button_clicked();
     void on_track_selection_changed(int index);
 
     void update_timer();

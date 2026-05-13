@@ -1,5 +1,5 @@
 #include "File.h"
-#include "../FilePathSanitizer.h"
+#include "../DirectoryManipulator.h"
 #include <iostream>
 #include <fstream>
 

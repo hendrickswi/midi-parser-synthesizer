@@ -37,8 +37,8 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         Sequencer/MidiSequencer.h
         Sequencer/TrackIndices.h
         Sequencer/ActiveNote.h
-        FilePathSanitizer.cpp
-        FilePathSanitizer.h
+        DirectoryManipulator.cpp
+        DirectoryManipulator.h
         "Synthesizer/Oscillators/Base Implementations/Oscillator.h"
         Synthesizer/Voices/Voice.cpp
         Synthesizer/Voices/Voice.h

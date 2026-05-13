@@ -215,6 +215,10 @@ void MidiSequencer::stop() {
 void MidiSequencer::skip_forward(float seconds) {
     if (!synthesizer || !track_sequence || seconds <= 0) return;
 
+    float duration_remaining = get_total_duration_seconds() - get_current_time_seconds();
+    if (duration_remaining <= 0) return;
+    if (duration_remaining < seconds) seconds = duration_remaining;
+
     is_skipping_flag = true;
 
     skip_microseconds(static_cast<uint64_t>(seconds * seconds_to_micros));
@@ -225,6 +229,10 @@ void MidiSequencer::skip_forward(float seconds) {
 
 void MidiSequencer::skip_backward(float seconds) {
     if (!synthesizer || !track_sequence || seconds <= 0) return;
+
+    float duration_elapsed = get_current_time_seconds();
+    if (duration_elapsed <= 0) return;
+    if (duration_elapsed < seconds) seconds = duration_elapsed;
 
     uint64_t skip_amount = static_cast<uint64_t>(seconds * seconds_to_micros);
     uint64_t target_micros = (total_elapsed_micros - skip_amount) ? (total_elapsed_micros - skip_amount) : 0;
