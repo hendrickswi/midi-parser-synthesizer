@@ -1,8 +1,8 @@
 #ifndef MIDI_PARSERSYNTHESIZER_SQUAREOSCILLATOR_H
 #define MIDI_PARSERSYNTHESIZER_SQUAREOSCILLATOR_H
-#include "Oscillator.h"
+#include "AlgorithmicOscillator.h"
 
-class SquareOscillator : public Oscillator {
+class SquareOscillator : public AlgorithmicOscillator {
 public:
     SquareOscillator();
     SquareOscillator(float hz, float sample_rate);

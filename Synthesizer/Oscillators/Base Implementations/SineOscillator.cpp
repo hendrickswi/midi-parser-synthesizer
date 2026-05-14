@@ -4,7 +4,7 @@
 SineOscillator::SineOscillator() = default;
 
 SineOscillator::SineOscillator(float hz, float sample_rate)
-    : Oscillator(hz, sample_rate) {
+    : AlgorithmicOscillator(hz, sample_rate) {
 }
 
 SineOscillator::SineOscillator(const SineOscillator& other) = default;

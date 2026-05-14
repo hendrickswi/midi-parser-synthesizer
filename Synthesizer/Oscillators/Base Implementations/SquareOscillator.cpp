@@ -9,7 +9,7 @@ inline int sign(const float val) {
 SquareOscillator::SquareOscillator() = default;
 
 SquareOscillator::SquareOscillator(float hz, float sample_rate)
-    : Oscillator(hz, sample_rate) {
+    : AlgorithmicOscillator(hz, sample_rate) {
 }
 
 SquareOscillator::SquareOscillator(const SquareOscillator& other) = default;

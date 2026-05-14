@@ -77,6 +77,10 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine.h
         Qt/MainWindow.cpp
         Qt/MainWindow.h
+        "Synthesizer/Oscillators/Base Implementations/SampleOscillator.cpp"
+        "Synthesizer/Oscillators/Base Implementations/SampleOscillator.h"
+        "Synthesizer/Oscillators/Base Implementations/AlgorithmicOscillator.cpp"
+        "Synthesizer/Oscillators/Base Implementations/AlgorithmicOscillator.h"
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_LIBRARIES} Qt6::Widgets)

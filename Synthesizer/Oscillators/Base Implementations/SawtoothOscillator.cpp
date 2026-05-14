@@ -4,7 +4,7 @@
 SawtoothOscillator::SawtoothOscillator() = default;
 
 SawtoothOscillator::SawtoothOscillator(float hz, float sample_rate)
-    : Oscillator(hz, sample_rate) {
+    : AlgorithmicOscillator(hz, sample_rate) {
 }
 
 SawtoothOscillator::SawtoothOscillator(const SawtoothOscillator& other) = default;

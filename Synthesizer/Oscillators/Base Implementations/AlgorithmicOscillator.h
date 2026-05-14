@@ -1,0 +1,28 @@
+#ifndef MIDI_PARSERSYNTHESIZER_ALGORITHMICOSCILLATOR_H
+#define MIDI_PARSERSYNTHESIZER_ALGORITHMICOSCILLATOR_H
+#include "Oscillator.h"
+
+constexpr float TWO_PI = 2 * 3.141592;
+
+inline float calculate_phase_increment(float hz, float sample_rate) {
+    return TWO_PI * hz / sample_rate;
+}
+
+class AlgorithmicOscillator : public Oscillator {
+
+private:
+    void init(float hz = 440.0f, float sample_rate = 44100.0f);
+
+protected:
+    float phase_increment;
+    float current_phase;
+
+    AlgorithmicOscillator();
+    AlgorithmicOscillator(float hz, float sample_rate);
+
+public:
+    void set_frequency(float hz, float sample_rate) override;
+};
+
+
+#endif //MIDI_PARSERSYNTHESIZER_ALGORITHMICOSCILLATOR_H

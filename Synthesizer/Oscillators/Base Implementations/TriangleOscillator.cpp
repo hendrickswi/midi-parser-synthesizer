@@ -5,7 +5,7 @@
 TriangleOscillator::TriangleOscillator() = default;
 
 TriangleOscillator::TriangleOscillator(float hz, float sample_rate)
-: Oscillator(hz, sample_rate) {
+    : AlgorithmicOscillator(hz, sample_rate) {
 }
 
 TriangleOscillator::TriangleOscillator(const TriangleOscillator& other) = default;
