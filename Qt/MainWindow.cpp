@@ -5,6 +5,7 @@
 #include "../DirectoryManipulator.h"
 
 void MainWindow::init_top_ui(QHBoxLayout* layout) {
+    // File select dropdown
     track_selector = new QComboBox(this);
     for (const auto& name : engine->get_loaded_file_names()) {
         track_selector->addItem(QString::fromStdString(name));
@@ -12,6 +13,12 @@ void MainWindow::init_top_ui(QHBoxLayout* layout) {
 
     connect(track_selector, &QComboBox::currentIndexChanged, this, &MainWindow::on_track_selection_changed);
     layout->addWidget(track_selector);
+
+    // Add directory button
+    add_directory_button = new QPushButton("Add Directory", this);
+    add_directory_button->setFixedWidth(150);
+    connect(add_directory_button, &QPushButton::clicked, this, &MainWindow::on_add_directory_button_clicked);
+    layout->addWidget(add_directory_button);
 }
 
 void MainWindow::init_middle_ui(QHBoxLayout* layout) {
@@ -37,11 +44,6 @@ void MainWindow::init_middle_ui(QHBoxLayout* layout) {
 }
 
 void MainWindow::init_bottom_ui(QHBoxLayout* layout) {
-    // Add directory button
-    add_directory_button = new QPushButton("Add Directory", this);
-    connect(add_directory_button, &QPushButton::clicked, this, &MainWindow::on_add_directory_button_clicked);
-    layout->addWidget(add_directory_button);
-
     // Skip 5s back button
     skip_back_button = new QPushButton("<< 5s", this);
     connect(skip_back_button, &QPushButton::clicked, this, &MainWindow::on_skip_back_button_clicked);
@@ -66,7 +68,8 @@ void MainWindow::init_bottom_ui(QHBoxLayout* layout) {
 MainWindow::MainWindow(AudioEngine* engine, QWidget *parent)
     : QMainWindow(parent), engine(engine) {
     setWindowTitle("MIDI Synthesizer");
-    setMinimumSize(400, 200);
+    setMinimumSize(400, 300);
+    resize(600, 300);
 
     QWidget* central_widget = new QWidget(this);
     QVBoxLayout* main_layout = new QVBoxLayout(central_widget);
@@ -91,7 +94,10 @@ MainWindow::MainWindow(AudioEngine* engine, QWidget *parent)
     }
 }
 
-MainWindow::~MainWindow() = default;
+MainWindow::~MainWindow() {
+    timer->stop();
+    // Destructor logic for any QObject* instantiated in MainWindow::MainWindow not needed here
+}
 
 void MainWindow::on_play_button_clicked() {
     if (engine->is_playing()) return;

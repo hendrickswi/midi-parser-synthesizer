@@ -80,12 +80,24 @@ const std::vector<std::string>& AudioEngine::get_loaded_file_names() const {
 }
 
 void AudioEngine::play() {
-    if (current_track < 0 || current_track >= loaded_track_sequences.size()) return;
+    if (current_track < 0 || current_track >= loaded_track_sequences.size() ||
+        sequencer.is_playing()) return;
+
+    // Thread cleanup
+    if (sequencer_thread.joinable()) {
+        sequencer_thread.join();
+    }
+
+    // Track setup
     if (file_has_switched) {
         sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
         file_has_switched = false;
     }
+    else if (sequencer.midi_file_ended()) {
+        sequencer.reset();
+    }
 
+    // Start the playback
     sequencer.start();
     sequencer_thread = std::thread(&AudioEngine::sequencer_thread_loop, this);
 }
