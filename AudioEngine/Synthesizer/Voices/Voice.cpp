@@ -1,7 +1,7 @@
 #include "Voice.h"
 #include "../Envelopes/Envelope.h"
 #include "../Oscillators/Base Implementations/Oscillator.h"
-#include "../../EventTypeEnums/ContinuousControllers.h"
+#include "../../../EventTypeEnums/ContinuousControllers.h"
 #include <cmath>
 
 static float pitch_to_hz(uint8_t pitch) {

@@ -6,11 +6,7 @@
 #include "InstrumentRegistry.h"
 #include "Oscillators/Base Implementations/SineOscillator.h"
 #include "Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
-#include "../EventTypeEnums/ContinuousControllers.h"
-
-static float byte_to_scale_float(uint8_t velocity) {
-    return (float)velocity / 127.0f;
-}
+#include "../../EventTypeEnums/ContinuousControllers.h"
 
 void VoiceManager::init(float sample_rate, float global_volume) {
     this->sample_rate = sample_rate;

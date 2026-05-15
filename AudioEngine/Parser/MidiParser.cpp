@@ -3,10 +3,10 @@
 #include <iostream>
 #include <vector>
 
-#include "../EventTypeEnums/EventType.h"
-#include "../Containers/File.h"
-#include "../Containers/TrackSequence.h"
-#include "../EventTypeEnums/MidiEventType.h"
+#include "../../EventTypeEnums/EventType.h"
+#include "../../Containers/File.h"
+#include "../../Containers/TrackSequence.h"
+#include "../../EventTypeEnums/MidiEventType.h"
 
 void MidiParser::init() {
     cursor = 0;

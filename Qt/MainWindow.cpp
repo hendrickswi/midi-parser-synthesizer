@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include <QHBoxLayout>
 #include <QFileDialog>
-#include "../AudioEngine.h"
+#include "../AudioEngine/AudioEngine.h"
 #include "../DirectoryManipulator.h"
 
 void MainWindow::init_top_ui(QHBoxLayout* layout) {

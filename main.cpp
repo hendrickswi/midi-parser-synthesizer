@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <QApplication>
-#include "AudioEngine.h"
+#include "AudioEngine/AudioEngine.h"
 #include "DirectoryManipulator.h"
 #include "Qt/MainWindow.h"
 

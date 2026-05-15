@@ -1,6 +1,6 @@
 #include "MidiSequencer.h"
-#include "../EventTypeEnums/MetaEventType.h"
-#include "../EventTypeEnums/MidiEventType.h"
+#include "../../EventTypeEnums/MetaEventType.h"
+#include "../../EventTypeEnums/MidiEventType.h"
 
 [[nodiscard]] inline uint32_t calculate_mpqn(const uint32_t tempo) {
     return 60000000 / tempo;

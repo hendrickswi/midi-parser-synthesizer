@@ -6,7 +6,7 @@
 
 #include "ActiveNote.h"
 #include "TrackIndices.h"
-#include "../Containers/TrackSequence.h"
+#include "../../Containers/TrackSequence.h"
 #include "../Synthesizer/VoiceManager.h"
 
 constexpr float micros_to_seconds = 1.0f / 1000000.0f;

@@ -2,7 +2,7 @@
 #ifndef MIDI_PARSERSYNTHESIZER_ACTIVENOTE_H
 #define MIDI_PARSERSYNTHESIZER_ACTIVENOTE_H
 #include <cstdint>
-#include "../TrackEvents/Note.h"
+#include "../../TrackEvents/Note.h"
 
 struct ActiveNote {
     std::uint32_t end_time;
