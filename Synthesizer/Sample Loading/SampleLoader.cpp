@@ -1,8 +1,10 @@
-#include "SampleLoader.h"
-
-#include <iostream>
-
+extern "C" {
+#define DR_WAV_IMPLEMENTATION
 #include "dr_wav.h"
+}
+
+#include "SampleLoader.h"
+#include <iostream>
 
 SampleLoader::SampleLoader() = default;
 

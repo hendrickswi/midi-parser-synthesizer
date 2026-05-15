@@ -2,10 +2,13 @@
 #define MIDI_PARSERSYNTHESIZER_VIBRATOOSCILLATOR_H
 #include "OscillatorDecorator.h"
 
+constexpr float TWO_PI = 2 * 3.141592;
+
 class VibratoOscillator : public OscillatorDecorator {
 private:
     float current_phase;
     float phase_increment;
+    float sample_rate;
 
     float base_hz;
     float speed_hz;

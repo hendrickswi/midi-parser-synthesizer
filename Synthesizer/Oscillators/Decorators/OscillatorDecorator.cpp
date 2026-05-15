@@ -2,7 +2,6 @@
 
 OscillatorDecorator::OscillatorDecorator(std::unique_ptr<Oscillator> osc, float sample_rate) {
     this->base_oscillator = std::move(osc);
-    this->sample_rate = sample_rate;
 }
 
 OscillatorDecorator::~OscillatorDecorator() = default;

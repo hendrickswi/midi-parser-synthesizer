@@ -21,6 +21,8 @@ protected:
     AlgorithmicOscillator(float hz, float sample_rate);
 
 public:
+    float get_sample() override = 0;
+    void set_modulation_depth(float depth) override;
     void set_frequency(float hz, float sample_rate) override;
 };
 
