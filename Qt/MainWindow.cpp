@@ -4,53 +4,86 @@
 #include "../AudioEngine.h"
 #include "../DirectoryManipulator.h"
 
+void MainWindow::init_top_ui(QHBoxLayout* layout) {
+    track_selector = new QComboBox(this);
+    for (const auto& name : engine->get_loaded_file_names()) {
+        track_selector->addItem(QString::fromStdString(name));
+    }
+
+    connect(track_selector, &QComboBox::currentIndexChanged, this, &MainWindow::on_track_selection_changed);
+    layout->addWidget(track_selector);
+}
+
+void MainWindow::init_middle_ui(QHBoxLayout* layout) {
+    // Creating the time display
+    track_sequence_length_label = new QLabel("0.00 / 0.00 s", this);
+    track_sequence_length_label->setAlignment(Qt::AlignCenter);
+    layout->addWidget(track_sequence_length_label);
+
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::update_timer);
+
+    // Creating the volume slider
+    volume_slider = new QSlider(Qt::Vertical, this);
+    volume_slider->setRange(0, 100);
+    volume_slider->setValue(50);
+    volume_slider->setFixedWidth(100);
+    volume_slider->setFixedHeight(100);
+    connect(volume_slider, &QAbstractSlider::valueChanged, this, &MainWindow::on_volume_slider_value_changed);
+    layout->addWidget(volume_slider);
+
+    // Spacing so the timer stays centered
+    layout->addSpacing(100);
+}
+
+void MainWindow::init_bottom_ui(QHBoxLayout* layout) {
+    // Add directory button
+    add_directory_button = new QPushButton("Add Directory", this);
+    connect(add_directory_button, &QPushButton::clicked, this, &MainWindow::on_add_directory_button_clicked);
+    layout->addWidget(add_directory_button);
+
+    // Skip 5s back button
+    skip_back_button = new QPushButton("<< 5s", this);
+    connect(skip_back_button, &QPushButton::clicked, this, &MainWindow::on_skip_back_button_clicked);
+    layout->addWidget(skip_back_button);
+
+    // Play button
+    play_button = new QPushButton("Play", this);
+    connect(play_button, &QPushButton::clicked, this, &MainWindow::on_play_button_clicked);
+    layout->addWidget(play_button);
+
+    // Stop button
+    stop_button = new QPushButton("Stop", this);
+    connect(stop_button, &QPushButton::clicked, this, &MainWindow::on_stop_button_clicked);
+    layout->addWidget(stop_button);
+
+    // Skip 5s forward button
+    skip_fwd_button = new QPushButton("5s >>", this);
+    connect(skip_fwd_button, &QPushButton::clicked, this, &MainWindow::on_skip_fwd_button_clicked);
+    layout->addWidget(skip_fwd_button);
+}
+
 MainWindow::MainWindow(AudioEngine* engine, QWidget *parent)
     : QMainWindow(parent), engine(engine) {
     setWindowTitle("MIDI Synthesizer");
     setMinimumSize(400, 200);
 
-    QWidget* centralWidget = new QWidget(this);
-    QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
+    QWidget* central_widget = new QWidget(this);
+    QVBoxLayout* main_layout = new QVBoxLayout(central_widget);
 
-    track_selector = new QComboBox(this);
-    for (const auto& name : engine->get_loaded_file_names()) {
-        track_selector->addItem(QString::fromStdString(name));
-    }
-    mainLayout->addWidget(track_selector);
+    QHBoxLayout* top_layout = new QHBoxLayout();
+    init_top_ui(top_layout);
+    main_layout->addLayout(top_layout);
 
-    // creating time display
-    track_sequence_length_label = new QLabel("0.00 / 0.00 s", this);
-    track_sequence_length_label->setAlignment(Qt::AlignCenter);
-    mainLayout->addWidget(track_sequence_length_label);
+    QHBoxLayout* middle_layout = new QHBoxLayout();
+    init_middle_ui(middle_layout);
+    main_layout->addLayout(middle_layout);
 
-    // creating playback buttons
-    QHBoxLayout* controls_layout = new QHBoxLayout();
-    skip_back_button = new QPushButton("<< 5s", this);
-    play_button = new QPushButton("Play", this);
-    stop_button = new QPushButton("Stop", this);
-    skip_fwd_button = new QPushButton("5s >>", this);
+    QHBoxLayout* bottom_layout = new QHBoxLayout();
+    init_bottom_ui(bottom_layout);
+    main_layout->addLayout(bottom_layout);
 
-    // Add directory button
-    add_directory_button = new QPushButton("Add Directory", this);
-
-    controls_layout->addWidget(add_directory_button);
-    controls_layout->addWidget(skip_back_button);
-    controls_layout->addWidget(play_button);
-    controls_layout->addWidget(stop_button);
-    controls_layout->addWidget(skip_fwd_button);
-    mainLayout->addLayout(controls_layout);
-    setCentralWidget(centralWidget);
-
-    // button to action mapping
-    connect(play_button, &QPushButton::clicked, this, &MainWindow::on_play_button_clicked);
-    connect(stop_button, &QPushButton::clicked, this, &MainWindow::on_stop_button_clicked);
-    connect(skip_fwd_button, &QPushButton::clicked, this, &MainWindow::on_skip_fwd_button_clicked);
-    connect(skip_back_button, &QPushButton::clicked, this, &MainWindow::on_skip_back_button_clicked);
-    connect(track_selector, &QComboBox::currentIndexChanged, this, &MainWindow::on_track_selection_changed);
-    connect(add_directory_button, &QPushButton::clicked, this, &MainWindow::on_add_directory_button_clicked);
-
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &MainWindow::update_timer);
+    setCentralWidget(central_widget);
 
     if (track_selector->count() > 0) {
         engine->set_track_sequence(0);
@@ -84,13 +117,6 @@ void MainWindow::on_skip_back_button_clicked() {
     update_timer();
 }
 
-void MainWindow::on_track_selection_changed(int index) {
-    if (index < 0 || index >= engine->get_loaded_file_names().size()) return;
-    engine->stop();
-    engine->set_track_sequence(index);
-    update_timer();
-}
-
 void MainWindow::on_add_directory_button_clicked() {
     QString directory = QFileDialog::getExistingDirectory(this, "Select Directory");
     if (directory.isEmpty()) return;
@@ -114,6 +140,17 @@ void MainWindow::on_add_directory_button_clicked() {
         engine->set_track_sequence(0);
         update_timer();
     }
+}
+
+void MainWindow::on_track_selection_changed(int index) {
+    if (index < 0 || index >= engine->get_loaded_file_names().size()) return;
+    engine->stop();
+    engine->set_track_sequence(index);
+    update_timer();
+}
+
+void MainWindow::on_volume_slider_value_changed(float volume) {
+    engine->set_global_volume(volume / 100.0f);
 }
 
 void MainWindow::update_timer() {
