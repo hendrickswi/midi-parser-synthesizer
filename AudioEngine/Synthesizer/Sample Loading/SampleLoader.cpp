@@ -4,21 +4,24 @@ extern "C" {
 }
 
 #include "SampleLoader.h"
+#include "../../../DirectoryManipulator.h"
 #include <iostream>
 
 SampleLoader::SampleLoader() = default;
 
 std::vector<float> SampleLoader::load_wav_mono(const std::string& file_path) {
+    std::string path = get_sanitized_file_path(file_path);
+
     std::vector<float> sample_data = std::vector<float>();
     unsigned int channels;
     unsigned int sample_rate;
     drwav_uint64 total_pcm_frame_count;
 
-    float* data = drwav_open_file_and_read_pcm_frames_f32(file_path.c_str(), &channels,
+    float* data = drwav_open_file_and_read_pcm_frames_f32(path.c_str(), &channels,
         &sample_rate, &total_pcm_frame_count, nullptr);
 
     if (data == nullptr) {
-        std::cerr << "Failed to load sample data at file path " << file_path << std::endl;
+        std::cerr << "Failed to load sample data at file path " << path << std::endl;
         return sample_data;
     }
 

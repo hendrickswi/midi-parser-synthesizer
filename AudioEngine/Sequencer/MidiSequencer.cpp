@@ -76,17 +76,20 @@ void MidiSequencer::init() {
 }
 
 void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
-    // Note processing
-    const auto& notes = track.get_notes();
-    while (indices.note_idx < notes.size()
-        && notes[indices.note_idx].absolute_time <= current_tick) {
+    // Meta event processing
+    const auto& meta_events = track.get_meta_events();
+    while (indices.meta_idx < meta_events.size()
+        && meta_events[indices.meta_idx].absolute_time <= current_tick) {
 
-        const auto& note = notes[indices.note_idx];
-        indices.note_idx++;
+        const auto& meta_event = meta_events[indices.meta_idx];
+        indices.meta_idx++;
 
-        if (!is_skipping_flag) {
-            synthesizer->note_on(note.channel, note.pitch, note.volume);
-            active_notes.emplace(note);
+        if (meta_event.type == TEMPO_SETTING) {
+            uint32_t mpqn = 0;
+            for (auto& byte : meta_event.data) {
+                mpqn = (mpqn << 8) | byte;
+            }
+            micros_per_tick = calculate_mpt(mpqn, track_sequence->get_division());
         }
     }
 
@@ -126,23 +129,18 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         }
     }
 
-    // Meta event processing
-    const auto& meta_events = track.get_meta_events();
-    while (indices.meta_idx < meta_events.size()
-        && meta_events[indices.meta_idx].absolute_time <= current_tick) {
+    // Note processing
+    const auto& notes = track.get_notes();
+    while (indices.note_idx < notes.size()
+        && notes[indices.note_idx].absolute_time <= current_tick) {
 
-        const auto& meta_event = meta_events[indices.meta_idx];
-        indices.meta_idx++;
+        const auto& note = notes[indices.note_idx];
+        indices.note_idx++;
 
-        if (meta_event.type == TEMPO_SETTING) {
-            uint32_t mpqn = 0;
-            for (auto& byte : meta_event.data) {
-                mpqn = (mpqn << 8) | byte;
-            }
-            micros_per_tick = calculate_mpt(mpqn, track_sequence->get_division());
+        if (!is_skipping_flag) {
+            synthesizer->note_on(note.channel, note.pitch, note.volume);
+            active_notes.emplace(note);
         }
-
-        // Other meta events largely ignored by this non-GUI program
     }
 }
 

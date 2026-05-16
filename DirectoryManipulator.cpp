@@ -66,3 +66,9 @@ void sanitize_file_path(std::string& file_path) {
     std::replace(file_path.begin(), file_path.end(), '\\', '/');
 #endif
 }
+
+std::string get_sanitized_file_path(const std::string& file_path) {
+    std::string sanitized_file_path = file_path;
+    sanitize_file_path(sanitized_file_path);
+    return sanitized_file_path;
+}

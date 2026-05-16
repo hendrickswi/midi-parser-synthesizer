@@ -17,8 +17,9 @@ public:
     SampleOscillator();
     SampleOscillator(const std::vector<float>* sample, float base_frequency);
 
-    void set_frequency(float hz, float sample_rate) override;
     float get_sample() override;
+    void set_modulation_depth(float depth) override;
+    void set_frequency(float hz, float sample_rate) override;
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_SAMPLEOSCILLATOR_H

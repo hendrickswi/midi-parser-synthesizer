@@ -12,6 +12,8 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
 include(FetchContent)
+
+# RtAudio fetch
 FetchContent_Declare(
         rtaudio
         GIT_REPOSITORY https://github.com/thestk/rtaudio.git
@@ -22,6 +24,14 @@ set(RTAUDIO_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(RTAUDIO_BUILD_STATIC_LIBS ON CACHE BOOL "" FORCE)
 set(RTAUDIO_BUILD_TESTING OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(rtaudio)
+
+# JSON Parser fetch
+FetchContent_Declare(
+        json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG develop
+)
+FetchContent_MakeAvailable(json)
 
 add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine/Parser/MidiParser.cpp
@@ -91,6 +101,7 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Synthesizer/Sample Loading/dr_wav.h"
         "AudioEngine/Synthesizer/Sample Loading/SampleLoader.cpp"
         "AudioEngine/Synthesizer/Sample Loading/SampleLoader.h"
+        "AudioEngine/Synthesizer/Sample Loading/Sample.h"
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE Qt6::Widgets rtaudio)

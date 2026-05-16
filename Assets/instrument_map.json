@@ -1,0 +1,58 @@
+{
+  "melodic_instruments" : {
+    "0" : [
+      {
+        "file" : "Assets/Samples/Piano/piano-A1.wav",
+        "base_frequency" : 55.0,
+        "min_pitch" : 0,
+        "max_pitch" : 44
+      },
+      {
+        "file" : "Assets/Samples/Piano/piano-A2.wav",
+        "base_frequency" : 110.0,
+        "min_pitch" : 45,
+        "max_pitch" : 56
+      },
+      {
+        "file" : "Assets/Samples/Piano/piano-A3.wav",
+        "base_frequency" : 220.0,
+        "min_pitch" : 57,
+        "max_pitch" : 68
+      },
+      {
+        "file" : "Assets/Samples/Piano/piano-A4.wav",
+        "base_frequency" : 440.0,
+        "min_pitch" : 69,
+        "max_pitch" : 80
+      },
+      {
+        "file" : "Assets/Samples/Piano/piano-A5.wav",
+        "base_frequency" : 880.0,
+        "min_pitch" : 81,
+        "max_pitch" : 92
+      },
+      {
+        "file" : "Assets/Samples/Piano/piano-A6.wav",
+        "base_frequency" : 1760.0,
+        "min_pitch" : 93,
+        "max_pitch" : 104
+      },
+      {
+        "file" : "Assets/Samples/Piano/piano-A7.wav",
+        "base_frequency" : 3520.0,
+        "min_pitch" : 105,
+        "max_pitch" : 127
+      }
+    ]
+  },
+  "drum_instruments" : {
+    "35": {
+      "file" : "Assets/Samples/Drums/kick.wav",
+      "base_frequency" : 55.0
+    },
+    "38": {
+      "file" : "Assets/Samples/Drums/snare.wav",
+      "base_frequency" : 220.0
+    }
+  }
+}

@@ -32,4 +32,6 @@ public:
  */
 void sanitize_file_path(std::string& file_path);
 
+std::string get_sanitized_file_path(const std::string& file_path);
+
 #endif //MIDI_PARSERSYNTHESIZER_FILEPATHSANITIZER_H

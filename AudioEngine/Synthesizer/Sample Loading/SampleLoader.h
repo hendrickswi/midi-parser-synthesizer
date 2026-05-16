@@ -4,6 +4,7 @@
 #include <vector>
 
 class SampleLoader {
+public:
     SampleLoader();
 
     std::vector<float> load_wav_mono(const std::string& file_path);
