@@ -104,7 +104,6 @@ if(WIN32)
             COMMAND "${_qt_bin_dir}/windeployqt.exe"
             --no-translations
             --no-opengl-sw
-            --no-compiler-runtime
             "$<TARGET_FILE:MIDI_ParserSynthesizer>"
             COMMENT "Running windeployqt to populate DLLs..."
     )
