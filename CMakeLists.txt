@@ -92,4 +92,19 @@ add_executable(MIDI_ParserSynthesizer main.cpp
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE Qt6::Widgets rtaudio)
 
+# Populate build directory with the necessary .dll files to prevent immediate crash
+if(WIN32)
+    get_target_property(_qt_qmake_executable Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qt_qmake_executable}" DIRECTORY)
+
+    add_custom_command(TARGET MIDI_ParserSynthesizer POST_BUILD
+            COMMAND "${_qt_bin_dir}/windeployqt.exe"
+            --no-translations
+            --no-opengl-sw
+            --no-compiler-runtime
+            "$<TARGET_FILE:MIDI_ParserSynthesizer>"
+            COMMENT "Running windeployqt to populate DLLs..."
+    )
+endif()
+
 
