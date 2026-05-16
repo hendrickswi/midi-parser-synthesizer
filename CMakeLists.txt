@@ -17,6 +17,9 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/thestk/rtaudio.git
         GIT_TAG master
 )
+
+set(RTAUDIO_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(RTAUDIO_BUILD_STATIC_LIBS ON CACHE BOOL "" FORCE)
 set(RTAUDIO_BUILD_TESTING OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(rtaudio)
 
