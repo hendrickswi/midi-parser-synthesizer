@@ -11,10 +11,14 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
-include_directories(SYSTEM /usr/include/rtaudio)
-
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(RTAUDIO REQUIRED rtaudio)
+include(FetchContent)
+FetchContent_Declare(
+        rtaudio
+        GIT_REPOSITORY https://github.com/thestk/rtaudio.git
+        GIT_TAG master
+)
+set(RTAUDIO_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(rtaudio)
 
 add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine/Parser/MidiParser.cpp
@@ -86,7 +90,6 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Synthesizer/Sample Loading/SampleLoader.h"
 )
 
-target_link_libraries(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_LIBRARIES} Qt6::Widgets)
-target_include_directories(MIDI_ParserSynthesizer PRIVATE ${RTAUDIO_INCLUDE_DIRS})
+target_link_libraries(MIDI_ParserSynthesizer PRIVATE Qt6::Widgets rtaudio)
 
 
