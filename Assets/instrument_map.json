@@ -1,116 +1,201 @@
 {
-  "melodic_instruments" : {
+  "melodic_instruments": {
     "0" : [
       {
-        "file" : "Assets/Samples/Piano/piano-A1.wav",
+        "file" : "Assets/Samples/Extra/Piano/piano-A1.wav",
         "base_frequency" : 55.0,
         "min_pitch" : 0,
         "max_pitch" : 44
       },
       {
-        "file" : "Assets/Samples/Piano/piano-A2.wav",
+        "file" : "Assets/Samples/Extra/Piano/piano-A2.wav",
         "base_frequency" : 110.0,
         "min_pitch" : 45,
         "max_pitch" : 56
       },
       {
-        "file" : "Assets/Samples/Piano/piano-A3.wav",
+        "file" : "Assets/Samples/Extra/Piano/piano-A3.wav",
         "base_frequency" : 220.0,
         "min_pitch" : 57,
         "max_pitch" : 68
       },
       {
-        "file" : "Assets/Samples/Piano/piano-A4.wav",
+        "file" : "Assets/Samples/Extra/Piano/piano-A4.wav",
         "base_frequency" : 440.0,
         "min_pitch" : 69,
         "max_pitch" : 80
       },
       {
-        "file" : "Assets/Samples/Piano/piano-A5.wav",
+        "file" : "Assets/Samples/Extra/Piano/piano-A5.wav",
         "base_frequency" : 880.0,
         "min_pitch" : 81,
         "max_pitch" : 92
       },
       {
-        "file" : "Assets/Samples/Piano/piano-A6.wav",
+        "file" : "Assets/Samples/Extra/Piano/piano-A6.wav",
         "base_frequency" : 1760.0,
         "min_pitch" : 93,
         "max_pitch" : 104
       },
       {
-        "file" : "Assets/Samples/Piano/piano-A7.wav",
+        "file" : "Assets/Samples/Extra/Piano/piano-A7.wav",
         "base_frequency" : 3520.0,
         "min_pitch" : 105,
         "max_pitch" : 127
       }
     ],
-    "40": [
-      {
-        "file" : "Assets/Samples/Violin/violin-G3.wav",
-        "base_frequency" : 196.0,
-        "min_pitch" : 0,
-        "max_pitch" : 61
-      },
-      {
-        "file" : "Assets/Samples/Violin/violin-D4.wav",
-        "base_frequency" : 293.66,
-        "min_pitch" : 62,
-        "max_pitch" : 68
-      },
-      {
-        "file" : "Assets/Samples/Violin/violin-A4.wav",
-        "base_frequency" : 440.0,
-        "min_pitch" : 69,
-        "max_pitch" : 75
-      },
-      {
-        "file" : "Assets/Samples/Violin/violin-E5.wav",
-        "base_frequency" : 659.26,
-        "min_pitch" : 76,
-        "max_pitch" : 87
-      },
-      {
-        "file" : "Assets/Samples/Violin/violin-E6.wav",
-        "base_frequency" : 1318.51,
-        "min_pitch" : 88,
-        "max_pitch" : 127
-      }
+    "8": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/c4-soft-PB.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 66, "min_velocity": 0, "max_velocity": 70 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/c4-hard-PB.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 66, "min_velocity": 71, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/e5-soft-PB.wav", "base_frequency": 659.25, "min_pitch": 67, "max_pitch": 79, "min_velocity": 0, "max_velocity": 70 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/e5-hard-PB.wav", "base_frequency": 659.25, "min_pitch": 67, "max_pitch": 79, "min_velocity": 71, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/c6-soft-PB.wav", "base_frequency": 1046.50, "min_pitch": 80, "max_pitch": 127, "min_velocity": 0, "max_velocity": 70 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/c6-hard-PB.wav", "base_frequency": 1046.50, "min_pitch": 80, "max_pitch": 127, "min_velocity": 71, "max_velocity": 127 }
     ],
-    "42" : [
-      {
-        "file" : "Assets/Samples/Cello/cello-C2.wav",
-        "base_frequency" : 65.41,
-        "min_pitch" : 0,
-        "max_pitch" : 42
-      },
-      {
-        "file" : "Assets/Samples/Cello/cello-G2.wav",
-        "base_frequency" : 98.00,
-        "min_pitch" : 43,
-        "max_pitch" : 49
-      },
-      {
-        "file" : "Assets/Samples/Cello/cello-D3.wav",
-        "base_frequency" : 146.83,
-        "min_pitch" : 50,
-        "max_pitch" : 56
-      },
-      {
-        "file" : "Assets/Samples/Cello/cello-A3.wav",
-        "base_frequency" : 220.0,
-        "min_pitch" : 57,
-        "max_pitch" : 127
-      }
+    "9": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/Glock/glock_medium_C5-PB.wav", "base_frequency": 523.25, "min_pitch": 0, "max_pitch": 78 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/Glock/glock_medium_C6-PB.wav", "base_frequency": 1046.50, "min_pitch": 79, "max_pitch": 90 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/Glock/glock_medium_C7-PB.wav", "base_frequency": 2093.00, "min_pitch": 91, "max_pitch": 127 }
+    ],
+    "11": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C4.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 65 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C5.wav", "base_frequency": 523.25, "min_pitch": 66, "max_pitch": 77 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C6.wav", "base_frequency": 1046.50, "min_pitch": 78, "max_pitch": 127 }
+    ],
+    "13": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/4_Ab-PB.wav", "base_frequency": 415.30, "min_pitch": 0, "max_pitch": 63 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/5_D-PB.wav", "base_frequency": 587.33, "min_pitch": 64, "max_pitch": 77 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/6_C-PB.wav", "base_frequency": 1046.50, "min_pitch": 78, "max_pitch": 127 }
+    ],
+    "14": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/3_C_p.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 65, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/3_C_f.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 65, "min_velocity": 86, "max_velocity": 127 }
+    ],
+    "40": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/3_G-PB-loop.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 58 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_D-PB.wav", "base_frequency": 293.66, "min_pitch": 59, "max_pitch": 65 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_A-PB.wav", "base_frequency": 440.00, "min_pitch": 66, "max_pitch": 72 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_E-PB.wav", "base_frequency": 659.25, "min_pitch": 73, "max_pitch": 127 }
+    ],
+    "41": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_C_mf-PB.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 51, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_C_f-PB.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 51, "min_velocity": 86, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_Gb_mf-PB.wav", "base_frequency": 185.00, "min_pitch": 52, "max_pitch": 58, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_Gb_f-PB.wav", "base_frequency": 185.00, "min_pitch": 52, "max_pitch": 58, "min_velocity": 86, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_Eb_mf-PB.wav", "base_frequency": 311.13, "min_pitch": 59, "max_pitch": 66, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_Eb_f-PB.wav", "base_frequency": 311.13, "min_pitch": 59, "max_pitch": 66, "min_velocity": 86, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_A_mf-PB.wav", "base_frequency": 440.00, "min_pitch": 67, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_A_f-PB.wav", "base_frequency": 440.00, "min_pitch": 67, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+    ],
+    "42": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/2_D-PB.wav", "base_frequency": 73.42, "min_pitch": 0, "max_pitch": 40 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/2_Gb-PB-loop.wav", "base_frequency": 92.50, "min_pitch": 41, "max_pitch": 45 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/3_Db-PB-loop.wav", "base_frequency": 138.59, "min_pitch": 46, "max_pitch": 53 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/3_A-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 54, "max_pitch": 62 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/4_G-PB.wav", "base_frequency": 392.00, "min_pitch": 63, "max_pitch": 127 }
+    ],
+    "43": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_E1_v3_rr1-PB-loop.wav", "base_frequency": 41.20, "min_pitch": 0, "max_pitch": 30 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_A1_v3_rr1-PB-loop.wav", "base_frequency": 55.00, "min_pitch": 31, "max_pitch": 35 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_D1_v3_rr1-PB-loop.wav", "base_frequency": 73.42, "min_pitch": 36, "max_pitch": 39 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_E2_v3_rr1-PB-loop.wav", "base_frequency": 82.41, "min_pitch": 40, "max_pitch": 127 }
+    ],
+    "44": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/G3-tremolo-PB-loop.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 58 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/D4-tremolo-PB-loop.wav", "base_frequency": 293.66, "min_pitch": 59, "max_pitch": 65 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/A4-tremolo-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 66, "max_pitch": 127 }
+    ],
+    "45": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/3_A-PB.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 63 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_E-PB.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 70 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_Db-PB.wav", "base_frequency": 554.37, "min_pitch": 71, "max_pitch": 127 }
+    ],
+    "46": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_C3_mf.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 51 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_G3_mf.wav", "base_frequency": 196.00, "min_pitch": 52, "max_pitch": 60 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_F4_mf.wav", "base_frequency": 349.23, "min_pitch": 61, "max_pitch": 68 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_C5_mf.wav", "base_frequency": 523.25, "min_pitch": 69, "max_pitch": 127 }
+    ],
+    "47": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/C2-PB.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 39 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/G2-PB.wav", "base_frequency": 98.00, "min_pitch": 40, "max_pitch": 45 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/C3-PB.wav", "base_frequency": 130.81, "min_pitch": 46, "max_pitch": 127 }
+    ],
+    "48": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g3.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 59 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e4.wav", "base_frequency": 329.63, "min_pitch": 60, "max_pitch": 68 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#5.wav", "base_frequency": 554.37, "min_pitch": 69, "max_pitch": 75 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e5.wav", "base_frequency": 659.26, "min_pitch": 76, "max_pitch": 87 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e6.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 127 }
+    ],
+    "52": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Chorus/chorus-female-a4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 0, "max_pitch": 72 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Chorus/chorus-female-e5-PB-loop.wav", "base_frequency": 659.25, "min_pitch": 73, "max_pitch": 127 }
+    ],
+    "53": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Chorus/chorus-male-a2-PB-loop.wav", "base_frequency": 110.00, "min_pitch": 0, "max_pitch": 51 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Chorus/chorus-male-e3-PB-loop.wav", "base_frequency": 164.81, "min_pitch": 52, "max_pitch": 127 }
+    ],
+    "56": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.mf.A3-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 63, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.ff.A3-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 63, "min_velocity": 86, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.mf.A4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 64, "max_pitch": 75, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.ff.A4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 64, "max_pitch": 75, "min_velocity": 86, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.mf.A5-PB-loop.wav", "base_frequency": 880.00, "min_pitch": 76, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.ff.A5-PB-loop.wav", "base_frequency": 880.00, "min_pitch": 76, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+    ],
+    "57": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trombone-solo/Trombone-sus.mf.C#3-PB-loop.wav", "base_frequency": 138.59, "min_pitch": 0, "max_pitch": 56, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trombone-solo/Trombone-sus.ff.C#3-PB-loop.wav", "base_frequency": 138.59, "min_pitch": 0, "max_pitch": 56, "min_velocity": 86, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trombone-solo/Trombone-sus.mf.E4-PB-loop.wav", "base_frequency": 329.63, "min_pitch": 57, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trombone-solo/Trombone-sus.ff.E4-PB-loop.wav", "base_frequency": 329.63, "min_pitch": 57, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+    ],
+    "58": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Tuba/tuba-sus-e1-PB-loop.wav", "base_frequency": 41.20, "min_pitch": 0, "max_pitch": 34 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Tuba/tuba-sus-e2-PB-loop.wav", "base_frequency": 82.41, "min_pitch": 35, "max_pitch": 41 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Tuba/tuba-sus-g2-PB-loop.wav", "base_frequency": 98.00, "min_pitch": 42, "max_pitch": 127 }
+    ],
+    "60": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Horn-solo/Horn.mf.A2-PB-loop.wav", "base_frequency": 110.00, "min_pitch": 0, "max_pitch": 57, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Horn-solo/Horn.ff.A2-PB-loop.wav", "base_frequency": 110.00, "min_pitch": 0, "max_pitch": 57, "min_velocity": 86, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Horn-solo/Horn.mf.A4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 58, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Horn-solo/Horn.ff.A4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 58, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+    ],
+    "68": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Oboe/oboe-a#3-PB-loop.wav", "base_frequency": 233.08, "min_pitch": 0, "max_pitch": 65 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Oboe/oboe-c#5-PB-loop.wav", "base_frequency": 554.37, "min_pitch": 66, "max_pitch": 127 }
+    ],
+    "69": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Cor Anglais/cor_anglais-f3-PB-loop.wav", "base_frequency": 174.61, "min_pitch": 0, "max_pitch": 63 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Cor Anglais/cor_anglais-d5-PB-loop.wav", "base_frequency": 587.33, "min_pitch": 64, "max_pitch": 127 }
+    ],
+    "70": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Bassoon-solo/Bassoon.mf.C2-PB.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 48, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Bassoon-solo/Bassoon.ff.C2-PB.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 48, "min_velocity": 86, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Bassoon-solo/Bassoon.mf.C4-PB.wav", "base_frequency": 261.63, "min_pitch": 49, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Bassoon-solo/Bassoon.ff.C4-PB.wav", "base_frequency": 261.63, "min_pitch": 49, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+    ],
+    "71": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/3_A_mf-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 61, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/3_A_f-PB.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 61, "min_velocity": 86, "max_velocity": 127 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/4_F_mf-PB.wav", "base_frequency": 349.23, "min_pitch": 62, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/4_F_f-PB.wav", "base_frequency": 349.23, "min_pitch": 62, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+    ],
+    "72": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-c5-PB-loop.wav", "base_frequency": 523.25, "min_pitch": 0, "max_pitch": 78 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-c6-PB-loop.wav", "base_frequency": 1046.50, "min_pitch": 79, "max_pitch": 127 }
+    ],
+    "73": [
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_C4_v1_2-PB-loop.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 66 },
+      { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_C5_v1_1-PB-loop.wav", "base_frequency": 523.25, "min_pitch": 67, "max_pitch": 127 }
     ]
   },
-  "drum_instruments" : {
-    "35": {
-      "file" : "Assets/Samples/Drums/kick.wav",
-      "base_frequency" : 55.0
-    },
-    "38": {
-      "file" : "Assets/Samples/Drums/snare.wav",
-      "base_frequency" : 220.0
-    }
+  "drum_instruments": {
+    "35": { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/bass_drum-f-PB.wav", "base_frequency": 55.0 },
+    "38": { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/snare-lh-ff-PB.wav", "base_frequency": 220.0 },
+    "49": { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/cymbal-crash1_ff_rr1-PB.wav", "base_frequency": 440.0 },
+    "56": { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/Cowbell1_Hit_v4_rr1_Sum-PB.wav", "base_frequency": 440.0 },
+    "58": { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/vibraslap-PB.wav", "base_frequency": 440.0 },
+    "81": { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/NBO/triangle_m-PB.wav", "base_frequency": 1760.0 }
   }
 }

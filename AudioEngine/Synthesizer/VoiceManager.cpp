@@ -126,12 +126,12 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
     // Ensure the voice has the correct oscillator/envelope
     if (channel == 9) {
         // Index by pitch
-        registry->configure_drum_voice(pitch, voices[voice_idx].get(), pitch);
+        registry->configure_drum_voice(pitch, voices[voice_idx].get(), pitch, velocity);
     }
     else {
         // Index by patch id
         uint8_t patch_id = channel_patches[channel];
-        registry->configure_melodic_voice(patch_id, voices[voice_idx].get(), pitch);
+        registry->configure_melodic_voice(patch_id, voices[voice_idx].get(), pitch, velocity);
     }
 
     voices[voice_idx]->note_on(channel, pitch, velocity, sample_rate);
