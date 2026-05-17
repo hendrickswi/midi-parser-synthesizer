@@ -88,8 +88,8 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelope.cpp"
         "AudioEngine/Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelope.h"
         "AudioEngine/Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelopeState.h"
-        AudioEngine/Synthesizer/InstrumentRegistry.cpp
-        AudioEngine/Synthesizer/InstrumentRegistry.h
+        "AudioEngine/Patch Configuration/InstrumentRegistry.cpp"
+        "AudioEngine/Patch Configuration/InstrumentRegistry.h"
         AudioEngine/AudioEngine.cpp
         AudioEngine/AudioEngine.h
         Qt/MainWindow.cpp
@@ -102,6 +102,10 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Synthesizer/Sample Loading/SampleLoader.cpp"
         "AudioEngine/Synthesizer/Sample Loading/SampleLoader.h"
         "AudioEngine/Synthesizer/Sample Loading/Sample.h"
+        "AudioEngine/Patch Configuration/InstrumentConfig.h"
+        "AudioEngine/Patch Configuration/PatchFactory.cpp"
+        "AudioEngine/Patch Configuration/PatchFactory.h"
+        AudioEngine/Synthesizer/Envelopes/EnvelopeType.h
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE Qt6::Widgets rtaudio)

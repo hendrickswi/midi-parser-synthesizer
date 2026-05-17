@@ -3,10 +3,11 @@
 
 #include <cmath>
 
-#include "InstrumentRegistry.h"
+#include "../Patch Configuration/InstrumentRegistry.h"
 #include "Oscillators/Base Implementations/SineOscillator.h"
 #include "Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
 #include "../../EventTypeEnums/ContinuousControllers.h"
+#include "../Synthesizer/Sample Loading/Sample.h"
 
 void VoiceManager::init(float sample_rate, float global_volume) {
     this->sample_rate = sample_rate;

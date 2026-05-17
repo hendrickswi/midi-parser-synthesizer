@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <functional>
 
-#include "Sample Loading/Sample.h"
+#include "InstrumentConfig.h"
 
 class Voice;
 
@@ -11,8 +11,8 @@ class InstrumentRegistry {
 private:
     float sample_rate;
 
-    std::array<std::vector<Sample>, 128> melodic_samples;
-    std::array<std::vector<Sample>, 128> drum_samples;
+    std::array<InstrumentConfig, 128> melodic_patch_configs;
+    std::array<InstrumentConfig, 128> drum_patch_configs;
     std::array<std::function<void(Voice*, uint8_t, uint8_t)>, 128> melodic_patch_factories;
     std::array<std::function<void(Voice*, uint8_t, uint8_t)>, 128> drum_patch_factories;
 
