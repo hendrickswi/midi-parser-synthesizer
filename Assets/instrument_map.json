@@ -43,6 +43,64 @@
         "min_pitch" : 105,
         "max_pitch" : 127
       }
+    ],
+    "40": [
+      {
+        "file" : "Assets/Samples/Violin/violin-G3.wav",
+        "base_frequency" : 196.0,
+        "min_pitch" : 0,
+        "max_pitch" : 61
+      },
+      {
+        "file" : "Assets/Samples/Violin/violin-D4.wav",
+        "base_frequency" : 293.66,
+        "min_pitch" : 62,
+        "max_pitch" : 68
+      },
+      {
+        "file" : "Assets/Samples/Violin/violin-A4.wav",
+        "base_frequency" : 440.0,
+        "min_pitch" : 69,
+        "max_pitch" : 75
+      },
+      {
+        "file" : "Assets/Samples/Violin/violin-E5.wav",
+        "base_frequency" : 659.26,
+        "min_pitch" : 76,
+        "max_pitch" : 87
+      },
+      {
+        "file" : "Assets/Samples/Violin/violin-E6.wav",
+        "base_frequency" : 1318.51,
+        "min_pitch" : 88,
+        "max_pitch" : 127
+      }
+    ],
+    "42" : [
+      {
+        "file" : "Assets/Samples/Cello/cello-C2.wav",
+        "base_frequency" : 65.41,
+        "min_pitch" : 0,
+        "max_pitch" : 42
+      },
+      {
+        "file" : "Assets/Samples/Cello/cello-G2.wav",
+        "base_frequency" : 98.00,
+        "min_pitch" : 43,
+        "max_pitch" : 49
+      },
+      {
+        "file" : "Assets/Samples/Cello/cello-D3.wav",
+        "base_frequency" : 146.83,
+        "min_pitch" : 50,
+        "max_pitch" : 56
+      },
+      {
+        "file" : "Assets/Samples/Cello/cello-A3.wav",
+        "base_frequency" : 220.0,
+        "min_pitch" : 57,
+        "max_pitch" : 127
+      }
     ]
   },
   "drum_instruments" : {
