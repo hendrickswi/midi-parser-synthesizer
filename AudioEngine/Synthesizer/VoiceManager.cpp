@@ -82,6 +82,8 @@ void VoiceManager::set_channel_pressure(const uint8_t channel, const uint8_t pre
 }
 
 void VoiceManager::set_channel_cc(uint8_t channel, uint8_t cc_number, uint8_t cc_value) {
+    std::lock_guard<std::mutex> lock(audio_mutex);
+
     if (channel >= NUM_CHANNELS) return;
     channel_cc_states[channel][cc_number] = cc_value;
 
@@ -94,6 +96,8 @@ void VoiceManager::set_channel_cc(uint8_t channel, uint8_t cc_number, uint8_t cc
 }
 
 void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
+    std::lock_guard<std::mutex> lock(audio_mutex);
+
     if (channel >= NUM_CHANNELS) return;
     if (velocity == 0) {
         note_off(channel, pitch);
@@ -139,6 +143,8 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
 }
 
 void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
+    std::lock_guard<std::mutex> lock(audio_mutex);
+
     for (auto& voice : voices) {
         if (voice->get_channel() == channel && voice->get_pitch() == pitch) {
             voice->note_off();
@@ -147,6 +153,8 @@ void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
 }
 
 void VoiceManager::process_audio_buffer(float* buffer, const unsigned int num_samples) {
+    std::lock_guard<std::mutex> lock(audio_mutex);
+
     for (int i = 0; i < num_samples; i++) {
         buffer[i] = 0.0f;
     }

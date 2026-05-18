@@ -2,6 +2,7 @@
 #define MIDI_PARSERSYNTHESIZER_VOICEMANAGER_H
 #include <array>
 #include <cstdint>
+#include <mutex>
 #include <functional>
 #include <memory>
 
@@ -17,6 +18,7 @@ private:
     std::array<std::unique_ptr<Voice>, NUM_VOICES> voices;
     std::array<uint8_t, NUM_CHANNELS> channel_patches;
     std::unique_ptr<InstrumentRegistry> registry;
+    std::mutex audio_mutex;
 
     // Midi-event specific data
     std::array<uint16_t, NUM_CHANNELS> channel_pitch_bends;
