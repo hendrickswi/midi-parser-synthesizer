@@ -152,7 +152,7 @@
       ]
     },
     "43": {
-      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.3, "sustain_level": 0.95, "release_time": 0.3, "release_min": 0.0 },
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.3, "sustain_level": 0.9, "release_time": 0.3, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_E1_v3_rr1-PB-loop.wav", "base_frequency": 41.20, "min_pitch": 0, "max_pitch": 30 },
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_A1_v3_rr1-PB-loop.wav", "base_frequency": 55.00, "min_pitch": 31, "max_pitch": 35 },
