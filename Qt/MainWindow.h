@@ -20,11 +20,18 @@ private:
     QPushButton* stop_button;
     QPushButton* skip_fwd_button;
     QPushButton* skip_back_button;
+    QPushButton* repeat_button;
+    QPushButton* shuffle_button;
+    QPushButton* autoplay_button;
     QPushButton* add_directory_button;
     QComboBox* track_selector;
     QLabel* track_sequence_length_label;
     QTimer* timer;
     QSlider* volume_slider;
+
+    bool repeat_flag;
+    bool shuffle_flag;
+    bool autoplay_flag;
 
     void init_top_ui(QHBoxLayout* layout);
     void init_middle_ui(QHBoxLayout* layout);
@@ -35,6 +42,9 @@ private slots:
     void on_stop_button_clicked();
     void on_skip_fwd_button_clicked();
     void on_skip_back_button_clicked();
+    void on_repeat_button_clicked();
+    void on_shuffle_button_clicked();
+    void on_autoplay_button_clicked();
     void on_add_directory_button_clicked();
     void on_track_selection_changed(int index);
     void on_volume_slider_value_changed(float volume);

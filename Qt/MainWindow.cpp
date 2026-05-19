@@ -44,18 +44,33 @@ void MainWindow::init_middle_ui(QHBoxLayout* layout) {
 }
 
 void MainWindow::init_bottom_ui(QHBoxLayout* layout) {
+    // Repeat button
+    repeat_button = new QPushButton("Repeat: Off", this);
+    connect(repeat_button, &QPushButton::clicked, this, &MainWindow::on_repeat_button_clicked);
+    layout->addWidget(repeat_button);
+
+    // Shuffle button
+    shuffle_button = new QPushButton("Shuffle: Off", this);
+    connect(shuffle_button, &QPushButton::clicked, this, &MainWindow::on_shuffle_button_clicked);
+    layout->addWidget(shuffle_button);
+
+    // Autoplay button
+    autoplay_button = new QPushButton("Autoplay: Off", this);
+    connect(autoplay_button, &QPushButton::clicked, this, &MainWindow::on_autoplay_button_clicked);
+    layout->addWidget(autoplay_button);
+
     // Skip 5s back button
     skip_back_button = new QPushButton("<< 5s", this);
     connect(skip_back_button, &QPushButton::clicked, this, &MainWindow::on_skip_back_button_clicked);
     layout->addWidget(skip_back_button);
 
     // Play button
-    play_button = new QPushButton("Play", this);
+    play_button = new QPushButton(QIcon("../Assets/img/play-button.png"), "Play", this);
     connect(play_button, &QPushButton::clicked, this, &MainWindow::on_play_button_clicked);
     layout->addWidget(play_button);
 
     // Stop button
-    stop_button = new QPushButton("Stop", this);
+    stop_button = new QPushButton(QIcon("../Assets/img/stop-button.png"), "Stop", this);
     connect(stop_button, &QPushButton::clicked, this, &MainWindow::on_stop_button_clicked);
     layout->addWidget(stop_button);
 
@@ -92,6 +107,10 @@ MainWindow::MainWindow(AudioEngine* engine, QWidget *parent)
         engine->set_track_sequence(0);
         update_timer();
     }
+
+    repeat_flag = false;
+    shuffle_flag = false;
+    autoplay_flag = false;
 }
 
 MainWindow::~MainWindow() {
@@ -159,6 +178,24 @@ void MainWindow::on_volume_slider_value_changed(float volume) {
     engine->set_global_volume(volume / 100.0f);
 }
 
+void MainWindow::on_repeat_button_clicked() {
+    repeat_flag = !repeat_flag;
+    QString str = QString::fromStdString(repeat_flag ? "Repeat: On" : "Repeat: Off");
+    repeat_button->setText(str);
+}
+
+void MainWindow::on_shuffle_button_clicked() {
+    shuffle_flag = !shuffle_flag;
+    QString str = QString::fromStdString(shuffle_flag ? "Shuffle: On" : "Shuffle: Off");
+    shuffle_button->setText(str);
+}
+
+void MainWindow::on_autoplay_button_clicked() {
+    autoplay_flag = !autoplay_flag;
+    QString str = QString::fromStdString(autoplay_flag ? "Autoplay: On" : "Autoplay: Off");
+    autoplay_button->setText(str);
+}
+
 void MainWindow::update_timer() {
     float current = engine->get_track_sequence_current_time_seconds();
     float total = engine->get_track_sequence_length_seconds();
@@ -168,6 +205,22 @@ void MainWindow::update_timer() {
 
     if (!engine->is_playing() && timer->isActive()) {
         timer->stop();
+
+        if (!autoplay_flag) return;
+        if (repeat_flag) {
+            // No track selection logic here
+        }
+        else if (shuffle_flag) {
+            std::size_t random_idx = std::rand() % track_selector->count();
+            engine->set_track_sequence(random_idx);
+            track_selector->setCurrentIndex(random_idx);
+        }
+        else {
+            std::size_t next_idx = (track_selector->currentIndex() + 1) % track_selector->count();
+            engine->set_track_sequence(next_idx);
+            track_selector->setCurrentIndex(next_idx);
+        }
+        on_play_button_clicked();
     }
 }
 
