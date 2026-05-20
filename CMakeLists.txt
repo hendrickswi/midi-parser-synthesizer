@@ -106,6 +106,7 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Patch Configuration/PatchFactory.cpp"
         "AudioEngine/Patch Configuration/PatchFactory.h"
         AudioEngine/Synthesizer/Envelopes/EnvelopeType.h
+        resources.qrc
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE Qt6::Widgets rtaudio)

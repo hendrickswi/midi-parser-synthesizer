@@ -1,0 +1,15 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/">
+        <file>Assets/img/pause.png</file>
+        <file>Assets/img/play.png</file>
+        <file>Assets/img/repeat.png</file>
+        <file>Assets/img/repeat_on.png</file>
+        <file>Assets/img/shuffle.png</file>
+        <file>Assets/img/skip_back.png</file>
+        <file>Assets/img/skip_fwd.png</file>
+        <file>Assets/img/volume_low.png</file>
+        <file>Assets/img/volume_max.png</file>
+        <file>Assets/img/volume_mute.png</file>
+    </qresource>
+</RCC>
