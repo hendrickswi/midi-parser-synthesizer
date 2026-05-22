@@ -47,6 +47,12 @@ private:
     QIcon add_directory_icon;
     QPushButton* add_directory_button;
 
+    // UI element: volume icon
+    QIcon volume_mute_icon;
+    QIcon volume_low_icon;
+    QIcon volume_max_icon;
+    QLabel* volume_label;
+
     QComboBox* track_selector;
     QLabel* track_sequence_length_label;
     QTimer* timer;

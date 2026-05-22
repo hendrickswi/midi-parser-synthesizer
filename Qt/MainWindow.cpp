@@ -37,6 +37,13 @@ void MainWindow::init_middle_ui(QHBoxLayout* layout) {
     volume_slider->setFixedHeight(100);
     connect(volume_slider, &QAbstractSlider::valueChanged, this, &MainWindow::on_volume_slider_value_changed);
 
+    // Creating the volume icon
+    volume_mute_icon = QIcon(":/Assets/img/volume_mute.png");
+    volume_low_icon = QIcon(":/Assets/img/volume_low.png");
+    volume_max_icon = QIcon(":/Assets/img/volume_max.png");
+    volume_label = new QLabel(this);
+    volume_label->setPixmap(volume_low_icon.pixmap(20, 20));
+
     // Creating the seek (playback) slider
     seek_slider = new QSlider(Qt::Horizontal, this);
     seek_slider->setRange(0, 1000);
@@ -44,6 +51,8 @@ void MainWindow::init_middle_ui(QHBoxLayout* layout) {
     connect(seek_slider, &QAbstractSlider::sliderMoved, this, &MainWindow::on_seek_slider_moved);
 
     layout->addSpacing(20);
+    layout->addWidget(volume_label);
+    layout->addSpacing(5);
     layout->addWidget(volume_slider);
     layout->addSpacing(20);
     layout->addWidget(track_sequence_length_label);
@@ -258,6 +267,15 @@ void MainWindow::on_track_selection_changed(int index) {
 
 void MainWindow::on_volume_slider_value_changed(int volume) {
     engine->set_global_volume(volume / 100.0f);
+    if (volume == 0) {
+        volume_label->setPixmap(volume_mute_icon.pixmap(20, 20));
+    }
+    else if (volume < 50) {
+        volume_label->setPixmap(volume_low_icon.pixmap(20, 20));
+    }
+    else {
+        volume_label->setPixmap(volume_max_icon.pixmap(20, 20));
+    }
 }
 
 void MainWindow::on_repeat_button_clicked() {
