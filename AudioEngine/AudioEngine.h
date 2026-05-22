@@ -43,6 +43,7 @@ public:
     void skip_seconds(float seconds);
     void set_track_sequence(std::size_t index);
     void set_global_volume(float volume);
+    void soft_reset();
 
     [[nodiscard]] bool is_playing() const;
     [[nodiscard]] float get_track_sequence_current_time_seconds() const;

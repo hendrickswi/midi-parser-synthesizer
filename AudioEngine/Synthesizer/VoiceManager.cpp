@@ -181,3 +181,19 @@ void VoiceManager::stop() {
         voice->note_off();
     }
 }
+
+void VoiceManager::reset_state() {
+    std::lock_guard<std::mutex> lock(audio_mutex);
+
+    stop();
+    channel_pitch_bends.fill(0);
+    channel_pressures.fill(0);
+    for (auto& channel_state : channel_cc_states) {
+        channel_state.fill(0);
+    }
+    for (int i = 0; i < 16; i++) {
+        channel_cc_states[i][7] = 100;  // Channel volume defaults to 100
+        channel_cc_states[i][11] = 127; // Expression defaults to max
+        channel_cc_states[i][10] = 64;  // Pan defaults to center
+    }
+}

@@ -51,6 +51,7 @@ public:
     void note_off(uint8_t channel, uint8_t pitch);
     void process_audio_buffer(float* buffer, unsigned int num_samples);
     void stop();
+    void reset_state();
 };
 
 

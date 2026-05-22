@@ -134,6 +134,12 @@ void AudioEngine::set_global_volume(float volume) {
     synth.set_global_volume(volume);
 }
 
+void AudioEngine::soft_reset() {
+    stop();
+    sequencer.reset();
+    synth.reset_state();
+}
+
 bool AudioEngine::is_playing() const {
     return sequencer.is_playing();
 }

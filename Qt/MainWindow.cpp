@@ -52,45 +52,73 @@ void MainWindow::init_middle_ui(QHBoxLayout* layout) {
 }
 
 void MainWindow::init_bottom_ui(QHBoxLayout* layout) {
+    QSize icon_size(40, 40);
+    QString transparent_button_style =
+        "QPushButton { background-color: transparent; border: none; outline: none; }"
+        "QPushButton:hover { background: rgba(128, 128, 128, 0.2); border-radius:5px; }";
+
     // Repeat button
     repeat_off_icon = QIcon(":/Assets/img/repeat.png");
     repeat_on_icon = QIcon(":/Assets/img/repeat_on.png");
     repeat_button = new QPushButton(repeat_off_icon,"", this);
+    repeat_button->setIconSize(icon_size);
+    repeat_button->setStyleSheet(transparent_button_style);
+    repeat_button->setCursor(Qt::PointingHandCursor);
     connect(repeat_button, &QPushButton::clicked, this, &MainWindow::on_repeat_button_clicked);
 
     // Shuffle button
     shuffle_off_icon = QIcon(":/Assets/img/shuffle.png");
+    shuffle_on_icon = QIcon(":/Assets/img/shuffle_on.png");
     shuffle_button = new QPushButton(shuffle_off_icon, "", this);
+    shuffle_button->setIconSize(icon_size);
+    shuffle_button->setStyleSheet(transparent_button_style);
+    shuffle_button->setCursor(Qt::PointingHandCursor);
     connect(shuffle_button, &QPushButton::clicked, this, &MainWindow::on_shuffle_button_clicked);
 
     // Autoplay button
     autoplay_off_icon = QIcon(":/Assets/img/autoplay.png");
     autoplay_button = new QPushButton(autoplay_off_icon, "", this);
+    autoplay_button->setIconSize(icon_size);
+    autoplay_button->setStyleSheet(transparent_button_style);
+    autoplay_button->setCursor(Qt::PointingHandCursor);
     connect(autoplay_button, &QPushButton::clicked, this, &MainWindow::on_autoplay_button_clicked);
 
     // Previous track sequence button
     skip_back_icon = QIcon(":/Assets/img/skip_back.png");
     skip_back_button = new QPushButton(skip_back_icon, "", this);
+    skip_back_button->setIconSize(icon_size);
+    skip_back_button->setStyleSheet(transparent_button_style);
+    skip_back_button->setCursor(Qt::PointingHandCursor);
     connect(skip_back_button, &QPushButton::clicked, this, &MainWindow::on_skip_back_button_clicked);
 
     // Play and pause button
     play_icon = QIcon(":/Assets/img/play.png");
     pause_icon = QIcon(":/Assets/img/pause.png");
     play_pause_button = new QPushButton(play_icon, "", this);
+    play_pause_button->setIconSize(icon_size);
+    play_pause_button->setStyleSheet(transparent_button_style);
+    play_pause_button->setCursor(Qt::PointingHandCursor);
     connect(play_pause_button, &QPushButton::clicked, this, &MainWindow::on_play_pause_button_clicked);
 
     // Next track sequence button
     skip_fwd_icon = QIcon(":/Assets/img/skip_fwd.png");
     skip_fwd_button = new QPushButton(skip_fwd_icon, "", this);
+    skip_fwd_button->setIconSize(icon_size);
+    skip_fwd_button->setStyleSheet(transparent_button_style);
+    skip_fwd_button->setCursor(Qt::PointingHandCursor);
     connect(skip_fwd_button, &QPushButton::clicked, this, &MainWindow::on_skip_fwd_button_clicked);
 
+
+    layout->addSpacing(20);
     layout->addWidget(repeat_button);
     layout->addWidget(shuffle_button);
+    layout->addStretch();
     layout->addWidget(skip_back_button);
     layout->addWidget(play_pause_button);
     layout->addWidget(skip_fwd_button);
-    layout->addWidget(repeat_button);
+    layout->addStretch();
     layout->addWidget(autoplay_button);
+    layout->addSpacing(20);
 }
 
 void MainWindow::on_song_end() {
@@ -163,8 +191,8 @@ void MainWindow::on_play_pause_button_clicked() {
 }
 
 void MainWindow::on_skip_fwd_button_clicked() {
-    bool was_playing = engine->is_playing();
     engine->stop();
+    engine->soft_reset();
 
     if (shuffle_flag) {
         std::size_t random_idx = std::rand() % track_selector->count();
@@ -177,27 +205,23 @@ void MainWindow::on_skip_fwd_button_clicked() {
         track_selector->setCurrentIndex(next_idx);
     }
 
-    if (was_playing) {
-        on_play_pause_button_clicked();
-    }
+    on_song_unique_start();
     update_timer();
 }
 
 void MainWindow::on_skip_back_button_clicked() {
-    std::size_t prev_idx = play_history.empty() ? 0 : play_history.back();
-    play_history.pop_back();
+    std::size_t prev_idx = 0;
+    if (!play_history.empty()) {
+        prev_idx = play_history.back();
+        play_history.pop_back();
+    }
 
-    bool was_playing = engine->is_playing();
+    track_selector->setCurrentIndex(prev_idx);
     engine->stop();
+    engine->soft_reset();
     engine->set_track_sequence(prev_idx);
+    on_song_start();
     update_timer();
-    if (!was_playing) {
-        timer->stop();
-        play_pause_button->setIcon(play_icon);
-    }
-    else {
-        on_play_pause_button_clicked();
-    }
 }
 
 void MainWindow::on_add_directory_button_clicked() {
