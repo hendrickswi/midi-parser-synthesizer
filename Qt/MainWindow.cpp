@@ -333,6 +333,20 @@ void MainWindow::update_timer() {
 
     // Case: the song has ended
     if (!engine->is_playing() && timer->isActive()) {
-        on_song_end();
+        if (autoplay_flag) {
+            engine->soft_reset();
+            if (repeat_flag) {
+                on_song_start();
+            }
+            else if (shuffle_flag) {
+                std::size_t random_idx = std::rand() % track_selector->count();
+                engine->set_track_sequence(random_idx);
+                track_selector->setCurrentIndex(random_idx);
+                on_song_unique_start();
+            }
+        }
+        else {
+            on_song_end();
+        }
     }
 }
