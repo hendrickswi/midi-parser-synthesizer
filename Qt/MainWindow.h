@@ -7,13 +7,14 @@
 #include <QTimer>
 #include <QLabel>
 
+class PlaybackController;
 class QHBoxLayout;
-class AudioEngine;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
+
 private:
-    AudioEngine* engine;
+    PlaybackController* playback_controller;
 
     // UI element: play/pause
     QIcon play_icon;
@@ -55,42 +56,29 @@ private:
 
     QComboBox* track_selector;
     QLabel* track_sequence_length_label;
-    QTimer* timer;
     QSlider* volume_slider;
     QSlider* seek_slider;
-
-    bool repeat_flag;
-    bool shuffle_flag;
-    bool autoplay_flag;
-
-    std::vector<std::size_t> play_history;
 
     void init_top_ui(QHBoxLayout* layout);
     void init_middle_ui(QHBoxLayout* layout);
     void init_bottom_ui(QHBoxLayout* layout);
+    void init_connections();
 
-    // Internal delegates
-    void on_song_end();
-    void on_song_start();
-    void on_song_unique_start();
+    // Prevent direct coupling of PlaybackController to QString
+    void on_add_directory_button_clicked();
 
 private slots:
-    void on_play_pause_button_clicked();
-    void on_skip_fwd_button_clicked();
-    void on_skip_back_button_clicked();
-    void on_repeat_button_clicked();
-    void on_shuffle_button_clicked();
-    void on_autoplay_button_clicked();
-    void on_add_directory_button_clicked();
-    void on_track_selection_changed(int index);
-    void on_volume_slider_value_changed(int volume);
-    void on_seek_slider_moved(int pos);
-
-    void update_timer();
+    void on_playback_state_changed(bool is_playing);
+    void on_repeat_changed(bool repeat_flag);
+    void on_shuffle_changed(bool shuffle_flag);
+    void on_autoplay_changed(bool autoplay_flag);
+    void on_track_list_updated(const std::vector<std::string>& file_paths);
+    void on_current_track_changed(std::size_t index);
+    void on_volume_changed(int volume);
+    void on_time_updated(float current_seconds, float total_seconds);
 
 public:
-    explicit MainWindow(AudioEngine* engine, QWidget* parent = nullptr);
-    ~MainWindow();
+    explicit MainWindow(PlaybackController* controller, QWidget* parent = nullptr);
 };
 
 

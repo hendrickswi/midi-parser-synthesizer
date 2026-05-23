@@ -3,8 +3,8 @@
 #include <fstream>
 #include <QApplication>
 #include "AudioEngine/AudioEngine.h"
-#include "DirectoryManipulator.h"
 #include "Qt/MainWindow.h"
+#include "Qt/PlaybackController.h"
 
 constexpr std::string auto_test_folder = "Testing files";
 constexpr float sample_rate = 44100.0f;
@@ -14,14 +14,12 @@ constexpr float volume = 0.5f;
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
     AudioEngine engine = AudioEngine(sample_rate, num_channels, volume);
+    PlaybackController playback_controller = PlaybackController(&engine);
+    MainWindow window = MainWindow(&playback_controller);
 
-    DirectoryManipulator dir_manipulator(auto_test_folder);
-    auto midi_files = dir_manipulator.get_midi_files_in_directory();
-    for (const auto& file : midi_files) {
-        engine.load_midi_file(file.get_file_path());
-    }
+    // Initial test folder loading
+    playback_controller.load_directory(auto_test_folder);
 
-    MainWindow window = MainWindow(&engine);
     window.show();
     return app.exec();
 }

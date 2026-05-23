@@ -79,6 +79,10 @@ const std::vector<std::string>& AudioEngine::get_loaded_file_names() const {
     return loaded_file_names;
 }
 
+std::size_t AudioEngine::get_current_track_sequence_index() const {
+    return current_track;
+}
+
 void AudioEngine::play() {
     if (current_track < 0 || current_track >= loaded_track_sequences.size() ||
         sequencer.is_playing()) return;

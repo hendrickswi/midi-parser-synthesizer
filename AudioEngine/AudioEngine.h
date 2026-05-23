@@ -37,6 +37,7 @@ public:
 
     bool load_midi_file(const std::string& file_path);
     [[nodiscard]] const std::vector<std::string>& get_loaded_file_names() const;
+    [[nodiscard]] std::size_t get_current_track_sequence_index() const;
 
     void play();
     void stop();
