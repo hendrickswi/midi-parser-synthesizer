@@ -22,7 +22,10 @@ void PlaybackController::on_song_end() {
             on_song_start();
         }
         else {
-            std::size_t next_idx = (play_history.back() + 1) % engine->get_loaded_file_names().size();
+            std::size_t next_idx = 0;
+            if (!play_history.empty()) {
+                next_idx = (play_history.back() + 1) % engine->get_loaded_file_names().size();
+            }
             on_track_sequence_change(next_idx);
             on_song_unique_start();
         }

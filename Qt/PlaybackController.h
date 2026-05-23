@@ -1,6 +1,5 @@
 #ifndef MIDI_PARSERSYNTHESIZER_PLAYBACKCONTROLLER_H
 #define MIDI_PARSERSYNTHESIZER_PLAYBACKCONTROLLER_H
-#include <QObject>
 #include <QString>
 #include <QTimer>
 
