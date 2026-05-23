@@ -82,7 +82,8 @@ void PlaybackController::skip_forward() {
         next_idx = std::rand() % engine->get_loaded_file_names().size();
     }
     else {
-        next_idx = (play_history.back() + 1) % engine->get_loaded_file_names().size();
+        std::size_t idx = play_history.empty() ? 0 : play_history.back();
+        next_idx = (idx + 1) % engine->get_loaded_file_names().size();
     }
     on_track_sequence_change(next_idx);
 }

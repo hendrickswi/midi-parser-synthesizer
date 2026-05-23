@@ -225,14 +225,18 @@ void MainWindow::on_autoplay_changed(bool autoplay_flag) {
 }
 
 void MainWindow::on_track_list_updated(const std::vector<std::string>& file_paths) {
+    track_selector->blockSignals(true);
     track_selector->clear();
     for (const auto& path : file_paths) {
         track_selector->addItem(QString::fromStdString(path));
     }
+    track_selector->blockSignals(false);
 }
 
 void MainWindow::on_current_track_changed(std::size_t index) {
+    track_selector->blockSignals(true);
     track_selector->setCurrentIndex(index);
+    track_selector->blockSignals(false);
 }
 
 void MainWindow::on_volume_changed(int volume) {
@@ -245,7 +249,10 @@ void MainWindow::on_volume_changed(int volume) {
     else {
         volume_label->setPixmap(volume_max_icon.pixmap(20, 20));
     }
+
+    volume_slider->blockSignals(true);
     volume_slider->setValue(volume);
+    volume_slider->blockSignals(false);
 }
 
 void MainWindow::on_time_updated(float current_seconds, float total_seconds) {
