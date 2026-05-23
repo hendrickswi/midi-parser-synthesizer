@@ -32,6 +32,12 @@ void PlaybackController::on_song_end() {
     }
 }
 
+void PlaybackController::on_song_pause() {
+    engine->stop();
+    playback_timer->stop();
+    playback_state_changed(false);
+}
+
 void PlaybackController::on_song_start() {
     engine->play();
     playback_timer->start(33);
@@ -64,7 +70,8 @@ PlaybackController::PlaybackController(AudioEngine* engine, QObject* parent)
 
 void PlaybackController::toggle_play_pause() {
     if (engine->is_playing()) {
-        on_song_end();
+        // User pressed the pause button
+        on_song_pause();
     }
     else {
         if (!play_history.empty() && play_history.back() == engine->get_current_track_sequence_index()) {

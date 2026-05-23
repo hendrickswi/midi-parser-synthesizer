@@ -190,16 +190,16 @@ void MidiSequencer::start() {
     is_playing_flag = true;
 
     // "Wake up" all suspended notes
-    std::vector<ActiveNote> suspended_notes;
-    while (!active_notes.empty()) {
-        auto note = active_notes.top();
-        active_notes.pop();
-        synthesizer->note_on(note.channel, note.pitch, note.volume);
-        suspended_notes.push_back(note);
-    }
-    for (const auto& note : suspended_notes) {
-        active_notes.push(note);
-    }
+    // std::vector<ActiveNote> suspended_notes;
+    // while (!active_notes.empty()) {
+    //     auto note = active_notes.top();
+    //     active_notes.pop();
+    //     synthesizer->note_on(note.channel, note.pitch, note.volume);
+    //     suspended_notes.push_back(note);
+    // }
+    // for (const auto& note : suspended_notes) {
+    //     active_notes.push(note);
+    // }
 
     // Reanchor
     prev_tick_time = std::chrono::high_resolution_clock::now();

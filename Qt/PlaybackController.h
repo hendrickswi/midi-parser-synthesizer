@@ -21,6 +21,7 @@ private:
 
     // Internal delegates
     void on_song_end();
+    void on_song_pause();
     void on_song_start();
     void on_song_unique_start();
     void on_track_sequence_change(std::size_t index);
