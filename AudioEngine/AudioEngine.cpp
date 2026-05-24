@@ -1,6 +1,8 @@
 #include "AudioEngine.h"
 
-void AudioEngine::init(float sample_rate, unsigned int num_channels, float global_volume) {
+#include <iostream>
+
+void AudioEngine::init(float sample_rate, unsigned int num_channels) {
     sequencer.set_synthesizer(&synth);
 
     // RtAudio setup
@@ -54,7 +56,7 @@ AudioEngine::AudioEngine() : parser(), sequencer(), synth() {
 
 AudioEngine::AudioEngine(float sample_rate, unsigned int num_channels, float global_volume)
 : parser(), sequencer(), synth(sample_rate, global_volume) {
-    init(sample_rate, num_channels, global_volume);
+    init(sample_rate, num_channels);
 }
 
 AudioEngine::~AudioEngine() {

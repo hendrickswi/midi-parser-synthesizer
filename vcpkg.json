@@ -3,7 +3,12 @@
   "name": "midi-synthesizer",
   "version": "1.0.0",
   "dependencies": [
-    "rtaudio",
+    {
+      "name": "rtaudio",
+      "features": [
+        { "name": "alsa", "platform": "linux" }
+      ]
+    },
     "qtbase"
   ]
 }

@@ -20,7 +20,7 @@ private:
 
     std::thread sequencer_thread;
 
-    void init(float sample_rate = 44100.0f, unsigned int num_channels = 1, float global_volume = 0.5f);
+    void init(float sample_rate = 44100.0f, unsigned int num_channels = 1);
 
     // RtAudio mandated callback function
     static int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,

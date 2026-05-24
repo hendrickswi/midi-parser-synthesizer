@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.1)
-project(MIDI_ParserSynthesizer)
+project(MIDI_ParserSynthesizer LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,21 +9,11 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+# vcpkg ensures these are available
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
+find_package(RtAudio CONFIG REQUIRED)
 
 include(FetchContent)
-
-# RtAudio fetch
-FetchContent_Declare(
-        rtaudio
-        GIT_REPOSITORY https://github.com/thestk/rtaudio.git
-        GIT_TAG master
-)
-
-set(RTAUDIO_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(RTAUDIO_BUILD_STATIC_LIBS ON CACHE BOOL "" FORCE)
-set(RTAUDIO_BUILD_TESTING OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(rtaudio)
 
 # JSON Parser fetch
 FetchContent_Declare(
@@ -114,7 +104,22 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Synthesizer/Oscillators/Base Implementations/Composite/CompositeOscillatorNode.h"
 )
 
-target_link_libraries(MIDI_ParserSynthesizer PRIVATE Qt6::Widgets rtaudio)
+target_link_libraries(MIDI_ParserSynthesizer PRIVATE Qt6::Widgets RtAudio::rtaudio)
+
+# Platform-specific audio backend link requirements
+if(APPLE)
+    target_link_libraries(MIDI_ParserSynthesizer PRIVATE
+            "-framework CoreAudio"
+            "-framework CoreFoundation"
+            "-framework AudioToolbox"
+    )
+elseif(WIN32)
+    target_link_libraries(MIDI_ParserSynthesizer PRIVATE ksuser mfplat mfuuid wmcodecdspuuid)
+elseif(UNIX)
+    # ALSA dev package must be installed: sudo apt install libasound2-dev
+    find_package(ALSA REQUIRED)
+    target_link_libraries(MIDI_ParserSynthesizer PRIVATE ALSA::ALSA)
+endif()
 
 # Populate build directory with the necessary .dll files to prevent immediate crash
 if(WIN32)
