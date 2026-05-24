@@ -1,6 +1,6 @@
 #include "Voice.h"
 #include "../Envelopes/Envelope.h"
-#include "../Oscillators/Base Implementations/Oscillator.h"
+#include "../Oscillators/Base Implementations/Base Oscillator/Oscillator.h"
 #include "../../../EventTypeEnums/ContinuousControllers.h"
 #include <cmath>
 

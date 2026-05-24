@@ -56,17 +56,17 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine/Sequencer/ActiveNote.h
         DirectoryManipulator.cpp
         DirectoryManipulator.h
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Oscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Base Oscillator/Oscillator.h"
         AudioEngine/Synthesizer/Voices/Voice.cpp
         AudioEngine/Synthesizer/Voices/Voice.h
         AudioEngine/Synthesizer/VoiceManager.cpp
         AudioEngine/Synthesizer/VoiceManager.h
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/SineOscillator.cpp"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/SineOscillator.h"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/SawtoothOscillator.cpp"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/SawtoothOscillator.h"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/SquareOscillator.cpp"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/SquareOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/Sine/SineOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/Sine/SineOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/Sawtooth/SawtoothOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/Sawtooth/SawtoothOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/Square/SquareOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/Square/SquareOscillator.h"
         AudioEngine/Synthesizer/Envelopes/Envelope.h
         AudioEngine/Synthesizer/Envelopes/Decorators/TremoloEnvelope.cpp
         AudioEngine/Synthesizer/Envelopes/Decorators/TremoloEnvelope.h
@@ -75,16 +75,16 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine/Synthesizer/Envelopes/Decorators/EnvelopeDecorator.cpp
         AudioEngine/Synthesizer/Envelopes/Decorators/EnvelopeDecorator.h
         "AudioEngine/Synthesizer/Envelopes/Base Implementations/ADSR/ADSREnvelopeState.h"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Oscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Base Oscillator/Oscillator.cpp"
         AudioEngine/Synthesizer/Oscillators/Decorators/OscillatorDecorator.cpp
         AudioEngine/Synthesizer/Oscillators/Decorators/OscillatorDecorator.h
         AudioEngine/Synthesizer/Oscillators/Decorators/VibratoOscillator.cpp
         AudioEngine/Synthesizer/Oscillators/Decorators/VibratoOscillator.h
         EventTypeEnums/ContinuousControllers.h
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/TriangleOscillator.cpp"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/TriangleOscillator.h"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/NoiseOscillator.cpp"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/NoiseOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/Triangle/TriangleOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/Triangle/TriangleOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Noise/NoiseOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Noise/NoiseOscillator.h"
         "AudioEngine/Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelope.cpp"
         "AudioEngine/Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelope.h"
         "AudioEngine/Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelopeState.h"
@@ -94,10 +94,10 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine/AudioEngine.h
         Qt/MainWindow.cpp
         Qt/MainWindow.h
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/SampleOscillator.cpp"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/SampleOscillator.h"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/AlgorithmicOscillator.cpp"
-        "AudioEngine/Synthesizer/Oscillators/Base Implementations/AlgorithmicOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Sample/SampleOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Sample/SampleOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/AlgorithmicOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/AlgorithmicOscillator.h"
         "AudioEngine/Synthesizer/Sample Loading/dr_wav.h"
         "AudioEngine/Synthesizer/Sample Loading/SampleLoader.cpp"
         "AudioEngine/Synthesizer/Sample Loading/SampleLoader.h"
@@ -109,6 +109,9 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         resources.qrc
         Qt/PlaybackController.cpp
         Qt/PlaybackController.h
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Composite/CompositeOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Composite/CompositeOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Base Implementations/Composite/CompositeOscillatorNode.h"
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE Qt6::Widgets rtaudio)

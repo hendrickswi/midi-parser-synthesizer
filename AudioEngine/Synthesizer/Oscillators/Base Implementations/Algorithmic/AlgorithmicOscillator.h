@@ -1,6 +1,6 @@
 #ifndef MIDI_PARSERSYNTHESIZER_ALGORITHMICOSCILLATOR_H
 #define MIDI_PARSERSYNTHESIZER_ALGORITHMICOSCILLATOR_H
-#include "Oscillator.h"
+#include "../Base Oscillator/Oscillator.h"
 
 constexpr float TWO_PI = 2 * 3.141592;
 

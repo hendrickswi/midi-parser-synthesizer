@@ -1,5 +1,4 @@
 #include "SawtoothOscillator.h"
-#include <cmath>
 
 SawtoothOscillator::SawtoothOscillator() = default;
 

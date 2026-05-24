@@ -3,6 +3,7 @@
 #include <memory>
 #include <nlohmann/json_fwd.hpp>
 
+class Oscillator;
 class ADREnvelope;
 class ADSREnvelope;
 class SineOscillator;
@@ -11,6 +12,7 @@ class TriangleOscillator;
 class SawtoothOscillator;
 class NoiseOscillator;
 class SampleOscillator;
+class CompositeOscillator;
 class Envelope;
 
 using json = nlohmann::json;

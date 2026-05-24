@@ -1,5 +1,4 @@
 #include "SquareOscillator.h"
-#include "Oscillator.h"
 #include <cmath>
 
 inline int sign(const float val) {

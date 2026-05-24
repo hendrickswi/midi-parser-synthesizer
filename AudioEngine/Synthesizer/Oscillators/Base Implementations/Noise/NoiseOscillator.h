@@ -1,6 +1,6 @@
 #ifndef MIDI_PARSERSYNTHESIZER_NOISEOSCILLATOR_H
 #define MIDI_PARSERSYNTHESIZER_NOISEOSCILLATOR_H
-#include "Oscillator.h"
+#include "../Base Oscillator/Oscillator.h"
 
 
 class NoiseOscillator : public Oscillator {

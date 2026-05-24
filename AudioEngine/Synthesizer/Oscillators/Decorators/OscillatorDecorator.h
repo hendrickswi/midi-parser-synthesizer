@@ -2,7 +2,7 @@
 #define MIDI_PARSERSYNTHESIZER_OSCILLATORDECORATOR_H
 #include <memory>
 
-#include "../Base Implementations/Oscillator.h"
+#include "../Base Implementations/Base Oscillator/Oscillator.h"
 
 
 

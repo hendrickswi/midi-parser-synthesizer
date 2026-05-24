@@ -1,7 +1,7 @@
 #ifndef MIDI_PARSERSYNTHESIZER_SAWTOOTHOSCILLATOR_H
 #define MIDI_PARSERSYNTHESIZER_SAWTOOTHOSCILLATOR_H
 
-#include "AlgorithmicOscillator.h"
+#include "../AlgorithmicOscillator.h"
 
 class SawtoothOscillator : public AlgorithmicOscillator {
 public:

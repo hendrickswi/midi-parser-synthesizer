@@ -8,12 +8,13 @@
 #include "PatchFactory.h"
 #include "../Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelope.h"
 #include "../Synthesizer/Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
-#include "../Synthesizer/Oscillators/Base Implementations/NoiseOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/SampleOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/SawtoothOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/SineOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/SquareOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/TriangleOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Noise/NoiseOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Sample/SampleOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Sawtooth/SawtoothOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Sine/SineOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Square/SquareOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Triangle/TriangleOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Composite/CompositeOscillator.h"
 #include "../Synthesizer/Sample Loading/Sample.h"
 #include "../Synthesizer/Sample Loading/SampleLoader.h"
 #include "../Synthesizer/Voices/Voice.h"
@@ -162,19 +163,63 @@ void InstrumentRegistry::init_samples() {
 }
 
 void InstrumentRegistry::init_leads() {
+    // Square lead
     melodic_patch_factories[80] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
         v->set_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate));
-        v->set_envelope(std::make_unique<ADSREnvelope>(sample_rate, 0.005f, 1.0f, 0.2f,
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.2f,
             0.25f, 0.1f, 0.0f));
     };
+
+    // Sawtooth lead
     melodic_patch_factories[81] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
         v->set_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate));
-        v->set_envelope(std::make_unique<ADSREnvelope>(sample_rate, 0.005f, 1.0f, 0.2f,
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.2f,
             0.25f, 0.1f, 0.0f));
     };
-    // Can add more leads here later (e.g., calliope lead)
-}
 
+    // Calliope lead
+    melodic_patch_factories[82] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        v->set_oscillator(PatchFactory::create_triangle_oscillator(440, sample_rate));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.02f, 0.6f, 0.1f, 0.7f, 0.2f, 0.0f));
+    };
+
+    // Chiff lead
+    melodic_patch_factories[83] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        v->set_oscillator(PatchFactory::create_sine_oscillator(440.0f, sample_rate));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f));
+    };
+
+    // Charang lead
+    melodic_patch_factories[84] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        v->set_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.3f, 0.2f, 0.15f, 0.0f));
+    };
+
+    // Voice lead
+    melodic_patch_factories[85] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        v->set_oscillator(PatchFactory::create_triangle_oscillator(440.0f, sample_rate));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.06f, 0.6f, 0.1f, 0.7f, 0.25f, 0.0f));
+    };
+
+    // Fifths lead
+    melodic_patch_factories[86] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        auto composite = std::make_unique<CompositeOscillator>();
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.6f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.4f, std::pow(2.0f, 7.0f / 12.0f));
+        v->set_oscillator(std::move(composite));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f));
+    };
+
+    // Bass + lead
+    melodic_patch_factories[87] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        auto composite = std::make_unique<CompositeOscillator>();
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.45f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate), 0.55f, 0.5f);
+
+        v->set_oscillator(std::move(composite));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.8f, 0.2f, 0.5f, 0.1f, 0.0f));
+    };
+}
 
 InstrumentRegistry::InstrumentRegistry() { // NOLINT
     init();

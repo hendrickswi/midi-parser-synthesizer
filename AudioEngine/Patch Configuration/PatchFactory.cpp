@@ -11,14 +11,14 @@
 #include "../Synthesizer/Envelopes/Envelope.h"
 #include "../Synthesizer/Envelopes/EnvelopeType.h"
 #include "../Synthesizer/Envelopes/Decorators/TremoloEnvelope.h"
-#include "../Synthesizer/Oscillators/Base Implementations/SampleOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/SineOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/SquareOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/TriangleOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/SawtoothOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/NoiseOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Sample/SampleOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Sine/SineOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Square/SquareOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Triangle/TriangleOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Sawtooth/SawtoothOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Noise/NoiseOscillator.h"
+#include "../Synthesizer/Oscillators/Base Implementations/Composite/CompositeOscillator.h"
 #include <nlohmann/json.hpp>
-
 
 std::unique_ptr<Envelope> PatchFactory::create_envelope(const json& config, float sample_rate) {
     if (config.is_null() || !config.contains("type")) {

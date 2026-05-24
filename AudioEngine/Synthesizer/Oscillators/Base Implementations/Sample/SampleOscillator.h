@@ -2,7 +2,7 @@
 #define MIDI_PARSERSYNTHESIZER_SAMPLEOSCILLATOR_H
 #include <vector>
 
-#include "Oscillator.h"
+#include "../Base Oscillator/Oscillator.h"
 
 class SampleOscillator : public Oscillator {
 private:

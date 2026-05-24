@@ -1,7 +1,7 @@
 #ifndef MIDI_PARSERSYNTHESIZER_TRIANGLEOSCILLATOR_H
 #define MIDI_PARSERSYNTHESIZER_TRIANGLEOSCILLATOR_H
 
-#include "AlgorithmicOscillator.h"
+#include "../AlgorithmicOscillator.h"
 
 class TriangleOscillator : public AlgorithmicOscillator {
 public:

@@ -1,7 +1,7 @@
 #ifndef MIDI_PARSERSYNTHESIZER_SINEOSCILLATOR_H
 #define MIDI_PARSERSYNTHESIZER_SINEOSCILLATOR_H
 
-#include "AlgorithmicOscillator.h"
+#include "../AlgorithmicOscillator.h"
 
 class SineOscillator : public AlgorithmicOscillator {
 public:
