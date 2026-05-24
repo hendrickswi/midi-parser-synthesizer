@@ -3,6 +3,7 @@
 #include "../Base Oscillator/Oscillator.h"
 
 constexpr float TWO_PI = 2 * 3.141592;
+constexpr float PI = 3.141592;
 
 inline float calculate_phase_increment(float hz, float sample_rate) {
     return TWO_PI * hz / sample_rate;

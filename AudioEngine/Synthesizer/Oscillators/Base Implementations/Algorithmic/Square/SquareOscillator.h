@@ -3,6 +3,10 @@
 #include "../AlgorithmicOscillator.h"
 
 class SquareOscillator : public AlgorithmicOscillator {
+
+private:
+    float poly_blep(float t, float dt);
+
 public:
     SquareOscillator();
     SquareOscillator(float hz, float sample_rate);

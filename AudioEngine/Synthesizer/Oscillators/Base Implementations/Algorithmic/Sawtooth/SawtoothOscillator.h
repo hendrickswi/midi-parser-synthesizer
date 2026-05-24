@@ -4,6 +4,9 @@
 #include "../AlgorithmicOscillator.h"
 
 class SawtoothOscillator : public AlgorithmicOscillator {
+private:
+    float poly_blep(float t, float dt);
+
 public:
     SawtoothOscillator();
     SawtoothOscillator(float hz, float sample_rate);
