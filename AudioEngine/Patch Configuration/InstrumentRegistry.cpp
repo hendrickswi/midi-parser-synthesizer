@@ -83,7 +83,7 @@ void InstrumentRegistry::init(float sample_rate) {
              *      Else: Use the first loaded sample
              */
 
-            const auto& samples = this->melodic_patch_configs[drum_key].samples;
+            const auto& samples = this->drum_patch_configs[drum_key].samples;
             const Sample* selected_sample = nullptr;
 
             for (const auto& sample : samples) {

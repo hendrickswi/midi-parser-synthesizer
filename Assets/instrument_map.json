@@ -107,16 +107,22 @@
     "13": {
       "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 0.3, "release_time": 0.1, "release_max": 0.1, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/4_Ab-PB.wav", "base_frequency": 415.30, "min_pitch": 0, "max_pitch": 63 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/5_D-PB.wav", "base_frequency": 587.33, "min_pitch": 64, "max_pitch": 77 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/6_C-PB.wav", "base_frequency": 1046.50, "min_pitch": 78, "max_pitch": 127 }
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/5_C-PB.wav", "base_frequency": 523.25, "min_pitch": 0, "max_pitch": 83, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/5_C_2-PB.wav", "base_frequency": 523.25, "min_pitch": 0, "max_pitch": 83, "min_velocity": 64, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/6_C-PB.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 95, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/6_C_2-PB.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 95, "min_velocity": 64, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/7_C-PB.wav", "base_frequency": 2093.0, "min_pitch": 96, "max_pitch": 127, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/7_C_2-PB.wav", "base_frequency": 2093.0, "min_pitch": 96, "max_pitch": 127, "min_velocity": 64, "max_velocity": 127 }
       ]
     },
     "14": {
       "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 2.0, "sustain_level": 0.2, "release_time": 1.5, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/3_C_p.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 65, "min_velocity": 0, "max_velocity": 85 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/3_C_f.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 65, "min_velocity": 86, "max_velocity": 127 }
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/3_C_p.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 59, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/3_C_f.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 59, "min_velocity": 64, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/4_C_f.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 64, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/4_F_p.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 127, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/4_F_f.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 127, "min_velocity": 64, "max_velocity": 127 }
       ]
     },
     "40": {
@@ -307,25 +313,50 @@
     "35": {
       "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.2, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/bass_drum-f-PB.wav", "base_frequency": 55.0 }
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/bass_drum-p-PB.wav", "base_frequency": 55.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/bass_drum-f-PB.wav", "base_frequency": 55.0, "min_velocity": 64, "max_velocity" : 127 }
+      ]
+    },
+    "36": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.2, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/bass_drum-p-PB.wav", "base_frequency": 55.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/bass_drum-f-PB.wav", "base_frequency": 55.0, "min_velocity": 64, "max_velocity" : 127 }
       ]
     },
     "38": {
       "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/snare-lh-ff-PB.wav", "base_frequency": 220.0 }
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/snare-lh-mf-PB.wav", "base_frequency": 220.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/snare-lh-ff-PB.wav", "base_frequency": 220.0, "min_velocity": 64, "max_velocity" : 127 }
       ]
     },
     "49": {
       "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 1.5, "release_time": 0.5, "release_max": 0.2, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/cymbal-crash1_ff_rr1-PB.wav", "base_frequency": 440.0 }
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_mf_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_ff_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 64, "max_velocity": 127 }
+      ]
+    },
+    "52": {
+      "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 1.5, "release_time": 0.5, "release_max": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/gongHit_f-PB.wav", "base_frequency": 440.0, "min_velocity": 0, "max_velocity": 91 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/gongHit_fff-PB.wav", "base_frequency": 440.0, "min_velocity": 92, "max_velocity": 127 }
       ]
     },
     "56": {
       "envelope": { "type": "ADR", "attack_time": 0.002, "attack_max": 1.0, "decay_time": 0.3, "release_time": 0.1, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/Cowbell1_Hit_v4_rr1_Sum-PB.wav", "base_frequency": 440.0 }
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/Cowbell1_Hit_v2_rr1_Sum-PB.wav", "base_frequency": 440.0, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/Cowbell1_Hit_v4_rr1_Sum-PB.wav", "base_frequency": 440.0, "min_velocity": 64, "max_velocity": 127 }
+      ]
+    },
+    "57": {
+      "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 1.5, "release_time": 0.5, "release_max": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_mf_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_ff_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 64, "max_velocity": 127 }
       ]
     },
     "58": {
