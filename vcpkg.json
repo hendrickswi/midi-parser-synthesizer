@@ -9,6 +9,10 @@
         { "name": "alsa", "platform": "linux" }
       ]
     },
-    "qtbase"
+    {
+      "name": "qtbase",
+      "default-features": false,
+      "features": ["widgets"]
+    }
   ]
 }
