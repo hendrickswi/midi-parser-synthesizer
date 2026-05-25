@@ -6,5 +6,5 @@
 /httpRequests/
 QtSettings.xml
 /.idea/
-external/qt
+external/*
 aqtinstall.log

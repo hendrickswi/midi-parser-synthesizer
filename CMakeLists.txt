@@ -10,7 +10,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 if(CMAKE_HOST_WIN32)
-    list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/qt/6.7.0/msvc2019_64")
+    list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/qt/6.7.0/mingw_64")
 elseif(CMAKE_HOST_UNIX AND NOT CMAKE_HOST_APPLE)
     list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/qt/6.7.0/gcc_64")
 endif()
@@ -112,7 +112,10 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Synthesizer/Oscillators/Base Implementations/Composite/CompositeOscillatorNode.h"
 )
 
-target_link_libraries(MIDI_ParserSynthesizer PRIVATE Qt6::Widgets RtAudio::rtaudio)
+target_link_libraries(MIDI_ParserSynthesizer PRIVATE
+        Qt6::Widgets
+        RtAudio::rtaudio
+        nlohmann_json::nlohmann_json)
 
 # Workaround for GCC 14+ emitting duplicate _Float16 templates with Qt 6.7.0
 if(UNIX AND NOT APPLE)
