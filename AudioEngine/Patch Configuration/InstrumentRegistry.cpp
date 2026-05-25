@@ -77,13 +77,29 @@ void InstrumentRegistry::init(float sample_rate) {
         if (drum_patch_configs[drum_key].samples.empty()) continue;
 
         drum_patch_factories[drum_key] = [this, drum_key](Voice* v, uint8_t pitch, uint8_t velocity) {
-            // Sample selection logic: Drums do not have multi-sampling,
-            // therefore can just grab the first sample loaded.
+            /*
+             * Sample selection logic:
+             *      1st pass: Try to find a sample with matching velocity
+             *      Else: Use the first loaded sample
+             */
 
-            const auto& selected_sample = this->drum_patch_configs[drum_key].samples.front();
+            const auto& samples = this->melodic_patch_configs[drum_key].samples;
+            const Sample* selected_sample = nullptr;
+
+            for (const auto& sample : samples) {
+                if (velocity >= sample.min_velocity && velocity <= sample.max_velocity) {
+                    selected_sample = &sample;
+                    break;
+                }
+            }
+
+            if (selected_sample == nullptr) {
+                selected_sample = &samples.front();
+            }
+
             v->set_oscillator(PatchFactory::create_sample_oscillator(
-                &selected_sample.audio_buffer,
-                selected_sample.base_frequency
+                &selected_sample->audio_buffer,
+                selected_sample->base_frequency
             ));
 
             const auto& env_data = drum_patch_configs[drum_key].envelope_data;
@@ -153,10 +169,10 @@ void InstrumentRegistry::init_samples() {
             std::string file_path = zone["file"];
             float base_freq = zone["base_frequency"];
             uint8_t min_velocity = zone.value("min_velocity", 0);
-            uint8_t max_pitch = zone.value("max_pitch", 127);
+            uint8_t max_velocity = zone.value("max_velocity", 127);
 
             drum_patch_configs[drum_key].samples.push_back(Sample(
-                loader.load_wav_mono(file_path), base_freq, 0, 127, min_velocity, max_pitch)
+                loader.load_wav_mono(file_path), base_freq, 0, 127, min_velocity, max_velocity)
             );
         }
     }
