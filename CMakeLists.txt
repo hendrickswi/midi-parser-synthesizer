@@ -114,6 +114,11 @@ add_executable(MIDI_ParserSynthesizer main.cpp
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE Qt6::Widgets RtAudio::rtaudio)
 
+# Workaround for GCC 14+ emitting duplicate _Float16 templates with Qt 6.7.0
+if(UNIX AND NOT APPLE)
+    target_link_options(MIDI_ParserSynthesizer PRIVATE "-Wl,--allow-multiple-definition")
+endif()
+
 # Platform-specific audio backend link requirements
 if(APPLE)
     target_link_libraries(MIDI_ParserSynthesizer PRIVATE
