@@ -9,8 +9,16 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-# vcpkg ensures these are available
+if(CMAKE_HOST_WIN32)
+    list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/qt/6.7.0/msvc2019_64")
+elseif(CMAKE_HOST_UNIX AND NOT CMAKE_HOST_APPLE)
+    list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/qt/6.7.0/gcc_64")
+endif()
+
+# relies on the user to install qt6.70 via aqtinstall
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
+
+# vcpkg ensures this is available
 find_package(RtAudio CONFIG REQUIRED)
 
 include(FetchContent)
