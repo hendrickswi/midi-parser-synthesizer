@@ -1,7 +1,3 @@
-//
-// Created by williamh on 5/17/26.
-//
-
 #include "PatchFactory.h"
 
 #include <iostream>
@@ -23,13 +19,13 @@
 std::unique_ptr<Envelope> PatchFactory::create_envelope(const json& config, float sample_rate) {
     if (config.is_null() || !config.contains("type")) {
         // Fallback
-        return std::make_unique<ADSREnvelope>(sample_rate, 0.005f, 1.0f, 3.0f, 0.025f, 0.2f, 0.0f);
+        return create_adsr_envelope(sample_rate, 0.005f, 1.0f, 3.0f, 0.025f, 0.2f, 0.0f);
     }
 
     EnvelopeType type = config["type"];
     switch (type) {
         case EnvelopeType::ADSR : {
-            return std::make_unique<ADSREnvelope>(
+            return create_adsr_envelope(
                 sample_rate,
                 config.value("attack_time", 0.005f),
                 config.value("attack_max", 1.0f),
@@ -40,7 +36,7 @@ std::unique_ptr<Envelope> PatchFactory::create_envelope(const json& config, floa
             );
         }
         case EnvelopeType::ADR : {
-            return std::make_unique<ADREnvelope>(
+            return create_adr_envelope(
                 sample_rate,
                 config.value("attack_time", 0.005f),
                 config.value("attack_max", 1.0f),
@@ -62,7 +58,7 @@ std::unique_ptr<Envelope> PatchFactory::create_envelope(const json& config, floa
         case EnvelopeType::Unknown :
         default: {
             std::cerr << "Warning: Unknown EnvelopeType in selected json. ADSR envelope fallback will be used." << std::endl;
-            return std::make_unique<ADSREnvelope>(
+            return create_adsr_envelope(
                 sample_rate,
                 0.005f,
                 1.0f,
@@ -84,7 +80,7 @@ std::unique_ptr<ADSREnvelope> PatchFactory::create_adsr_envelope(float sample_ra
 std::unique_ptr<ADREnvelope> PatchFactory::create_adr_envelope(float sample_rate, float attack_time,
     float attack_max_level, float decay_time, float release_time, float release_max_level, float release_min_level) {
     return std::make_unique<ADREnvelope>(sample_rate, attack_time, attack_max_level, decay_time,
-        release_max_level, release_time, release_min_level);
+        release_time, release_max_level, release_min_level);
 }
 
 std::unique_ptr<SampleOscillator> PatchFactory::create_sample_oscillator(const std::vector<float>* sample, float base_frequency) {

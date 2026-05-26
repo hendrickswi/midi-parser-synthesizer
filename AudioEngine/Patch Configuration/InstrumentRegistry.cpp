@@ -97,9 +97,12 @@ void InstrumentRegistry::init(float sample_rate) {
                 selected_sample = &samples.front();
             }
 
+            // Force 1.0x playback for drums
+            float target_freq = 440.0f * std::pow(2.0f, (pitch - 69.0f) / 12.0f);
+
             v->set_oscillator(PatchFactory::create_sample_oscillator(
                 &selected_sample->audio_buffer,
-                selected_sample->base_frequency
+                target_freq
             ));
 
             const auto& env_data = drum_patch_configs[drum_key].envelope_data;
@@ -171,8 +174,12 @@ void InstrumentRegistry::init_samples() {
             uint8_t min_velocity = zone.value("min_velocity", 0);
             uint8_t max_velocity = zone.value("max_velocity", 127);
 
+            std::vector<float> audio_data = loader.load_wav_mono(file_path);
+            if (audio_data.empty()) {
+                std::cerr << "Drum data buffer is completely empty for file: " << file_path << std::endl;
+            }
             drum_patch_configs[drum_key].samples.push_back(Sample(
-                loader.load_wav_mono(file_path), base_freq, 0, 127, min_velocity, max_velocity)
+                audio_data, base_freq, 0, 127, min_velocity, max_velocity)
             );
         }
     }
@@ -250,5 +257,5 @@ void InstrumentRegistry::configure_melodic_voice(std::uint8_t patch_id, Voice* v
 }
 
 void InstrumentRegistry::configure_drum_voice(std::uint8_t patch_id, Voice* voice, uint8_t pitch, uint8_t velocity) {
-    drum_patch_factories[patch_id](voice, pitch, velocity);
+    drum_patch_factories[pitch](voice, pitch, velocity);
 }

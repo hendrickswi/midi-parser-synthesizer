@@ -4,7 +4,7 @@
 
 void ADREnvelope::calculate_rates() {
     attack_increment = attack_max_level / (std::max(attack_time, 0.00001f) * std::max(sample_rate, 0.00001f));
-    decay_increment = (attack_max_level - release_max_level) / (std::max(attack_time, 0.00001f) * std::max(sample_rate, 0.00001f));
+    decay_increment = (attack_max_level - release_max_level) / (std::max(release_time, 0.00001f) * std::max(sample_rate, 0.00001f));
     release_increment = (release_max_level - release_min_level) / (std::max(release_time, 0.00001f) * std::max(sample_rate, 0.00001f));
 }
 
@@ -78,9 +78,9 @@ float ADREnvelope::get_multiplier() {
         }
         case ADREnvelopeState::DECAY : {
             current_multiplier -= decay_increment;
-            if (current_multiplier <= release_min_level) {
-                current_multiplier = release_min_level;
-                state = ADREnvelopeState::IDLE;
+            if (current_multiplier <= release_max_level) {
+                current_multiplier = release_max_level;
+                state = ADREnvelopeState::RELEASE;
             }
             break;
         }

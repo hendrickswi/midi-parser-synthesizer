@@ -313,22 +313,43 @@
     "35": {
       "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.2, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/bass_drum-p-PB.wav", "base_frequency": 55.0, "min_velocity": 0, "max_velocity" : 63 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/bass_drum-f-PB.wav", "base_frequency": 55.0, "min_velocity": 64, "max_velocity" : 127 }
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/bass_drum-p-PB.wav", "base_frequency": 55.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/bass_drum-f-PB.wav", "base_frequency": 55.0, "min_velocity": 64, "max_velocity" : 127 }
       ]
     },
     "36": {
       "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.2, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/bass_drum-p-PB.wav", "base_frequency": 55.0, "min_velocity": 0, "max_velocity" : 63 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/bass_drum-f-PB.wav", "base_frequency": 55.0, "min_velocity": 64, "max_velocity" : 127 }
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/bass_drum-p-PB.wav", "base_frequency": 55.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/bass_drum-f-PB.wav", "base_frequency": 55.0, "min_velocity": 64, "max_velocity" : 127 }
       ]
     },
     "38": {
       "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/snare-lh-mf-PB.wav", "base_frequency": 220.0, "min_velocity": 0, "max_velocity" : 63 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/snare-lh-ff-PB.wav", "base_frequency": 220.0, "min_velocity": 64, "max_velocity" : 127 }
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-mf-PB.wav", "base_frequency": 220.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-ff-PB.wav", "base_frequency": 220.0, "min_velocity": 64, "max_velocity" : 127 }
+      ]
+    },
+    "42": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-mf-PB.wav", "base_frequency": 220.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-ff-PB.wav", "base_frequency": 220.0, "min_velocity": 64, "max_velocity" : 127 }
+      ]
+    },
+    "44": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-mf-PB.wav", "base_frequency": 220.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-ff-PB.wav", "base_frequency": 220.0, "min_velocity": 64, "max_velocity" : 127 }
+      ]
+    },
+    "46": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-mf-PB.wav", "base_frequency": 220.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-ff-PB.wav", "base_frequency": 220.0, "min_velocity": 64, "max_velocity" : 127 }
       ]
     },
     "49": {
@@ -362,7 +383,7 @@
     "58": {
       "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 0.5, "release_time": 0.1, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO/vibraslap-PB.wav", "base_frequency": 440.0 }
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/vibraslap-PB.wav", "base_frequency": 440.0 }
       ]
     },
     "81": {
