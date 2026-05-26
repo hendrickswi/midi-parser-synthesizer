@@ -3,83 +3,83 @@
     "0": {
       "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 2.5, "sustain_level": 0.1, "release_time": 0.4, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Extra/Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
       ]
     },
     "1": {
       "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 2.5, "sustain_level": 0.1, "release_time": 0.4, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Extra/Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
       ]
     },
     "2": {
       "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 2.5, "sustain_level": 0.1, "release_time": 0.4, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Extra/Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
       ]
     },
     "3": {
       "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 2.5, "sustain_level": 0.1, "release_time": 0.4, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Extra/Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
       ]
     },
     "4": {
       "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 2.5, "sustain_level": 0.1, "release_time": 0.4, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Extra/Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
       ]
     },
     "5": {
       "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 2.5, "sustain_level": 0.1, "release_time": 0.4, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Extra/Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
-        { "file": "Assets/Samples/Extra/Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 92 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A6.wav", "base_frequency": 1760.0, "min_pitch": 93, "max_pitch": 104 },
+        { "file": "Assets/Samples/Extra/0-Piano/piano-A7.wav", "base_frequency": 3520.0, "min_pitch": 105, "max_pitch": 127 }
       ]
     },
     "6": {
       "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 2.5, "sustain_level": 0.1, "release_time": 0.4, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Extra/Harpsichord/harpsichord-a1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
-        { "file": "Assets/Samples/Extra/Harpsichord/harpsichord-a2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
-        { "file": "Assets/Samples/Extra/Harpsichord/harpsichord-a3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
-        { "file": "Assets/Samples/Extra/Harpsichord/harpsichord-a4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
-        { "file": "Assets/Samples/Extra/Harpsichord/harpsichord-a5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 127 }
+        { "file": "Assets/Samples/Extra/6-Harpsichord/harpsichord-a1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
+        { "file": "Assets/Samples/Extra/6-Harpsichord/harpsichord-a2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
+        { "file": "Assets/Samples/Extra/6-Harpsichord/harpsichord-a3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
+        { "file": "Assets/Samples/Extra/6-Harpsichord/harpsichord-a4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
+        { "file": "Assets/Samples/Extra/6-Harpsichord/harpsichord-a5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 127 }
       ]
     },
     "8": {
@@ -128,6 +128,18 @@
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/4_C_f.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 64, "min_velocity": 0, "max_velocity": 127 },
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/4_F_p.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 127, "min_velocity": 0, "max_velocity": 63 },
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/4_F_f.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 127, "min_velocity": 64, "max_velocity": 127 }
+      ]
+    },
+    "38": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 2.0, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/38-SynthBass1/Casio-MT-45-Bass-I-C2.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 127 }
+      ]
+    },
+    "39": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 2.0, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/39-SynthBass2/Casio-MT-45-Bass-II-C2.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 127 }
       ]
     },
     "40": {
