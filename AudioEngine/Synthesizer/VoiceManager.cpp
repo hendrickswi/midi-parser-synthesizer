@@ -2,6 +2,7 @@
 #include "Voices/Voice.h"
 
 #include <cmath>
+#include <iostream>
 
 #include "../Patch Configuration/InstrumentRegistry.h"
 #include "Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
@@ -47,7 +48,7 @@ VoiceManager::VoiceManager() { // NOLINT
 }
 
 VoiceManager::VoiceManager(float sample_rate, float global_volume) { // NOLINT
-    if (global_volume < 0.0f || global_volume > 1.0f) {
+    if (global_volume < 0.0f || global_volume > 2.0f) {
         init(sample_rate);
         return;
     }
@@ -62,6 +63,7 @@ void VoiceManager::set_sample_rate(float sample_rate) {
 }
 
 void VoiceManager::set_global_volume(float global_volume) {
+    if (global_volume < 0.0f || global_volume > 2.0f) return;
     this->global_volume = global_volume;
 }
 
@@ -120,6 +122,7 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
     if (voice_idx == -1) {
         voice_idx = oldest_voice_idx;
         voices[voice_idx]->note_off();
+        std::cout << "INFO: Voice " << voice_idx << " stolen" << std::endl;
     }
 
     // Pass the voice the entire cc states

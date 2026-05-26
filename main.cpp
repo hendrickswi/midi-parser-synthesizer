@@ -9,7 +9,7 @@
 constexpr std::string auto_test_folder = "Testing files";
 constexpr float sample_rate = 44100.0f;
 constexpr unsigned int num_channels = 1;
-constexpr float volume = 0.5f;
+constexpr float volume = 1.0f;
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);

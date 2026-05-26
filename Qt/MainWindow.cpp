@@ -27,8 +27,8 @@ void MainWindow::init_middle_ui(QHBoxLayout* layout) {
 
     // Creating the volume slider
     volume_slider = new QSlider(Qt::Vertical, this);
-    volume_slider->setRange(0, 100);
-    volume_slider->setValue(50);
+    volume_slider->setRange(0, 200);
+    volume_slider->setValue(100);
     volume_slider->setFixedHeight(100);
 
     // Creating the volume icon
@@ -245,7 +245,7 @@ void MainWindow::on_volume_changed(int volume) {
     if (volume == 0) {
         volume_label->setPixmap(volume_mute_icon.pixmap(20, 20));
     }
-    else if (volume < 50) {
+    else if (volume < 100) {
         volume_label->setPixmap(volume_low_icon.pixmap(20, 20));
     }
     else {

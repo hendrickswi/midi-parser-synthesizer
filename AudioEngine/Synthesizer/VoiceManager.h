@@ -13,7 +13,7 @@ class Oscillator;
 
 class VoiceManager {
 private:
-    static constexpr int NUM_VOICES = 48;
+    static constexpr int NUM_VOICES = 128;
     static constexpr int NUM_CHANNELS = 16;
     std::array<std::unique_ptr<Voice>, NUM_VOICES> voices;
     std::array<uint8_t, NUM_CHANNELS> channel_patches;
@@ -29,7 +29,7 @@ private:
     float global_volume;
     float headroom_attenuation;
 
-    void init(float sample_rate = 44100.0f, float global_volume = 0.8f);
+    void init(float sample_rate = 44100.0f, float global_volume = 1.0f);
 
 public:
     VoiceManager();
