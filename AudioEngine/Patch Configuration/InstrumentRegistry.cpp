@@ -126,7 +126,7 @@ void InstrumentRegistry::init(float sample_rate) {
             // Fallback
             factory = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
                 v->set_oscillator(PatchFactory::create_noise_oscillator());
-                v->set_envelope(PatchFactory::create_adr_envelope(this->sample_rate, 0.005f, 0.8f,
+                v->set_envelope(PatchFactory::create_adr_envelope(this->sample_rate, 0.005f, 0.4f,
                     0.1f, 0.1f, 0.1f, 0.0f));
             };
         }
