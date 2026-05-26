@@ -3,8 +3,8 @@
 #include "../AudioEngine/AudioEngine.h"
 
 void PlaybackController::on_song_end() {
-    engine->stop();
     playback_timer->stop();
+    engine->stop();
 
     if (autoplay_flag) {
         if (shuffle_flag) {
@@ -53,11 +53,20 @@ void PlaybackController::on_song_unique_start() {
 }
 
 void PlaybackController::on_track_sequence_change(std::size_t index) {
+    if (index >= engine->get_loaded_file_names().size() && index == engine->get_current_track_sequence_index()) return;
+    playback_timer->stop();
     engine->stop();
     engine->soft_reset();
     engine->set_track_sequence(index);
     current_track_changed(index);
     time_updated(engine->get_track_sequence_current_time_seconds(), engine->get_track_sequence_length_seconds());
+
+    if (autoplay_flag) {
+        on_song_unique_start();
+    }
+    else {
+        playback_state_changed(false);
+    }
 }
 
 PlaybackController::PlaybackController(AudioEngine* engine, QObject* parent)
@@ -148,7 +157,7 @@ void PlaybackController::load_directory(const std::string& directory_path) {
     if (added_new_files) {
         track_list_updated(updated_files);
         if (was_empty) {
-            on_track_sequence_change(0);
+            first_loaded();
         }
     }
 }

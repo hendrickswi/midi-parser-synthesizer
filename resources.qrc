@@ -12,5 +12,7 @@
         <file>Assets/img/volume_low.png</file>
         <file>Assets/img/volume_max.png</file>
         <file>Assets/img/volume_mute.png</file>
+        <file>Assets/img/autoplay.png</file>
+        <file>Assets/img/autoplay_on.png</file>
     </qresource>
 </RCC>

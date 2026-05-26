@@ -35,9 +35,10 @@ signals:
     void shuffle_changed(bool shuffle_flag);
     void autoplay_changed(bool autoplay_flag);
     void track_list_updated(const std::vector<std::string>& tracks);
-    void current_track_changed(std::size_t index);
+    void current_track_changed(std::size_t idx);
     void volume_changed(int volume);
     void time_updated(float current_seconds, float total_seconds);
+    void first_loaded(int track_selector_start_idx = 0);
 
 public slots:
     // View to controller

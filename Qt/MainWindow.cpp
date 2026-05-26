@@ -77,7 +77,8 @@ void MainWindow::init_bottom_ui(QHBoxLayout* layout) {
 
     // Autoplay button
     autoplay_off_icon = QIcon(":/Assets/img/autoplay.png");
-    autoplay_button = new QPushButton(autoplay_off_icon, "", this);
+    autoplay_on_icon = QIcon(":/Assets/img/autoplay_on.png");
+    autoplay_button = new QPushButton(autoplay_on_icon, "", this);
     autoplay_button->setIconSize(icon_size);
     autoplay_button->setStyleSheet(transparent_button_style);
     autoplay_button->setCursor(Qt::PointingHandCursor);
@@ -127,6 +128,7 @@ void MainWindow::init_connections() {
     // Track selector
     connect(track_selector, &QComboBox::currentIndexChanged, playback_controller, &PlaybackController::select_track);
     connect(playback_controller, &PlaybackController::current_track_changed, this, &MainWindow::on_current_track_changed);
+    connect(playback_controller, &PlaybackController::first_loaded, this, &MainWindow::on_current_track_changed);
 
     // Add directory button
     connect(add_directory_button, &QPushButton::clicked, this, &MainWindow::on_add_directory_button_clicked);
