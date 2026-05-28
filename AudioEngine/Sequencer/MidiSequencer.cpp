@@ -101,25 +101,23 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         const auto& midi_event = midi_events[indices.midi_event_idx];
         indices.midi_event_idx++;
 
-        uint8_t command = midi_event.status & 0xF0;
-        uint8_t channel = midi_event.status & 0x0F;
-        switch (command) {
+        switch (midi_event.command) {
             case PROGRAM_CHANGE: {
-                synthesizer->set_channel_patch(channel, midi_event.data1);
+                synthesizer->set_channel_patch(midi_event.channel, midi_event.data1);
                 break;
             }
             case CONTROL_CHANGE : {
-                synthesizer->set_channel_cc(channel, midi_event.data1, midi_event.data2);
+                synthesizer->set_channel_cc(midi_event.channel, midi_event.data1, midi_event.data2);
                 break;
             }
 
             case PITCH_BEND : {
-                synthesizer->set_channel_pitch_bend(channel, (midi_event.data1 & 0x7F) | ((midi_event.data2 & 0x7F ) << 7));
+                synthesizer->set_channel_pitch_bend(midi_event.channel, (midi_event.data1 & 0x7F) | ((midi_event.data2 & 0x7F ) << 7));
                 break;
             }
 
             case CHANNEL_PRESSURE : {
-                synthesizer->set_channel_pressure(channel, midi_event.data1);
+                synthesizer->set_channel_pressure(midi_event.channel, midi_event.data1);
                 break;
             }
 

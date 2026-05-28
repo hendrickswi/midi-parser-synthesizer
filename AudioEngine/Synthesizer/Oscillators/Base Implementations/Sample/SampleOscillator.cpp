@@ -2,21 +2,34 @@
 
 #include <cmath>
 
-void SampleOscillator::init(const std::vector<float>* sample, float base_frequency, float repeat_low, float repeat_high) {
+void SampleOscillator::init(const std::vector<float>* sample, float raw_sample_rate, float target_sample_rate, float base_frequency, float* repeat_low, float* repeat_high) {
     this->sample = sample;
-    sample_index = 0;
-    playback_speed = 1.0f;
+    this->raw_sample_rate = raw_sample_rate;
+    this->target_sample_rate = target_sample_rate;
     this->base_frequency = base_frequency;
-    this->repeat_low = repeat_low;
-    this->repeat_high = repeat_high;
+
+    if (repeat_low == nullptr) {
+        this->repeat_low = -1.0f;
+    } else {
+        this->repeat_low = *repeat_low;
+    }
+
+    if (repeat_high == nullptr) {
+        this->repeat_high = -1.0f;
+    } else {
+        this->repeat_high = *repeat_high;
+    }
+
+    sample_index = 0;
+    playback_speed = raw_sample_rate / target_sample_rate;
 }
 
 SampleOscillator::SampleOscillator() {
-    init();
+    init(nullptr, 0.0f, 44100.0f, 440.0f, nullptr, nullptr);
 }
 
-SampleOscillator::SampleOscillator(const std::vector<float>* sample, float base_frequency, float repeat_low, float repeat_high) {
-    init(sample, base_frequency, repeat_low, repeat_high);
+SampleOscillator::SampleOscillator(const std::vector<float>* sample, float raw_sample_rate, float target_sample_rate, float base_frequency, float* repeat_low, float* repeat_high) {
+    init(sample, raw_sample_rate, target_sample_rate, base_frequency, repeat_low, repeat_high);
 }
 
 float SampleOscillator::get_sample() {
@@ -36,8 +49,10 @@ float SampleOscillator::get_sample() {
 
     // Repeat logic
     sample_index += playback_speed;
-    if (sample_index >= sample->size() * repeat_high) {
-        sample_index = sample->size() * repeat_low;
+    if (repeat_low >= 0.0f && repeat_high >= 0.0f) {
+        if (sample_index >= sample->size() * repeat_high) {
+            sample_index = sample->size() * repeat_low;
+        }
     }
 
     return interpolated_sample;
@@ -47,5 +62,6 @@ void SampleOscillator::set_modulation_depth(float depth) {
 }
 
 void SampleOscillator::set_frequency(float hz, float sample_rate) {
-    playback_speed = hz / base_frequency;
+    target_sample_rate = sample_rate;
+    playback_speed = hz / base_frequency * raw_sample_rate / sample_rate;
 }

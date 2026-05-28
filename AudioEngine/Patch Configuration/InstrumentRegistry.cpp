@@ -64,7 +64,12 @@ void InstrumentRegistry::init(float sample_rate) {
 
             v->set_oscillator(PatchFactory::create_sample_oscillator(
                 &selected_sample->audio_buffer,
-                selected_sample->base_frequency
+                selected_sample->sample_rate,
+                this->sample_rate,
+                selected_sample->base_frequency,
+                nullptr,
+                nullptr
+                // TODO: Add logic for percussive vs. sustained instruments
             ));
 
             const auto& env_data = melodic_patch_configs[patch_id].envelope_data;
@@ -102,7 +107,11 @@ void InstrumentRegistry::init(float sample_rate) {
 
             v->set_oscillator(PatchFactory::create_sample_oscillator(
                 &selected_sample->audio_buffer,
-                target_freq
+                selected_sample->sample_rate,
+                this->sample_rate,
+                target_freq,
+                nullptr,
+                nullptr
             ));
 
             const auto& env_data = drum_patch_configs[drum_key].envelope_data;
@@ -156,8 +165,12 @@ void InstrumentRegistry::init_samples() {
             uint8_t min_velocity = zone.value("min_velocity", 0);
             uint8_t max_velocity = zone.value("max_velocity", 127);
 
+            auto raw_sample = loader.load_wav_mono(file_path);
+            if (raw_sample.audio_buffer.empty()) {
+                std::cerr << "Audio buffer is completely empty for file: " << file_path << std::endl;
+            }
             melodic_patch_configs[patch_id].samples.push_back(Sample(
-                loader.load_wav_mono(file_path), base_freq, min_pitch, max_pitch, min_velocity, max_velocity)
+                raw_sample.audio_buffer, raw_sample.sample_rate, base_freq, min_pitch, max_pitch, min_velocity, max_velocity)
             );
         }
     }
@@ -174,12 +187,12 @@ void InstrumentRegistry::init_samples() {
             uint8_t min_velocity = zone.value("min_velocity", 0);
             uint8_t max_velocity = zone.value("max_velocity", 127);
 
-            std::vector<float> audio_data = loader.load_wav_mono(file_path);
-            if (audio_data.empty()) {
-                std::cerr << "Drum data buffer is completely empty for file: " << file_path << std::endl;
+            auto raw_sample = loader.load_wav_mono(file_path);
+            if (raw_sample.audio_buffer.empty()) {
+                std::cerr << "Audio buffer is completely empty for file: " << file_path << std::endl;
             }
             drum_patch_configs[drum_key].samples.push_back(Sample(
-                audio_data, base_freq, 0, 127, min_velocity, max_velocity)
+                raw_sample.audio_buffer, raw_sample.sample_rate, base_freq, 0, 127, min_velocity, max_velocity)
             );
         }
     }

@@ -130,6 +130,26 @@
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/4_F_f.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 127, "min_velocity": 64, "max_velocity": 127 }
       ]
     },
+    "21": {
+      "envelope": { "type": "ADSR", "attack_time": 0.02, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.95, "release_time": 0.08, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-A3.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 59 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-C4.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 60 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-Db4.wav", "base_frequency": 277.18, "min_pitch": 61, "max_pitch": 63 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-E4.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 65 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-F#4.wav", "base_frequency": 369.99, "min_pitch": 66, "max_pitch": 67 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-Ab4.wav", "base_frequency": 415.30, "min_pitch": 68, "max_pitch": 69 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-Bb4.wav", "base_frequency": 466.16, "min_pitch": 70, "max_pitch": 71 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-C5.wav", "base_frequency": 523.25, "min_pitch": 72, "max_pitch": 73 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-D5.wav", "base_frequency": 587.33, "min_pitch": 74, "max_pitch": 75 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-E5.wav", "base_frequency": 659.25, "min_pitch": 76, "max_pitch": 76 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-F5.wav", "base_frequency": 698.46, "min_pitch": 77, "max_pitch": 78 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-G5.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 80 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-A5.wav", "base_frequency": 880.00, "min_pitch": 81, "max_pitch": 83 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-C6.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 87 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-E6.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 127 }
+      ]
+    },
     "38": {
       "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 2.0, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
       "zones": [
@@ -414,22 +434,19 @@
     "42": {
       "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-mf-PB.wav", "base_frequency": 220.0, "min_velocity": 0, "max_velocity" : 63 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-ff-PB.wav", "base_frequency": 220.0, "min_velocity": 64, "max_velocity" : 127 }
+        { "file": "Assets/Samples/Extra/42drum-closed-hi-hat/closed-hi-hat.wav", "base_frequency": 220.0 }
       ]
     },
     "44": {
       "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-mf-PB.wav", "base_frequency": 220.0, "min_velocity": 0, "max_velocity" : 63 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-ff-PB.wav", "base_frequency": 220.0, "min_velocity": 64, "max_velocity" : 127 }
+        { "file": "Assets/Samples/Extra/44drum-pedal-hi-hat/pedal-hi-hat.wav", "base_frequency": 220.0 }
       ]
     },
     "46": {
       "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-mf-PB.wav", "base_frequency": 220.0, "min_velocity": 0, "max_velocity" : 63 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-ff-PB.wav", "base_frequency": 220.0, "min_velocity": 64, "max_velocity" : 127 }
+        { "file": "Assets/Samples/Extra/46drum-open-hi-hat/open-hi-hat.wav", "base_frequency": 220.0 }
       ]
     },
     "49": {

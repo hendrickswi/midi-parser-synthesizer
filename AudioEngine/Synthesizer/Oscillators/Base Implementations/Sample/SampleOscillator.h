@@ -7,17 +7,19 @@
 class SampleOscillator : public Oscillator {
 private:
     const std::vector<float>* sample;
+    float raw_sample_rate;
+    float target_sample_rate;
     float sample_index;
     float base_frequency;
     float playback_speed;
     float repeat_low;
     float repeat_high;
 
-    void init(const std::vector<float>* sample = nullptr, float base_frequency = 440.0f, float repeat_low = 0.3f, float repeat_high = 0.7f);
+    void init(const std::vector<float>* sample, float raw_sample_rate, float target_sample_rate, float base_frequency, float* repeat_low, float* repeat_high);
 
 public:
     SampleOscillator();
-    SampleOscillator(const std::vector<float>* sample, float base_frequency, float repeat_low = 0.3f, float repeat_high = 0.7f);
+    SampleOscillator(const std::vector<float>* sample, float raw_sample_rate, float target_sample_rate, float base_frequency, float* repeat_low, float* repeat_high);
 
     float get_sample() override;
     void set_modulation_depth(float depth) override;

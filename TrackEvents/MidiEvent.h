@@ -20,18 +20,20 @@
  * @param absolute_time
  *        The time in ticks since the start of the track at which this event occurs.
  * @param status
- *        The status byte identifying the type of MIDI event
+ *        The top four bits of the status byte identifying the type of MIDI event
  * @param data1
  *        The first data byte, whose specific meaning depends on the event type.
  * @param data2
  *        The second data byte, whose specific meaning depends on the event type.
+ * @param channel
+ *        The bottom four bits of the status byte indicating the channel of the MIDI event.
  */
 struct MidiEvent {
     // Ticks since the start of the song
     uint32_t absolute_time;
 
     // Type of MIDI event (e.g., pitch bend, polyphonic key pressure)
-    uint8_t status;
+    uint8_t command;
 
     // 8-bit data points about this event, varies based on the given status.
     uint8_t data1;

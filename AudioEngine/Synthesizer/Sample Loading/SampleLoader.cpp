@@ -9,20 +9,20 @@ extern "C" {
 
 SampleLoader::SampleLoader() = default;
 
-std::vector<float> SampleLoader::load_wav_mono(const std::string& file_path) {
+RawAudioData SampleLoader::load_wav_mono(const std::string& file_path) {
     std::string path = get_sanitized_file_path(file_path);
 
     std::vector<float> sample_data = std::vector<float>();
-    unsigned int channels;
-    unsigned int sample_rate;
-    drwav_uint64 total_pcm_frame_count;
+    unsigned int channels = 0;
+    unsigned int sample_rate = 0;
+    drwav_uint64 total_pcm_frame_count = 0;
 
     float* data = drwav_open_file_and_read_pcm_frames_f32(path.c_str(), &channels,
         &sample_rate, &total_pcm_frame_count, nullptr);
 
     if (data == nullptr) {
         std::cerr << "Failed to load sample data at file path " << path << std::endl;
-        return sample_data;
+        return RawAudioData(sample_data, sample_rate);
     }
 
     sample_data.reserve(total_pcm_frame_count);
@@ -40,5 +40,5 @@ std::vector<float> SampleLoader::load_wav_mono(const std::string& file_path) {
     }
 
     drwav_free(data, nullptr); // Free memory allocated by dr_wav
-    return sample_data;
+    return RawAudioData(sample_data, sample_rate);
 }

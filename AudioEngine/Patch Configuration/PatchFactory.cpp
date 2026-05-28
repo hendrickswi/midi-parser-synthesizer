@@ -83,8 +83,8 @@ std::unique_ptr<ADREnvelope> PatchFactory::create_adr_envelope(float sample_rate
         release_time, release_max_level, release_min_level);
 }
 
-std::unique_ptr<SampleOscillator> PatchFactory::create_sample_oscillator(const std::vector<float>* sample, float base_frequency) {
-    return std::make_unique<SampleOscillator>(sample, base_frequency);
+std::unique_ptr<SampleOscillator> PatchFactory::create_sample_oscillator(const std::vector<float>* sample, float raw_sample_rate, float target_sample_rate, float base_frequency, float* repeat_low, float* repeat_high) {
+    return std::make_unique<SampleOscillator>(sample, raw_sample_rate, target_sample_rate, base_frequency, repeat_low, repeat_high);
 }
 
 std::unique_ptr<SineOscillator> PatchFactory::create_sine_oscillator(float hz, float sample_rate) {

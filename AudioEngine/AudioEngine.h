@@ -20,6 +20,72 @@ private:
 
     std::thread sequencer_thread;
 
+    // Helper array of strings for get_instrument_names_of_current_track_sequence()
+    const std::string GM_PATCH_NAMES[128] = {
+        "Acoustic Grand Piano", "Bright Acoustic Piano", "Electric Grand Piano", "Honky-tonk Piano",
+        "Electric Piano 1 (Rhodes)", "Electric Piano 2 (Chorused)", "Harpsichord", "Clavinet",
+
+        // Chromatic Percussion (8 - 15)
+        "Celesta", "Glockenspiel", "Music Box", "Vibraphone",
+        "Marimba", "Xylophone", "Tubular Bells", "Dulcimer",
+
+        // Organ (16 - 23)
+        "Drawbar Organ", "Percussive Organ", "Rock Organ", "Church Organ",
+        "Reed Organ", "Accordion", "Harmonica", "Tango Accordion",
+
+        // Guitar (24 - 31)
+        "Acoustic Guitar (Nylon)", "Acoustic Guitar (Steel)", "Electric Guitar (Jazz)", "Electric Guitar (Clean)",
+        "Electric Guitar (Muted)", "Overdriven Guitar", "Distortion Guitar", "Guitar Harmonics",
+
+        // Bass (32 - 39)
+        "Acoustic Bass", "Electric Bass (Finger)", "Electric Bass (Pick)", "Fretless Bass",
+        "Slap Bass 1", "Slap Bass 2", "Synth Bass 1", "Synth Bass 2",
+
+        // Strings (40 - 47)
+        "Violin", "Viola", "Cello", "Contrabass",
+        "Tremolo Strings", "Pizzicato Strings", "Orchestral Harp", "Timpani",
+
+        // Ensemble (48 - 55)
+        "String Ensemble 1", "String Ensemble 2", "Synth Strings 1", "Synth Strings 2",
+        "Choir Aahs", "Voice Oohs", "Synth Voice", "Orchestra Hit",
+
+        // Brass (56 - 63)
+        "Trumpet", "Trombone", "Tuba", "Muted Trumpet",
+        "French Horn", "Brass Section", "Synth Brass 1", "Synth Brass 2",
+
+        // Reed (64 - 71)
+        "Soprano Sax", "Alto Sax", "Tenor Sax", "Baritone Sax",
+        "Oboe", "English Horn", "Bassoon", "Clarinet",
+
+        // Pipe (72 - 79)
+        "Piccolo", "Flute", "Recorder", "Pan Flute",
+        "Blown Bottle", "Shakuhachi", "Whistle", "Ocarina",
+
+        // Synth Lead (80 - 87)
+        "Lead 1 (Square)", "Lead 2 (Sawtooth)", "Lead 3 (Calliope)", "Lead 4 (Chiff)",
+        "Lead 5 (Charang)", "Lead 6 (Voice)", "Lead 7 (Fifths)", "Lead 8 (Bass + Lead)",
+
+        // Synth Pad (88 - 95)
+        "Pad 1 (New Age)", "Pad 2 (Warm)", "Pad 3 (Polysynth)", "Pad 4 (Choir)",
+        "Pad 5 (Bowed)", "Pad 6 (Metallic)", "Pad 7 (Halo)", "Pad 8 (Sweep)",
+
+        // Synth Effects (96 - 103)
+        "FX 1 (Rain)", "FX 2 (Soundtrack)", "FX 3 (Crystal)", "FX 4 (Atmosphere)",
+        "FX 5 (Brightness)", "FX 6 (Goblins)", "FX 7 (Echoes)", "FX 8 (Sci-fi)",
+
+        // Ethnic (104 - 111)
+        "Sitar", "Banjo", "Shamisen", "Koto",
+        "Kalimba", "Bagpipe", "Fiddle", "Shanai",
+
+        // Percussive (112 - 119)
+        "Tinkle Bell", "Agogo", "Steel Drums", "Woodblock",
+        "Taiko Drum", "Melodic Tom", "Synth Drum", "Reverse Cymbal",
+
+        // Sound Effects (120 - 127)
+        "Guitar Fret Noise", "Breath Noise", "Seashore", "Bird Tweet",
+        "Telephone Ring", "Helicopter", "Applause", "Gunshot"
+    };
+
     void init(float sample_rate = 44100.0f, unsigned int num_channels = 1);
 
     // RtAudio mandated callback function
@@ -38,6 +104,7 @@ public:
     bool load_midi_file(const std::string& file_path);
     [[nodiscard]] const std::vector<std::string>& get_loaded_file_names() const;
     [[nodiscard]] std::size_t get_current_track_sequence_index() const;
+    [[nodiscard]] std::vector<std::string> get_instrument_names_of_current_track_sequence() const;
 
     void play();
     void stop();

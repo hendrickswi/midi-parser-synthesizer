@@ -24,7 +24,7 @@ public:
         float sustain_level, float release_time, float release_min_level);
     static std::unique_ptr<ADREnvelope> create_adr_envelope(float sample_rate, float attack_time, float attack_max_level, float decay_time,
         float release_time, float release_max_level, float release_min_level);
-    static std::unique_ptr<SampleOscillator> create_sample_oscillator(const std::vector<float>* sample, float base_frequency);
+    static std::unique_ptr<SampleOscillator> create_sample_oscillator(const std::vector<float>* sample, float raw_sample_rate, float target_sample_rate, float base_frequency, float* repeat_low, float* repeat_high);
     static std::unique_ptr<SineOscillator> create_sine_oscillator(float hz, float sample_rate);
     static std::unique_ptr<SquareOscillator> create_square_oscillator(float hz, float sample_rate);
     static std::unique_ptr<TriangleOscillator> create_triangle_oscillator(float hz, float sample_rate);

@@ -124,7 +124,6 @@ bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, co
                 const uint32_t duration = current_time - start_time;
                 const uint32_t attack_velocity = active_note_volumes[channel][data1];
 
-                // FIXED: Passing start_time, channel, and attack_velocity
                 track.add_note(Note(start_time, duration, data1, attack_velocity, channel));
 
                 // Reset the corresponding active note
@@ -148,7 +147,7 @@ bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, co
     }
     else {
         // Then this is some kind of miscellaneous event like a pitch bend
-        track.add_midi_event(MidiEvent(current_time, status_byte, data1, data2));
+        track.add_midi_event(MidiEvent(current_time, command, data1, data2, channel));
     }
 
     return true;

@@ -1,6 +1,8 @@
 #include "AudioEngine.h"
+#include "../EventTypeEnums/MidiEventType.h"
 
 #include <iostream>
+#include <set>
 
 void AudioEngine::init(float sample_rate, unsigned int num_channels) {
     sequencer.set_synthesizer(&synth);
@@ -83,6 +85,52 @@ const std::vector<std::string>& AudioEngine::get_loaded_file_names() const {
 
 std::size_t AudioEngine::get_current_track_sequence_index() const {
     return current_track;
+}
+
+std::vector<std::string> AudioEngine::get_instrument_names_of_current_track_sequence() const {
+    const auto& track_sequence = loaded_track_sequences[current_track];
+    auto patch_ids = std::set<uint8_t>();
+
+    bool has_notes = false;
+    bool has_drums = false;
+    bool explicit_program_change_found = false;
+
+    // Find unique patch IDs
+    for (auto& track : track_sequence.get_tracks()) {
+        for (const auto& event : track.get_midi_events()) {
+            if (event.command == PROGRAM_CHANGE) {
+                patch_ids.insert(event.data1);
+                explicit_program_change_found = true;
+            }
+            else if (event.command == NOTE_ON && event.data2 > 0) {
+                if (event.channel == 9) {
+                    has_drums = true;
+                }
+                else {
+                    has_notes = true;
+                }
+            }
+        }
+    }
+
+    if (has_notes && !explicit_program_change_found) {
+        // Grand piano default
+        patch_ids.insert(0);
+    }
+
+    // Convert patch IDs into instrument names
+    std::vector<std::string> instrument_names = std::vector<std::string>();
+    for (auto patch_id : patch_ids) {
+        if (patch_id <= 127) {
+            instrument_names.push_back(GM_PATCH_NAMES[patch_id]);
+        }
+    }
+
+    if (has_drums) {
+        instrument_names.push_back("Drum Kit");
+    }
+
+    return instrument_names;
 }
 
 void AudioEngine::play() {

@@ -23,23 +23,23 @@ void VoiceManager::init(float sample_rate, float global_volume) {
     channel_pressures = std::array<uint8_t, NUM_CHANNELS>();
     channel_cc_states = std::array<std::array<uint8_t, 128>, NUM_CHANNELS>();
 
+    // Initialize default values for midi event data
+    channel_patches.fill(0);
+    channel_pitch_bends.fill(8192);
+    for (auto& channel_state : channel_cc_states) {
+        channel_state.fill(0);
+    }
+    for (int i = 0; i < 16; i++) {
+        channel_cc_states[i][7] = 100;  // Channel volume defaults to 100
+        channel_cc_states[i][11] = 127; // Expression defaults to max
+        channel_cc_states[i][10] = 64;  // Pan defaults to center
+    }
+
     // Creating all the voices
     for (auto& voice : voices) {
         auto oscillator = std::make_unique<SineOscillator>();
         auto envelope = std::make_unique<ADSREnvelope>();
         voice = std::make_unique<Voice>(std::move(oscillator), std::move(envelope));
-    }
-
-    channel_patches.fill(0);
-
-    for (auto& channel_state : channel_cc_states) {
-        channel_state.fill(0);
-    }
-
-    for (int i = 0; i < 16; i++) {
-        channel_cc_states[i][7] = 100;  // Channel volume defaults to 100
-        channel_cc_states[i][11] = 127; // Expression defaults to max
-        channel_cc_states[i][10] = 64;  // Pan defaults to center
     }
 }
 

@@ -67,6 +67,13 @@ void PlaybackController::on_track_sequence_change(std::size_t index) {
     else {
         playback_state_changed(false);
     }
+
+    auto instrument_names = engine->get_instrument_names_of_current_track_sequence();
+    std::cout << "INFO: Selected track contains instruments:" << std::endl;
+    for (const auto& name : instrument_names) {
+        std::cout << name << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 PlaybackController::PlaybackController(AudioEngine* engine, QObject* parent)

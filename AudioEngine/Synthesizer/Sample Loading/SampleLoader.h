@@ -3,11 +3,13 @@
 #include <string>
 #include <vector>
 
+#include "RawAudioData.h"
+
 class SampleLoader {
 public:
     SampleLoader();
 
-    std::vector<float> load_wav_mono(const std::string& file_path);
+    RawAudioData load_wav_mono(const std::string& file_path);
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_SAMPLELOADER_H
