@@ -62,14 +62,19 @@ void InstrumentRegistry::init(float sample_rate) {
                selected_sample = &samples.front();
             }
 
+            // Safe estimate for repeat logic until implemented properly
+            // Could keep it like this indefinitely, as ADSR vs. ADR envelope
+            // already handles sustained instrument vs percussive instrument
+            float repeat_low = 0.3f;
+            float repeat_high = 0.7f;
+
             v->set_oscillator(PatchFactory::create_sample_oscillator(
                 &selected_sample->audio_buffer,
                 selected_sample->sample_rate,
                 this->sample_rate,
                 selected_sample->base_frequency,
-                nullptr,
-                nullptr
-                // TODO: Add logic for percussive vs. sustained instruments
+                &repeat_low,
+                &repeat_high
             ));
 
             const auto& env_data = melodic_patch_configs[patch_id].envelope_data;
