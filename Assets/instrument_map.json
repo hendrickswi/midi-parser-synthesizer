@@ -150,6 +150,30 @@
         { "file": "Assets/Samples/Extra/21-accordion/accordion-E6.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 127 }
       ]
     },
+    "24": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C4.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 127 }
+      ]
+    },
+    "25": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/25-AcousticGuitarSteel/acoustic-guitar-steel-C4.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 127 }
+      ]
+    },
+    "35": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/35-FretlessBass/fretless-bass-C3.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 127 }
+      ]
+    },
+    "36": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/36-SlapBass1/slap-bass-1-C2.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 127 }
+      ]
+    },
     "38": {
       "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 2.0, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
       "zones": [
