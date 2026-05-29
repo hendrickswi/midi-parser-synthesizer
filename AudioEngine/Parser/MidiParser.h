@@ -2,8 +2,11 @@
 #define MIDI_PARSERSYNTHESIZER_MIDIPARSER_H
 
 #include <cstdint>
+#include <queue>
 #include <string>
 #include <vector>
+
+#include "UnfinishedNote.h"
 #include "../../Containers/File.h"
 #include "../../Containers/TrackSequence.h"
 
@@ -15,13 +18,11 @@ private:
     std::size_t cursor;
 
     /*
-     * Helper collections for keeping track of active notes.
+     * Helper FIFO collection for keeping track of active notes.
      * Each channel (outside vector) has 128 pitches (inside vector).
      * Allows notes to be created on a rolling basis.
-     * Explicitly does not allow duplicates.
      */
-    std::vector<std::vector<uint32_t>> active_note_start_times;
-    std::vector<std::vector<uint32_t>> active_note_volumes;
+    std::vector<std::vector<std::queue<UnfinishedNote>>> pending_notes;
 
     // Helper functions for Big-Endian format of midi files
     uint16_t read_uint16();

@@ -10,8 +10,8 @@
 
 void MidiParser::init() {
     cursor = 0;
-    active_note_start_times = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
-    active_note_volumes = std::vector<std::vector<uint32_t>>(16, std::vector<uint32_t>(128, -1));
+    pending_notes = std::vector<std::vector<std::queue<UnfinishedNote>>>(
+        16, std::vector<std::queue<UnfinishedNote>>(128));
 }
 
 MidiParser::MidiParser() { // NOLINT
@@ -26,8 +26,7 @@ MidiParser::MidiParser(const File& file) { // NOLINT
 MidiParser::MidiParser(const MidiParser& other) {
     this->file = other.file;
     this->cursor = other.cursor;
-    this->active_note_start_times = other.active_note_start_times;
-    this->active_note_volumes = other.active_note_volumes;
+    this->pending_notes = other.pending_notes;
 }
 
 uint16_t MidiParser::read_uint16() {
@@ -90,17 +89,13 @@ uint32_t MidiParser::read_vlq() {
 }
 
 bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, const uint8_t& status_byte) {
-    // Bitmasking with 11110000 (0xF0) to get the top 4 bits
-    // The top 4 bits are the command
     uint8_t command = status_byte & 0xF0;
-
-    // Bitmasking with 00001111 (0x0F) to get the bottom 4 bits
-    // The bottom 4 bits are the channel
     uint8_t channel = status_byte & 0x0F;
 
     uint8_t data1 = file.get_data().at(cursor);
     cursor++;
     uint8_t data2 = 0;
+
     if (!(command == PROGRAM_CHANGE || command == CHANNEL_PRESSURE)) {
         // These events only have one byte of data,
         // so if it is not either of these, set data2.
@@ -108,41 +103,15 @@ bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, co
         cursor++;
     }
 
-    // Special cases: Note On or Note Off
-    if (command == NOTE_ON) {
-        if (data2 > 0) {
-            // Set a specific pitch (data1) to be active now and with data2 volume.
-            active_note_start_times[channel][data1] = current_time;
-            active_note_volumes[channel][data1] = data2;
-        }
-        else if (data2 == 0) {
-            // A Note On with 0 velocity is a Note Off
-            const uint32_t start_time = active_note_start_times[channel][data1];
-
-            // Safety check to prevent ghost notes
-            if (start_time != -1) {
-                const uint32_t duration = current_time - start_time;
-                const uint32_t attack_velocity = active_note_volumes[channel][data1];
-
-                track.add_note(Note(start_time, duration, data1, attack_velocity, channel));
-
-                // Reset the corresponding active note
-                active_note_start_times[channel][data1] = -1;
-                active_note_volumes[channel][data1] = -1;
-            }
-        }
+    if (command == NOTE_ON && data2 > 0) {
+        pending_notes[channel][data1].push(UnfinishedNote(current_time, data2));
     }
-    else if (command == NOTE_OFF) {
-        const uint32_t start_time = active_note_start_times[channel][data1];
-
-        if (start_time != -1) {
-            const uint32_t duration = current_time - start_time;
-            const uint32_t attack_velocity = active_note_volumes[channel][data1];
-            track.add_note(Note(start_time, duration, data1, attack_velocity, channel));
-
-            // Reset the corresponding active note
-            active_note_start_times[channel][data1] = -1;
-            active_note_volumes[channel][data1] = -1;
+    else if (command == NOTE_OFF || (command == NOTE_ON && data2 == 0)) {
+        if (!pending_notes[channel][data1].empty()) {
+            auto note_data = pending_notes[channel][data1].front();
+            pending_notes[channel][data1].pop();
+            uint32_t duration = current_time - note_data.start_time;
+            track.add_note(Note(note_data.start_time, duration, data1, note_data.velocity, channel));
         }
     }
     else {
@@ -224,13 +193,13 @@ bool MidiParser::parse_track_event(Track& track, uint32_t& current_time, uint8_t
 
     // Dispatch to the correct event parser method
     if (is_meta_event(current_status)) {
-        return parse_meta_event(track, current_time, running_status);
+        return parse_meta_event(track, current_time, current_status);
     }
     else if (is_sysex_event(current_status)) {
-        return parse_sysex_event(track, current_time, running_status);
+        return parse_sysex_event(track, current_time, current_status);
     }
     else if (is_midi_event(current_status)) {
-        parse_midi_event(track, current_time, running_status);
+        parse_midi_event(track, current_time, current_status);
     }
     else {
         return false;
@@ -240,13 +209,12 @@ bool MidiParser::parse_track_event(Track& track, uint32_t& current_time, uint8_t
 }
 
 bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
-    // Clear the active note helper collections
-    for (int i = 0; i < active_note_start_times.size(); i++) {
-       fill(active_note_start_times[i].begin(), active_note_start_times[i].end(), -1);
-    }
-
-    for (int i = 0; i < active_note_volumes.size(); i++) {
-        fill(active_note_volumes[i].begin(), active_note_volumes[i].end(), -1);
+    for (int channel = 0; channel < 16; channel++) {
+        for (int pitch = 0; pitch < 128; pitch++) {
+            while (!pending_notes[channel][pitch].empty()) {
+                pending_notes[channel][pitch].pop();
+            }
+        }
     }
 
     uint32_t current_time = 0;
@@ -261,7 +229,19 @@ bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
         }
     }
 
-    track.sort_notes();
+    // Note cleanup (to not drop unfinished notes in poorly formatted files)
+    for (uint8_t channel = 0; channel < 16; channel++) {
+        for (uint8_t pitch = 0; pitch < 128; pitch++) {
+            if (!pending_notes[channel][pitch].empty()) {
+                auto note_data = pending_notes[channel][pitch].front();
+                pending_notes[channel][pitch].pop();
+                uint32_t duration = current_time - note_data.start_time;
+                track.add_note(Note(note_data.start_time, duration, pitch, note_data.velocity, channel));
+            }
+        }
+    }
+
+    track.sort_notes(); // Final sort to ensure correctness
     return true;
 }
 

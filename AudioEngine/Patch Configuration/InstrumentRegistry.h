@@ -19,6 +19,7 @@ private:
     void init(float sample_rate = 44100.0f);
     void init_samples();
     void init_leads();
+    void init_pads();
 
 public:
     InstrumentRegistry();

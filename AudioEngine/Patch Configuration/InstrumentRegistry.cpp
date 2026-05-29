@@ -25,6 +25,7 @@ void InstrumentRegistry::init(float sample_rate) {
     this->sample_rate = sample_rate;
     init_samples();
     init_leads();
+    init_pads();
 
     // Melodic sample handling
     for (int patch_id = 0; patch_id < 128; patch_id++) {
@@ -259,6 +260,94 @@ void InstrumentRegistry::init_leads() {
 
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.8f, 0.2f, 0.5f, 0.1f, 0.0f));
+    };
+}
+
+void InstrumentRegistry::init_pads() {
+    // Pad 1 (New age)
+    melodic_patch_factories[88] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        auto composite = std::make_unique<CompositeOscillator>();
+        composite->add_oscillator(PatchFactory::create_triangle_oscillator(440.0f, sample_rate), 0.5f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_sine_oscillator(440.0f, sample_rate), 0.2f, 2.0f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.2f, 1.003f);
+
+        v->set_oscillator(std::move(composite));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.2f, 1.0f, 0.001f, 1.0f, 0.2f, 0.0f));
+    };
+
+    // Pad 2 (Warm)
+    melodic_patch_factories[89] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        auto composite = std::make_unique<CompositeOscillator>();
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.34f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.33f, 0.996f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.33f, 1.004f);
+
+        v->set_oscillator(std::move(composite));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.4f, 0.6f, 0.001f, 0.6f, 0.4f, 0.0f));
+    };
+
+    // Pad 3 (Polysynth)
+    melodic_patch_factories[90] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        auto composite = std::make_unique<CompositeOscillator>();
+        composite->add_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate), 0.4f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.003f);
+
+        v->set_oscillator(std::move(composite));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.05f, 0.6f, 0.3f, 0.6f, 0.5f, 0.0f));
+    };
+
+    // Pad (Choir)
+    melodic_patch_factories[91] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        auto composite = std::make_unique<CompositeOscillator>();
+        composite->add_oscillator(PatchFactory::create_triangle_oscillator(440.0f, sample_rate), 0.4f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.002f);
+
+        v->set_oscillator(std::move(composite));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.6f, 0.6f, 0.001f, 0.6f, 0.6f, 0.0f));
+    };
+
+    // Pad 5 (Bowed)
+    melodic_patch_factories[92] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        auto composite = std::make_unique<CompositeOscillator>();
+        composite->add_oscillator(PatchFactory::create_triangle_oscillator(440.0f, sample_rate), 0.4f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.005f);
+
+        v->set_oscillator(std::move(composite));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.5f, 0.6f, 0.1f, 0.4f, 0.5f, 0.0f));
+    };
+
+    // Pad 6 (Metallic)
+    melodic_patch_factories[93] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        auto composite = std::make_unique<CompositeOscillator>();
+        composite->add_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate), 0.4f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate), 0.4f, 2.0f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.2f, 4.0f);
+
+        v->set_oscillator(std::move(composite));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.1f, 0.6f, 0.5f, 0.3f, 0.5f, 0.0f));
+    };
+
+    // Pad 7 (Halo)
+    melodic_patch_factories[94] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        auto composite = std::make_unique<CompositeOscillator>();
+        composite->add_oscillator(PatchFactory::create_sine_oscillator(440.0f, sample_rate), 0.5f, 1.0f);
+        composite->add_oscillator(PatchFactory::create_sine_oscillator(440.0f, sample_rate), 0.3f, 2.0f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.2f, 1.0f);
+
+        v->set_oscillator(std::move(composite));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 0.5f, 0.0f));
+    };
+
+    // Pad 8 (Sweep)
+    melodic_patch_factories[95] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
+        auto composite = std::make_unique<CompositeOscillator>();
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.5f, 0.992f);
+        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.5f, 1.008f);
+
+        v->set_oscillator(std::move(composite));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 1.0f, 0.0f));
     };
 }
 
