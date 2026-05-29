@@ -2,6 +2,7 @@
 
 read -p "Enter the SOURCE directory containing raw .wav files: " INPUT_DIR
 read -p "Enter the TARGET directory for normalized files: " OUTPUT_DIR
+read -p "Enter the peak amplitude relative to the digital ceiling: " AMT
 
 if [ ! -d "$INPUT_DIR" ]; then
     echo "Error: Source directory '$INPUT_DIR' does not exist."
@@ -48,11 +49,11 @@ find "$INPUT_DIR" -type f -iname "*.wav" -print0 | while IFS= read -r -d '' file
 
     if [ "$IN_PLACE" = true ]; then
         temp_file="${file}.tmp.wav"
-        sox "$file" "$temp_file" norm 0
+        sox "$file" "$temp_file" norm "$AMT"
         mv "$temp_file" "$file"
     else
         mkdir -p "$(dirname "$output_file")"
-        sox "$file" "$output_file" norm -1
+        sox "$file" "$output_file" norm "$AMT"
     fi
     echo "Processed: $relative_path"
 done
