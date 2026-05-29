@@ -418,7 +418,7 @@
       ]
     },
     "73": {
-      "envelope": { "type": "ADSR", "attack_time": 0.04, "attack_max": 1.0, "decay_time": 0.2, "sustain_level": 0.85, "release_time": 0.3, "release_min": 0.0 },
+      "envelope": { "type": "ADSR", "attack_time": 0.04, "attack_max": 1.0, "decay_time": 0.2, "sustain_level": 0.9, "release_time": 0.5, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_C3-PB-loop.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 51 },
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_E3-PB-loop.wav", "base_frequency": 164.81, "min_pitch": 52, "max_pitch": 56 },

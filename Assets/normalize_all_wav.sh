@@ -8,7 +8,11 @@ if [ ! -d "$INPUT_DIR" ]; then
     exit 1
 fi
 
-ABS_TARGET=$(realpath -m "$OUTPUT_DIR")
+IN_PLACE=false
+if [ "$INPUT_DIR" -ef "$OUTPUT_DIR" ]; then
+    IN_PLACE=true
+    echo "Notice: Input and Output directories are the same. Files will be modified in-place."
+fi
 
 # Do not allow operations directory on these critical directories
 PROTECTED_DIRS=(
@@ -24,11 +28,13 @@ for protected in "${PROTECTED_DIRS[@]}"; do
     fi
 done
 
-if [ -d "$OUTPUT_DIR" ]; then
-    echo "Syncing: Removing old .wav files from '$OUTPUT_DIR'..."
-    find "$OUTPUT_DIR" -type f -iname "*.wav" -delete
-else
-    mkdir -p "$OUTPUT_DIR"
+if [ "$IN_PLACE" = "false" ]; then
+  if [ -d "$OUTPUT_DIR" ]; then
+      echo "Syncing: Removing old .wav files from '$OUTPUT_DIR'..."
+      find "$OUTPUT_DIR" -type f -iname "*.wav" -delete
+  else
+      mkdir -p "$OUTPUT_DIR"
+  fi
 fi
 
 echo "Starting normalization process..."
@@ -40,10 +46,14 @@ find "$INPUT_DIR" -type f -iname "*.wav" -print0 | while IFS= read -r -d '' file
     relative_path="${file#$INPUT_DIR/}"
     output_file="$OUTPUT_DIR/$relative_path"
 
-    mkdir -p "$(dirname "$output_file")"
-
-    sox "$file" "$output_file" norm -1
-
+    if [ "$IN_PLACE" = true ]; then
+        temp_file="${file}.tmp.wav"
+        sox "$file" "$temp_file" norm 0
+        mv "$temp_file" "$file"
+    else
+        mkdir -p "$(dirname "$output_file")"
+        sox "$file" "$output_file" norm -1
+    fi
     echo "Processed: $relative_path"
 done
 
