@@ -216,6 +216,7 @@ void InstrumentRegistry::init_leads() {
         v->set_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.2f,
             0.25f, 0.1f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Sawtooth lead
@@ -223,30 +224,35 @@ void InstrumentRegistry::init_leads() {
         v->set_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.2f,
             0.25f, 0.1f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Calliope lead
     melodic_patch_factories[82] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
         v->set_oscillator(PatchFactory::create_triangle_oscillator(440, sample_rate));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.02f, 0.6f, 0.1f, 0.7f, 0.2f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Chiff lead
     melodic_patch_factories[83] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
         v->set_oscillator(PatchFactory::create_sine_oscillator(440.0f, sample_rate));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Charang lead
     melodic_patch_factories[84] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
         v->set_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.3f, 0.2f, 0.15f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Voice lead
     melodic_patch_factories[85] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
         v->set_oscillator(PatchFactory::create_triangle_oscillator(440.0f, sample_rate));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.06f, 0.6f, 0.1f, 0.7f, 0.25f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Fifths lead
@@ -256,6 +262,7 @@ void InstrumentRegistry::init_leads() {
         composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.4f, std::pow(2.0f, 7.0f / 12.0f));
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Bass + lead
@@ -266,6 +273,7 @@ void InstrumentRegistry::init_leads() {
 
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.8f, 0.2f, 0.5f, 0.1f, 0.0f));
+        v->set_one_shot(false);
     };
 }
 
@@ -279,6 +287,7 @@ void InstrumentRegistry::init_pads() {
 
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.2f, 1.0f, 0.001f, 1.0f, 0.2f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Pad 2 (Warm)
@@ -290,6 +299,7 @@ void InstrumentRegistry::init_pads() {
 
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.4f, 0.6f, 0.001f, 0.6f, 0.4f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Pad 3 (Polysynth)
@@ -301,6 +311,7 @@ void InstrumentRegistry::init_pads() {
 
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.05f, 0.6f, 0.3f, 0.6f, 0.3f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Pad (Choir)
@@ -311,6 +322,7 @@ void InstrumentRegistry::init_pads() {
 
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.6f, 0.6f, 0.001f, 0.6f, 0.6f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Pad 5 (Bowed)
@@ -322,6 +334,7 @@ void InstrumentRegistry::init_pads() {
 
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.5f, 0.6f, 0.1f, 0.4f, 0.5f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Pad 6 (Metallic)
@@ -333,6 +346,7 @@ void InstrumentRegistry::init_pads() {
 
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.1f, 0.6f, 0.5f, 0.3f, 0.5f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Pad 7 (Halo)
@@ -344,6 +358,7 @@ void InstrumentRegistry::init_pads() {
 
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 0.5f, 0.0f));
+        v->set_one_shot(false);
     };
 
     // Pad 8 (Sweep)
@@ -354,6 +369,7 @@ void InstrumentRegistry::init_pads() {
 
         v->set_oscillator(std::move(composite));
         v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 1.0f, 0.0f));
+        v->set_one_shot(false);
     };
 }
 
