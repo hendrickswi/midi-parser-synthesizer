@@ -158,7 +158,7 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
 }
 
 void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
-    if (channel == 9 || channel >= NUM_CHANNELS) return;
+    if (channel >= NUM_CHANNELS) return;
     std::lock_guard<std::mutex> lock(audio_mutex);
 
     // Only turn off the oldest voice that is currently held, with matching channel and pitch.

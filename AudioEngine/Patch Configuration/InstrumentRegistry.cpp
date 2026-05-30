@@ -80,6 +80,7 @@ void InstrumentRegistry::init(float sample_rate) {
 
             const auto& env_data = melodic_patch_configs[patch_id].envelope_data;
             v->set_envelope(PatchFactory::create_envelope(env_data, this->sample_rate));
+            v->set_one_shot(melodic_patch_configs[patch_id].one_shot);
         };
     }
 
@@ -122,6 +123,7 @@ void InstrumentRegistry::init(float sample_rate) {
 
             const auto& env_data = drum_patch_configs[drum_key].envelope_data;
             v->set_envelope(PatchFactory::create_envelope(env_data, this->sample_rate));
+            v->set_one_shot(drum_patch_configs[drum_key].one_shot);
         };
     }
 
@@ -132,6 +134,7 @@ void InstrumentRegistry::init(float sample_rate) {
                 v->set_oscillator(PatchFactory::create_sine_oscillator(440.0, this->sample_rate));
                 v->set_envelope(PatchFactory::create_adsr_envelope(this->sample_rate, 0.001f, 0.8f, 0.1f,
                 0.6f, 0.03f, 0.0f));
+                v->set_one_shot(false);
             };
         }
     }
@@ -143,6 +146,7 @@ void InstrumentRegistry::init(float sample_rate) {
                 v->set_oscillator(PatchFactory::create_noise_oscillator());
                 v->set_envelope(PatchFactory::create_adr_envelope(this->sample_rate, 0.005f, 0.4f,
                     0.1f, 0.1f, 0.1f, 0.0f));
+                v->set_one_shot(true);
             };
         }
     }
@@ -179,6 +183,7 @@ void InstrumentRegistry::init_samples() {
                 raw_sample.audio_buffer, raw_sample.sample_rate, base_freq, min_pitch, max_pitch, min_velocity, max_velocity)
             );
         }
+        melodic_patch_configs[patch_id].one_shot = melodic_patch_data.value("one_shot", false);
     }
 
     // Loading drum samples
@@ -201,6 +206,7 @@ void InstrumentRegistry::init_samples() {
                 raw_sample.audio_buffer, raw_sample.sample_rate, base_freq, 0, 127, min_velocity, max_velocity)
             );
         }
+        drum_patch_configs[drum_key].one_shot = drum_patch_data.value("one_shot", true);
     }
 }
 

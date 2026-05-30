@@ -7,6 +7,7 @@
 struct InstrumentConfig {
     std::vector<Sample> samples;
     nlohmann::json envelope_data;
+    bool one_shot;
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_INSTRUMENTCONFIG_H

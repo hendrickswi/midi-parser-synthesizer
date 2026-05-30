@@ -23,6 +23,8 @@ void Voice::init(std::unique_ptr<Oscillator> oscillator, std::unique_ptr<Envelop
     cc_volume = 1.0f;
     cc_expression = 1.0f;
     key_held_flag = false;
+    sustained_flag = false;
+    one_shot_flag = false;
 }
 
 Voice::Voice() { // NOLINT
@@ -38,8 +40,13 @@ Voice::~Voice() = default;
 void Voice::set_oscillator(std::unique_ptr<Oscillator> oscillator) {
     this->oscillator = std::move(oscillator);
 }
+
 void Voice::set_envelope(std::unique_ptr<Envelope> envelope) {
     this->envelope = std::move(envelope);
+}
+
+void Voice::set_one_shot(bool is_one_shot) {
+    one_shot_flag = is_one_shot;
 }
 
 [[nodiscard]] const std::chrono::high_resolution_clock::time_point& Voice::get_note_activation_time() const {
@@ -74,7 +81,7 @@ void Voice::note_off() {
     if (!envelope) return;
     key_held_flag = false;
 
-    if (!sustained_flag) {
+    if (!sustained_flag && !one_shot_flag) {
         envelope->off();
     }
 }

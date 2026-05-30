@@ -24,6 +24,7 @@ private:
     float cc_expression;
     bool key_held_flag;
     bool sustained_flag;
+    bool one_shot_flag;
 
     void init(std::unique_ptr<Oscillator> oscillator = nullptr, std::unique_ptr<Envelope> envelope = nullptr);
 
@@ -57,6 +58,14 @@ public:
      *                 control the amplitude shape of the voice over time.
      */
     void set_envelope(std::unique_ptr<Envelope> envelope);
+
+    /**
+     * Sets the "one-shot" status of <tt>this</tt>.
+     * @param is_one_shot
+     *      If true, @c note_off() will not call @c this->envelope->off(). If false,
+     *      @c note_off() will resume its normal logic.
+     */
+    void set_one_shot(bool is_one_shot);
 
     [[nodiscard]] const std::chrono::high_resolution_clock::time_point& get_note_activation_time() const;
     [[nodiscard]] const uint8_t& get_channel() const;

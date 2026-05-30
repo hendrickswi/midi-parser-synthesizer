@@ -83,6 +83,7 @@
       ]
     },
     "8": {
+      "one_shot": true,
       "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 1.0, "sustain_level": 0.0, "release_time": 0.3, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/e4-soft-PB.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 66, "min_velocity": 0, "max_velocity": 70 },
@@ -94,6 +95,7 @@
       ]
     },
     "9": {
+      "one_shot": true,
       "envelope": { "type": "ADR", "attack_time": 0.002, "attack_max": 1.0, "decay_time": 1.5, "release_time": 0.4, "release_max": 0.2, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/Glock/glock_medium_C5-PB.wav", "base_frequency": 523.25, "min_pitch": 0, "max_pitch": 78 },
@@ -110,6 +112,7 @@
       ]
     },
     "13": {
+      "one_shot": true,
       "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 0.3, "release_time": 0.1, "release_max": 0.1, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/5_C-PB.wav", "base_frequency": 523.25, "min_pitch": 0, "max_pitch": 83, "min_velocity": 0, "max_velocity": 63 },
@@ -151,15 +154,23 @@
       ]
     },
     "24": {
-      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "one_shot": true,
+      "envelope": { "type": "ADR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "release_time": 0.2, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C4.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 127 }
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C3.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 59 },
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C4.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 68 },
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 71 },
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C5.wav", "base_frequency": 523.25, "min_pitch": 72, "max_pitch": 78 },
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-G5.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 83 },
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C6.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 127 }
       ]
     },
     "25": {
-      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "one_shot": true,
+      "envelope": { "type": "ADR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "release_time": 0.2, "release_max": 0.05, "release_min": 0.0 },
       "zones": [
-        { "file": "Assets/Samples/Extra/25-AcousticGuitarSteel/acoustic-guitar-steel-C4.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 127 }
+        { "file": "Assets/Samples/Extra/25-AcousticGuitarSteel/acoustic-guitar-steel-C3.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 59 },
+        { "file": "Assets/Samples/Extra/25-AcousticGuitarSteel/acoustic-guitar-steel-C4.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 127 }
       ]
     },
     "35": {
@@ -169,7 +180,7 @@
       ]
     },
     "36": {
-      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.2, "release_time": 0.25, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Extra/36-SlapBass1/slap-bass-1-C2.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 127 }
       ]
@@ -314,6 +325,7 @@
       ]
     },
     "45": {
+      "one_shot": true,
       "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 0.4, "release_time": 0.2, "release_max": 0.1, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/3_A-PB.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 57 },
@@ -380,6 +392,7 @@
       ]
     },
     "47": {
+      "one_shot": true,
       "envelope": { "type": "ADR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 1.2, "release_time": 0.4, "release_max": 0.1, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/C2-PB.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 37 },
