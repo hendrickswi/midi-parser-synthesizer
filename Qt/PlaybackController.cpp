@@ -169,6 +169,32 @@ void PlaybackController::load_directory(const std::string& directory_path) {
     }
 }
 
+void PlaybackController::load_file(const std::string& file_path) {
+    if (file_path.empty()) return;
+
+    std::vector<std::string> updated_files = std::vector<std::string>();
+    const std::vector<std::string>& prev_loaded_file_names = engine->get_loaded_file_names();
+    for (const auto& file : prev_loaded_file_names) {
+        updated_files.push_back(file);
+    }
+
+    bool was_empty = updated_files.size() == 0;
+    bool added_new_files = false;
+
+    if (engine->load_midi_file(file_path)) {
+        updated_files.push_back(file_path);
+        added_new_files = true;
+    }
+
+    // Automatically update if we went from 0 to ( > 0) amount of files.
+    if (added_new_files) {
+        track_list_updated(updated_files);
+        if (was_empty) {
+            first_loaded();
+        }
+    }
+}
+
 void PlaybackController::select_track(std::size_t index) {
     if (index >= engine->get_loaded_file_names().size()) return;
     on_track_sequence_change(index);

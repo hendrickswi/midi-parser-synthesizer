@@ -15,8 +15,12 @@ void MainWindow::init_top_ui(QHBoxLayout* layout) {
     add_directory_button = new QPushButton("Add Directory", this);
     add_directory_button->setFixedWidth(150);
 
+    // Add file button
+    add_file_button = new QPushButton("Add File", this);
+
     layout->addWidget(track_selector);
     layout->addWidget(add_directory_button);
+    layout->addWidget(add_file_button);
 }
 
 void MainWindow::init_middle_ui(QHBoxLayout* layout) {
@@ -134,6 +138,10 @@ void MainWindow::init_connections() {
     connect(add_directory_button, &QPushButton::clicked, this, &MainWindow::on_add_directory_button_clicked);
     connect(playback_controller, &PlaybackController::track_list_updated, this, &MainWindow::on_track_list_updated);
 
+    // Add file button
+    connect(add_file_button, &QPushButton::clicked, this, &MainWindow::on_add_file_button_clicked);
+    connect(playback_controller, &PlaybackController::track_list_updated, this, &MainWindow::on_track_list_updated);
+
     // Volume slider
     connect(volume_slider, &QAbstractSlider::valueChanged, playback_controller, &PlaybackController::set_volume);
     connect(playback_controller, &PlaybackController::volume_changed, this, &MainWindow::on_volume_changed);
@@ -167,6 +175,11 @@ void MainWindow::init_connections() {
 void MainWindow::on_add_directory_button_clicked() {
     QString directory_path = QFileDialog::getExistingDirectory(this, "Select Directory");
     playback_controller->load_directory(directory_path.toStdString());
+}
+
+void MainWindow::on_add_file_button_clicked() {
+    QString file_path = QFileDialog::getOpenFileName(this, "Select a file");
+    playback_controller->load_file(file_path.toStdString());
 }
 
 MainWindow::MainWindow(PlaybackController* playback_controller, QWidget *parent)

@@ -45,8 +45,10 @@ private:
     QPushButton* autoplay_button;
 
     // UI element: add directory
-    QIcon add_directory_icon;
     QPushButton* add_directory_button;
+
+    // UI element: add singular file
+    QPushButton* add_file_button;
 
     // UI element: volume icon
     QIcon volume_mute_icon;
@@ -66,6 +68,7 @@ private:
 
     // Prevent direct coupling of PlaybackController to QString
     void on_add_directory_button_clicked();
+    void on_add_file_button_clicked();
 
 private slots:
     void on_playback_state_changed(bool is_playing);

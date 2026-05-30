@@ -49,6 +49,7 @@ public slots:
     void toggle_shuffle();
     void toggle_autoplay();
     void load_directory(const std::string& directory_path);
+    void load_file(const std::string& file_path);
     void select_track(std::size_t index);
     void set_volume(int volume);
     void seek_to(int pos);
