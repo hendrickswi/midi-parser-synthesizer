@@ -294,7 +294,7 @@ void InstrumentRegistry::init_pads() {
         composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.003f);
 
         v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.05f, 0.6f, 0.3f, 0.6f, 0.5f, 0.0f));
+        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.05f, 0.6f, 0.3f, 0.6f, 0.3f, 0.0f));
     };
 
     // Pad (Choir)

@@ -161,10 +161,19 @@ void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
     if (channel == 9 || channel >= NUM_CHANNELS) return;
     std::lock_guard<std::mutex> lock(audio_mutex);
 
-    for (auto& voice : voices) {
-        if (voice->get_channel() == channel && voice->get_pitch() == pitch) {
-            voice->note_off();
+    // Only turn off the oldest voice that is currently held, with matching channel and pitch.
+    int target_voice = -1;
+    for (int i = 0; i < NUM_VOICES; i++) {
+        auto& voice = voices[i];
+        if (voice->get_channel() == channel && voice->get_pitch() == pitch && voice->is_key_held()) {
+            if (target_voice == -1 || voice->get_note_activation_time() < voices[target_voice]->get_note_activation_time()) {
+                target_voice = i;
+            }
         }
+    }
+
+    if (target_voice != -1) {
+        voices[target_voice]->note_off();
     }
 }
 
@@ -190,10 +199,7 @@ void VoiceManager::process_audio_buffer(float* buffer, const unsigned int num_sa
 
 void VoiceManager::stop() {
     for (auto& voice : voices) {
-        // Force sustain pedal up
         voice->update_cc(SUSTAIN_PEDAL, 0);
-
-        // Then turn off the note
         voice->note_off();
     }
 }
@@ -202,7 +208,7 @@ void VoiceManager::reset_state() {
     std::lock_guard<std::mutex> lock(audio_mutex);
 
     stop();
-    channel_pitch_bends.fill(0);
+    channel_pitch_bends.fill(8192);
     channel_pressures.fill(0);
     for (auto& channel_state : channel_cc_states) {
         channel_state.fill(0);

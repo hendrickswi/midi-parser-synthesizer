@@ -22,7 +22,7 @@ void Voice::init(std::unique_ptr<Oscillator> oscillator, std::unique_ptr<Envelop
     volume = 1.0f;
     cc_volume = 1.0f;
     cc_expression = 1.0f;
-    is_key_held = false;
+    key_held_flag = false;
 }
 
 Voice::Voice() { // NOLINT
@@ -66,15 +66,15 @@ void Voice::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity, float samp
     envelope->on();
 
     is_active = true;
-    is_key_held = true;
+    key_held_flag = true;
     note_activation_time = std::chrono::high_resolution_clock::now();
 }
 
 void Voice::note_off() {
     if (!envelope) return;
-    is_key_held = false;
+    key_held_flag = false;
 
-    if (!is_sustained_flag) {
+    if (!sustained_flag) {
         envelope->off();
     }
 }
@@ -82,8 +82,8 @@ void Voice::note_off() {
 void Voice::update_cc(uint8_t cc_number, uint8_t cc_value) {
     switch (cc_number) {
         case SUSTAIN_PEDAL : {
-            is_sustained_flag = cc_value >= 64;
-            if (!is_sustained_flag && !is_key_held) {
+            sustained_flag = cc_value >= 64;
+            if (!sustained_flag && !key_held_flag) {
                 if (envelope) envelope->off();
             }
             break;
@@ -117,7 +117,11 @@ void Voice::update_cc(uint8_t cc_number, uint8_t cc_value) {
 }
 
 [[nodiscard]] bool Voice::is_sustained() const {
-    return is_sustained_flag;
+    return sustained_flag;
+}
+
+[[nodiscard]] bool Voice::is_key_held() const {
+    return key_held_flag;
 }
 
 float Voice::process() {
