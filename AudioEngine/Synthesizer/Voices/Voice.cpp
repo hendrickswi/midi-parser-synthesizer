@@ -8,8 +8,9 @@ static float pitch_to_hz(uint8_t pitch) {
     return 440.0f * std::pow(2.0f, ((float)pitch - 69) / 12.0f);
 }
 
-static float byte_to_scale_float(uint8_t velocity) {
-    return (float)velocity / 127.0f;
+static float byte_to_scale_float(uint8_t value) {
+    float normalized = (float)value / 127.0f;
+    return normalized * normalized;
 }
 
 void Voice::init(std::unique_ptr<Oscillator> oscillator, std::unique_ptr<Envelope> envelope) {
@@ -20,7 +21,7 @@ void Voice::init(std::unique_ptr<Oscillator> oscillator, std::unique_ptr<Envelop
     velocity = 0;
     channel = 0;
     volume = 1.0f;
-    cc_volume = 1.0f;
+    cc_volume = (100.0f / 127.0f) * (1.0f / 127.0f);
     cc_expression = 1.0f;
     key_held_flag = false;
     sustained_flag = false;
