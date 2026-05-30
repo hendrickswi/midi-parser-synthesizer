@@ -155,7 +155,7 @@
     },
     "24": {
       "one_shot": true,
-      "envelope": { "type": "ADR", "attack_time": 0.01, "attack_max": 0.5, "decay_time": 0.1, "release_time": 0.2, "release_max": 0.05, "release_min": 0.0 },
+      "envelope": { "type": "ADR", "attack_time": 0.01, "attack_max": 0.8, "decay_time": 0.1, "release_time": 0.2, "release_max": 0.2, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C3.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 59 },
         { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C4.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 68 },
@@ -167,7 +167,7 @@
     },
     "25": {
       "one_shot": true,
-      "envelope": { "type": "ADR", "attack_time": 0.01, "attack_max": 0.5, "decay_time": 0.1, "release_time": 0.2, "release_max": 0.05, "release_min": 0.0 },
+      "envelope": { "type": "ADR", "attack_time": 0.01, "attack_max": 0.7, "decay_time": 0.1, "release_time": 0.2, "release_max": 0.2, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Extra/25-AcousticGuitarSteel/acoustic-guitar-steel-C3.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 59 },
         { "file": "Assets/Samples/Extra/25-AcousticGuitarSteel/acoustic-guitar-steel-C4.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 127 }
@@ -412,7 +412,7 @@
       ]
     },
     "48": {
-      "envelope": { "type": "ADSR", "attack_time": 0.1, "attack_max": 1.0, "decay_time": 0.5, "sustain_level": 0.9, "release_time": 0.1, "release_min": 0.0 },
+      "envelope": { "type": "ADSR", "attack_time": 0.1, "attack_max": 0.9, "decay_time": 0.4, "sustain_level": 0.82, "release_time": 0.1, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g3.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 57 },
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#3.wav", "base_frequency": 233.08, "min_pitch": 58, "max_pitch": 60 },
@@ -431,7 +431,7 @@
       ]
     },
     "49": {
-      "envelope": { "type": "ADSR", "attack_time": 0.3, "attack_max": 1.0, "decay_time": 0.5, "sustain_level": 0.5, "release_time": 0.3, "release_min": 0.0 },
+      "envelope": { "type": "ADSR", "attack_time": 0.3, "attack_max": 0.9, "decay_time": 0.4, "sustain_level": 0.82, "release_time": 0.3, "release_min": 0.0 },
       "zones": [
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g3.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 57 },
         { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#3.wav", "base_frequency": 233.08, "min_pitch": 58, "max_pitch": 60 },
