@@ -23,7 +23,7 @@ private:
     float cc_volume;
     float cc_expression;
     bool is_key_held;
-    bool is_sustained;
+    bool is_sustained_flag;
 
     void init(std::unique_ptr<Oscillator> oscillator = nullptr, std::unique_ptr<Envelope> envelope = nullptr);
 
@@ -67,6 +67,7 @@ public:
     void update_cc(uint8_t cc_number, uint8_t cc_value);
     [[nodiscard]] bool is_free() const;
     [[nodiscard]] bool is_released() const;
+    [[nodiscard]] bool is_sustained() const;
 
     float process();
 };

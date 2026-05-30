@@ -74,7 +74,7 @@ void Voice::note_off() {
     if (!envelope) return;
     is_key_held = false;
 
-    if (!is_sustained) {
+    if (!is_sustained_flag) {
         envelope->off();
     }
 }
@@ -82,8 +82,8 @@ void Voice::note_off() {
 void Voice::update_cc(uint8_t cc_number, uint8_t cc_value) {
     switch (cc_number) {
         case SUSTAIN_PEDAL : {
-            is_sustained = cc_value >= 64;
-            if (!is_sustained && !is_key_held) {
+            is_sustained_flag = cc_value >= 64;
+            if (!is_sustained_flag && !is_key_held) {
                 if (envelope) envelope->off();
             }
             break;
@@ -114,6 +114,10 @@ void Voice::update_cc(uint8_t cc_number, uint8_t cc_value) {
 [[nodiscard]] bool Voice::is_released() const {
     if (!envelope) return true;
     return envelope->is_released();
+}
+
+[[nodiscard]] bool Voice::is_sustained() const {
+    return is_sustained_flag;
 }
 
 float Voice::process() {

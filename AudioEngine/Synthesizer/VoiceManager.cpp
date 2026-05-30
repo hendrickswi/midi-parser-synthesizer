@@ -105,24 +105,39 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
         return;
     }
 
-    // Look for a free voice
-    int voice_idx = -1, oldest_voice_idx = 0;
+    // Look for a free voice, but also track the oldest voices in case none are free
+    int voice_idx = -1, oldest_released_voice_idx = 0, oldest_sustained_voice_idx = 0, oldest_active_voice_idx = 0;
     for (int i = 0; i < NUM_VOICES; i++) {
         if (voices[i]->is_free()) {
             voice_idx = i;
             break;
         }
-
-        if (voices[i]->get_note_activation_time() < voices[oldest_voice_idx]->get_note_activation_time()) {
-            oldest_voice_idx = i;
+        if (voices[i]->is_released() && voices[i]->get_note_activation_time() < voices[oldest_released_voice_idx]->get_note_activation_time()) {
+            oldest_released_voice_idx = i;
+        }
+        if (voices[i]->is_released() && voices[i]->is_sustained() && voices[i]->get_note_activation_time() < voices[oldest_active_voice_idx]->get_note_activation_time()) {
+            oldest_sustained_voice_idx = i;
+        }
+        if (voices[i]->get_note_activation_time() < voices[oldest_active_voice_idx]->get_note_activation_time()) {
+            oldest_active_voice_idx = i;
         }
     }
 
     // Voice steal on the oldest start time if no free voice was found
+    // Priority on voices in release phase, then sustained but not released, then oldest.
     if (voice_idx == -1) {
-        voice_idx = oldest_voice_idx;
+        if (oldest_released_voice_idx != -1) {
+            voice_idx = oldest_released_voice_idx;
+        }
+        else if (oldest_sustained_voice_idx != -1) {
+            voice_idx = oldest_sustained_voice_idx;
+        }
+        else {
+            voice_idx = oldest_active_voice_idx;
+        }
+
         voices[voice_idx]->note_off();
-        // std::cout << "INFO: Voice " << voice_idx << " stolen" << std::endl;
+        std::cout << "INFO: Voice " << voice_idx << " stolen" << std::endl;
     }
 
     // Pass the voice the entire cc states
@@ -143,6 +158,7 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
 }
 
 void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
+    if (channel == 9 || channel >= NUM_CHANNELS) return;
     std::lock_guard<std::mutex> lock(audio_mutex);
 
     for (auto& voice : voices) {
