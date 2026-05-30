@@ -137,7 +137,7 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
         }
 
         voices[voice_idx]->note_off();
-        std::cout << "INFO: Voice " << voice_idx << " stolen" << std::endl;
+        // std::cout << "INFO: Voice " << voice_idx << " stolen" << std::endl;
     }
 
     // Pass the voice the entire cc states

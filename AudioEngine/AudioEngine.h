@@ -21,7 +21,7 @@ private:
     std::thread sequencer_thread;
 
     // Helper array of strings for get_instrument_names_of_current_track_sequence()
-    const std::string GM_PATCH_NAMES[128] = {
+    const std::string GM_MELODIC_PATCH_NAMES[128] = {
         "Acoustic Grand Piano", "Bright Acoustic Piano", "Electric Grand Piano", "Honky-tonk Piano",
         "Electric Piano 1 (Rhodes)", "Electric Piano 2 (Chorused)", "Harpsichord", "Clavinet",
 
@@ -85,6 +85,47 @@ private:
         "Guitar Fret Noise", "Breath Noise", "Seashore", "Bird Tweet",
         "Telephone Ring", "Helicopter", "Applause", "Gunshot"
     };
+
+    const std::string GM_DRUM_PATCH_NAMES[128] = {
+    // 0 - 34: Unmapped in GM 1.0
+    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+    "Unmapped", "Unmapped", "Unmapped",
+
+    // 35 - 42
+    "Acoustic Bass Drum", "Bass Drum 1", "Side Stick", "Acoustic Snare",
+    "Hand Clap", "Electric Snare", "Low Floor Tom", "Closed Hi-Hat",
+
+    // 43 - 50
+    "High Floor Tom", "Pedal Hi-Hat", "Low Tom", "Open Hi-Hat",
+    "Low-Mid Tom", "Hi-Mid Tom", "Crash Cymbal 1", "High Tom",
+
+    // 51 - 58
+    "Ride Cymbal 1", "Chinese Cymbal", "Ride Bell", "Tambourine",
+    "Splash Cymbal", "Cowbell", "Crash Cymbal 2", "Vibraslap",
+
+    // 59 - 66
+    "Ride Cymbal 2", "Hi Bongo", "Low Bongo", "Mute Hi Conga",
+    "Open Hi Conga", "Low Conga", "High Timbale", "Low Timbale",
+
+    // 67 - 74
+    "High Agogo", "Low Agogo", "Cabasa", "Maracas",
+    "Short Whistle", "Long Whistle", "Short Guiro", "Long Guiro",
+
+    // 75 - 82
+    "Claves", "Hi Wood Block", "Low Wood Block", "Mute Cuica",
+    "Open Cuica", "Mute Triangle", "Open Triangle", "Shaker",
+
+    // 83 - 127: Unmapped in GM 1.0
+    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped"
+};
 
     void init(float sample_rate = 44100.0f, unsigned int num_channels = 1);
 

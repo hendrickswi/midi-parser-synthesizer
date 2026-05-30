@@ -89,45 +89,49 @@ std::size_t AudioEngine::get_current_track_sequence_index() const {
 
 std::vector<std::string> AudioEngine::get_instrument_names_of_current_track_sequence() const {
     const auto& track_sequence = loaded_track_sequences[current_track];
-    auto patch_ids = std::set<uint8_t>();
+    auto melodic_patch_ids = std::set<uint8_t>();
+    auto drum_patch_ids = std::set<uint8_t>();
 
     bool has_notes = false;
-    bool has_drums = false;
     bool explicit_program_change_found = false;
 
     // Find unique patch IDs
     for (auto& track : track_sequence.get_tracks()) {
-        for (const auto& event : track.get_midi_events()) {
-            if (event.command == PROGRAM_CHANGE) {
-                patch_ids.insert(event.data1);
-                explicit_program_change_found = true;
+        for (const auto& note : track.get_notes()) {
+            if (note.channel == 9) {
+                drum_patch_ids.insert(note.pitch);
             }
-            else if (event.command == NOTE_ON && event.data2 > 0) {
-                if (event.channel == 9) {
-                    has_drums = true;
-                }
-                else {
-                    has_notes = true;
-                }
+            else {
+                has_notes = true;
+            }
+        }
+
+        for (const auto& event : track.get_midi_events()) {
+            if (event.command == PROGRAM_CHANGE && event.channel != 9) {
+                melodic_patch_ids.insert(event.data1);
+                explicit_program_change_found = true;
             }
         }
     }
 
     if (has_notes && !explicit_program_change_found) {
         // Grand piano default
-        patch_ids.insert(0);
+        melodic_patch_ids.insert(0);
     }
 
-    // Convert patch IDs into instrument names
+    // Convert melodic patch IDs into instrument names
     std::vector<std::string> instrument_names = std::vector<std::string>();
-    for (auto patch_id : patch_ids) {
+    for (auto patch_id : melodic_patch_ids) {
         if (patch_id <= 127) {
-            instrument_names.push_back(GM_PATCH_NAMES[patch_id]);
+            instrument_names.push_back(GM_MELODIC_PATCH_NAMES[patch_id]);
         }
     }
 
-    if (has_drums) {
-        instrument_names.push_back("Drum Kit");
+    // Convert drum patch pitches into instrument names
+    for (auto pitch : drum_patch_ids) {
+        if (pitch <= 127 && GM_DRUM_PATCH_NAMES[pitch] != "Unmapped") {
+            instrument_names.push_back(GM_DRUM_PATCH_NAMES[pitch]);
+        }
     }
 
     return instrument_names;
