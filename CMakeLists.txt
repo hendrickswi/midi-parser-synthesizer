@@ -133,10 +133,6 @@ if(APPLE)
     )
 elseif(WIN32)
     target_link_libraries(MIDI_ParserSynthesizer PRIVATE ksuser mfplat mfuuid wmcodecdspuuid)
-elseif(UNIX)
-    # ALSA dev package must be installed: sudo apt install libasound2-dev
-    find_package(ALSA REQUIRED)
-    target_link_libraries(MIDI_ParserSynthesizer PRIVATE ALSA::ALSA)
 endif()
 
 # Populate build directory with the necessary .dll files to prevent immediate crash
