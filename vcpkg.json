@@ -5,9 +5,13 @@
   "dependencies": [
     {
       "name": "rtaudio",
-      "features": [
-        { "name": "alsa", "platform": "linux" }
-      ]
+      "features": ["alsa"],
+      "platform": "linux"
+    },
+    {
+      "name": "rtaudio",
+      "features": ["wasapi"],
+      "platform": "windows"
     }
   ]
 }
