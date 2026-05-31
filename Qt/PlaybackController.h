@@ -11,6 +11,9 @@ class PlaybackController : public QObject {
 private:
     AudioEngine* engine;
     QTimer* playback_timer;
+    QTimer* underrun_timer;
+    uint64_t prev_underrun_count;
+    unsigned int underrun_warning_ticks;
 
     // State logic
     bool repeat_flag;
@@ -39,6 +42,7 @@ signals:
     void volume_changed(int volume);
     void time_updated(float current_seconds, float total_seconds);
     void first_loaded(int track_selector_start_idx = 0);
+    void underrun_detected(bool status);
 
 public slots:
     // View to controller
@@ -55,7 +59,8 @@ public slots:
     void seek_to(int pos);
 
 private slots:
-    void on_timer_tick();
+    void on_playback_timer_tick();
+    void on_underrun_timer_tick();
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_PLAYBACKCONTROLLER_H

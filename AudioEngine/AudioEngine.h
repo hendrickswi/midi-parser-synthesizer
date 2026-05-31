@@ -12,6 +12,9 @@ private:
     MidiSequencer sequencer;
     VoiceManager synth;
     RtAudio rt_audio;
+    std::atomic<uint64_t> underrun_count;
+    float active_sample_rate;
+    bool platform_requires_profiling;
 
     std::vector<TrackSequence> loaded_track_sequences;
     std::vector<std::string> loaded_file_names;
@@ -146,17 +149,16 @@ public:
     [[nodiscard]] const std::vector<std::string>& get_loaded_file_names() const;
     [[nodiscard]] std::size_t get_current_track_sequence_index() const;
     [[nodiscard]] std::vector<std::string> get_instrument_names_of_current_track_sequence() const;
-
     void play();
     void stop();
     void skip_seconds(float seconds);
     void set_track_sequence(std::size_t index);
     void set_global_volume(float volume);
     void soft_reset();
-
     [[nodiscard]] bool is_playing() const;
     [[nodiscard]] float get_track_sequence_current_time_seconds() const;
     [[nodiscard]] float get_track_sequence_length_seconds() const;
+    [[nodiscard]] uint64_t get_underrun_count() const;
 };
 
 

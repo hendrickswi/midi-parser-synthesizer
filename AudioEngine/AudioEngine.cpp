@@ -35,18 +35,29 @@ void AudioEngine::init(float sample_rate, unsigned int num_channels) {
     parameters.nChannels = num_channels;
     parameters.firstChannel = 0;
     unsigned int buffer_size = 1024;
+    active_sample_rate = sample_rate;
     try {
         rt_audio.openStream(&parameters, nullptr, RTAUDIO_FLOAT32,
-            static_cast<unsigned int>(sample_rate), &buffer_size, &audio_callback, &synth);
-        rt_audio.startStream();
+            static_cast<unsigned int>(sample_rate), &buffer_size, &audio_callback, this);
 
-        std::cout << "Audio engine now running at " << sample_rate << " Hz. " <<  std::endl << std::endl;
+        auto current_api = rt_audio.getCurrentApi();
+        if (current_api == RtAudio::WINDOWS_WASAPI || current_api == RtAudio::WINDOWS_DS) {
+            platform_requires_profiling = true;
+        }
+        else {
+            platform_requires_profiling = false;
+        }
+
+        rt_audio.startStream();
+        std::cout << "Audio engine now running at " << sample_rate << " Hz, "
+            "using " << RtAudio::getApiDisplayName(current_api) << std::endl << std::endl;
     }
     catch (const std::exception& e) {
         throw std::runtime_error(std::string("AudioEngine::init() failed during RtAudio stream opening/starting. Error:") += e.what());
     }
 
     // Other instance variables
+    underrun_count = 0;
     loaded_track_sequences = std::vector<TrackSequence>();
     loaded_file_names = std::vector<std::string>();
     current_track = -1;
@@ -56,9 +67,33 @@ void AudioEngine::init(float sample_rate, unsigned int num_channels) {
 
 int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,
         RtAudioStreamStatus status, void *user_data) {
-    float *buffer = static_cast<float *>(output_buffer);
-    VoiceManager *synth = static_cast<VoiceManager *>(user_data);
-    synth->process_audio_buffer(buffer, num_frames);
+    AudioEngine *engine = static_cast<AudioEngine*>(user_data);
+
+    if (engine->platform_requires_profiling) {
+        auto start_time = std::chrono::high_resolution_clock::now();
+
+        float *buffer = static_cast<float *>(output_buffer);
+        engine->synth.process_audio_buffer(buffer, num_frames);
+
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto elapsed_micros = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+        double budget_seconds = static_cast<double>(num_frames) / engine->active_sample_rate;
+        auto budget_micros = static_cast<uint64_t>(budget_seconds * 950000.0); // 95% threshold to give OS extra time
+
+        if (elapsed_micros > budget_micros) {
+            engine->underrun_count.fetch_add(1, std::memory_order_relaxed);
+        }
+    }
+    else {
+        // Can just use native RtAudio library
+        if (status & RTAUDIO_OUTPUT_UNDERFLOW) {
+            engine->underrun_count.fetch_add(1, std::memory_order_relaxed);
+        }
+
+        float *buffer = static_cast<float *>(output_buffer);
+        engine->synth.process_audio_buffer(buffer, num_frames);
+    }
+
     return 0;
 }
 
@@ -228,4 +263,8 @@ float AudioEngine::get_track_sequence_current_time_seconds() const {
 float AudioEngine::get_track_sequence_length_seconds() const {
     if (current_track < 0 || current_track >= loaded_track_sequences.size()) return 0.0f;
     return sequencer.get_total_duration_seconds();
+}
+
+uint64_t AudioEngine::get_underrun_count() const {
+    return underrun_count;
 }

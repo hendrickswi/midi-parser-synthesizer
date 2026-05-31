@@ -56,6 +56,9 @@ private:
     QIcon volume_max_icon;
     QLabel* volume_label;
 
+    // UI element: underrun warning
+    QLabel* underrun_label;
+
     QComboBox* track_selector;
     QLabel* track_sequence_length_label;
     QSlider* volume_slider;
@@ -79,6 +82,7 @@ private slots:
     void on_current_track_changed(std::size_t index);
     void on_volume_changed(int volume);
     void on_time_updated(float current_seconds, float total_seconds);
+    void on_underrun_detected(bool status);
 
 public:
     explicit MainWindow(PlaybackController* controller, QWidget* parent = nullptr);

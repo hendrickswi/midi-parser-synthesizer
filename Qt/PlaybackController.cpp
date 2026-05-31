@@ -4,6 +4,7 @@
 
 void PlaybackController::on_song_end() {
     playback_timer->stop();
+    underrun_timer->stop();
     engine->stop();
 
     if (autoplay_flag) {
@@ -38,12 +39,14 @@ void PlaybackController::on_song_end() {
 void PlaybackController::on_song_pause() {
     engine->stop();
     playback_timer->stop();
+    underrun_timer->stop();
     playback_state_changed(false);
 }
 
 void PlaybackController::on_song_start() {
     engine->play();
     playback_timer->start(33);
+    underrun_timer->start(500);
     playback_state_changed(true);
 }
 
@@ -55,6 +58,7 @@ void PlaybackController::on_song_unique_start() {
 void PlaybackController::on_track_sequence_change(std::size_t index) {
     if (index >= engine->get_loaded_file_names().size() && index == engine->get_current_track_sequence_index()) return;
     playback_timer->stop();
+    underrun_timer->stop();
     engine->stop();
     engine->soft_reset();
     engine->set_track_sequence(index);
@@ -79,7 +83,11 @@ void PlaybackController::on_track_sequence_change(std::size_t index) {
 PlaybackController::PlaybackController(AudioEngine* engine, QObject* parent)
     : QObject(parent), engine(engine) {
     playback_timer = new QTimer(this);
-    connect(playback_timer, &QTimer::timeout, this, &PlaybackController::on_timer_tick);
+    underrun_timer = new QTimer(this);
+    prev_underrun_count = 0;
+    underrun_warning_ticks = 0;
+    connect(playback_timer, &QTimer::timeout, this, &PlaybackController::on_playback_timer_tick);
+    connect(underrun_timer, &QTimer::timeout, this, &PlaybackController::on_underrun_timer_tick);
 
     repeat_flag = false;
     shuffle_flag = false;
@@ -212,9 +220,28 @@ void PlaybackController::seek_to(int pos) {
     time_updated(engine->get_track_sequence_current_time_seconds(), engine->get_track_sequence_length_seconds());
 }
 
-void PlaybackController::on_timer_tick() {
+void PlaybackController::on_playback_timer_tick() {
     time_updated(engine->get_track_sequence_current_time_seconds(), engine->get_track_sequence_length_seconds());
     if (!engine->is_playing()) {
         on_song_end();
     }
+}
+
+void PlaybackController::on_underrun_timer_tick() {
+    auto current_underrun_count = engine->get_underrun_count();
+
+    if (current_underrun_count > prev_underrun_count) {
+        underrun_detected(true);
+        underrun_warning_ticks = 4;
+    }
+    else {
+        if (underrun_warning_ticks > 0) {
+            underrun_warning_ticks--;
+        }
+        else {
+            underrun_detected(false);
+        }
+    }
+
+    prev_underrun_count = current_underrun_count;
 }

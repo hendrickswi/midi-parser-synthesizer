@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include <QHBoxLayout>
+#include <QStatusBar>
 #include <QFileDialog>
 #include <QSizePolicy>
 
@@ -170,6 +171,9 @@ void MainWindow::init_connections() {
     // Play and pause button
     connect(play_pause_button, &QPushButton::clicked, playback_controller, &PlaybackController::toggle_play_pause);
     connect(playback_controller, &PlaybackController::playback_state_changed, this, &MainWindow::on_playback_state_changed);
+
+    // Audio underrun warning
+    connect(playback_controller, &PlaybackController::underrun_detected, this, &MainWindow::on_underrun_detected);
 }
 
 void MainWindow::on_add_directory_button_clicked() {
@@ -202,6 +206,11 @@ MainWindow::MainWindow(PlaybackController* playback_controller, QWidget *parent)
     QHBoxLayout* bottom_layout = new QHBoxLayout();
     init_bottom_ui(bottom_layout);
     main_layout->addLayout(bottom_layout);
+
+    underrun_label = new QLabel("Underrun Warning!", this);
+    underrun_label->setStyleSheet("QLabel { color: red; }");
+    underrun_label->setVisible(false);
+    this->statusBar()->addPermanentWidget(underrun_label);
 
     init_connections();
     setCentralWidget(central_widget);
@@ -281,5 +290,14 @@ void MainWindow::on_time_updated(float current_seconds, float total_seconds) {
         int slider_val = static_cast<int>(current_seconds / total_seconds * 1000.0f);
         seek_slider->setValue(slider_val);
         seek_slider->blockSignals(false);
+    }
+}
+
+void MainWindow::on_underrun_detected(bool status) {
+    if (status) {
+        underrun_label->setVisible(true);
+    }
+    else {
+        underrun_label->setVisible(false);
     }
 }
