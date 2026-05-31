@@ -1,4 +1,7 @@
 #include "MidiSequencer.h"
+
+#include <algorithm>
+
 #include "../../EventTypeEnums/MetaEventType.h"
 #include "../../EventTypeEnums/MidiEventType.h"
 

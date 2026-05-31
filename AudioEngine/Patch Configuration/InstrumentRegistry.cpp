@@ -18,6 +18,7 @@
 #include "../Synthesizer/Sample Loading/Sample.h"
 #include "../Synthesizer/Sample Loading/SampleLoader.h"
 #include "../Synthesizer/Voices/Voice.h"
+#include "../../DirectoryManipulator.h"
 
 using json = nlohmann::json;
 
@@ -154,7 +155,8 @@ void InstrumentRegistry::init(float sample_rate) {
 
 void InstrumentRegistry::init_samples() {
     SampleLoader loader;
-    std::ifstream file = std::ifstream("Assets/instrument_map.json");
+    std::string instrument_map_file_path = "Assets/instrument_map.json";
+    std::ifstream file = std::ifstream(get_sanitized_file_path(instrument_map_file_path));
     if (!file.is_open()) {
         std::cerr << "Failed to open instrument map file. Samples loading will be skipped." << std::endl;
         return;

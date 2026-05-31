@@ -2,11 +2,13 @@
 #include <iostream>
 #include <fstream>
 #include <QApplication>
+
+#include "DirectoryManipulator.h"
 #include "AudioEngine/AudioEngine.h"
 #include "Qt/MainWindow.h"
 #include "Qt/PlaybackController.h"
 
-constexpr std::string auto_test_folder = "Testing files";
+const std::string auto_test_folder = get_sanitized_file_path("Testing files");
 constexpr float sample_rate = 44100.0f;
 constexpr unsigned int num_channels = 1;
 constexpr float volume = 1.0f;
