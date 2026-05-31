@@ -2,6 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "midi-synthesizer",
   "version": "1.0.0",
+  "builtin-baseline": "00d899c410b31467733472fc3a83a25729046b13",
   "dependencies": [
     {
       "name": "rtaudio",
