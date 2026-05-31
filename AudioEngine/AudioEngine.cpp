@@ -72,6 +72,43 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
     if (engine->platform_requires_profiling) {
         auto start_time = std::chrono::high_resolution_clock::now();
 
+        // Drain the lock-free queue
+        SynthesizerCommand command;
+        while (engine->synth.pop_from_command_queue(command)) {
+            switch (command.type) {
+                case SynthesizerCommandType::NOTE_ON : {
+                    engine->synth.note_on(command.channel, command.data1, command.data2);
+                    break;
+                }
+                case SynthesizerCommandType::NOTE_OFF : {
+                    engine->synth.note_off(command.channel, command.data1);
+                    break;
+                }
+                case SynthesizerCommandType::SET_CHANNEL_PATCH : {
+                    engine->synth.set_channel_patch(command.channel, command.data1);
+                    break;
+                }
+                case SynthesizerCommandType::SET_CHANNEL_PITCH_BEND : {
+                    const uint16_t value = (command.data1 & 0x7F) | ((command.data2 & 0x7F) << 7);
+                    engine->synth.set_channel_pitch_bend(command.channel, value);
+                    break;
+                }
+                case SynthesizerCommandType::SET_CONTROL_CHANGE : {
+                    engine->synth.set_channel_cc(command.channel, command.data1, command.data2);
+                    break;
+                }
+                case SynthesizerCommandType::STOP_ALL_VOICES : {
+                    engine->synth.stop();
+                    break;
+                }
+                default : {
+                    std::cerr << "Warning: Unhandled synthesizer command type " << static_cast<int>(command.type) << std::endl;
+                    break;
+                }
+            }
+        }
+
+        // Then process new audio data
         float *buffer = static_cast<float *>(output_buffer);
         engine->synth.process_audio_buffer(buffer, num_frames);
 
@@ -90,6 +127,43 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
             engine->underrun_count.fetch_add(1, std::memory_order_relaxed);
         }
 
+        // Drain the lock-free queue
+        SynthesizerCommand command;
+        while (engine->synth.pop_from_command_queue(command)) {
+            switch (command.type) {
+                case SynthesizerCommandType::NOTE_ON : {
+                    engine->synth.note_on(command.channel, command.data1, command.data2);
+                    break;
+                }
+                case SynthesizerCommandType::NOTE_OFF : {
+                    engine->synth.note_off(command.channel, command.data1);
+                    break;
+                }
+                case SynthesizerCommandType::SET_CHANNEL_PATCH : {
+                    engine->synth.set_channel_patch(command.channel, command.data1);
+                    break;
+                }
+                case SynthesizerCommandType::SET_CHANNEL_PITCH_BEND : {
+                    const uint16_t value = (command.data1 & 0x7F) | ((command.data2 & 0x7F) << 7);
+                    engine->synth.set_channel_pitch_bend(command.channel, value);
+                    break;
+                }
+                case SynthesizerCommandType::SET_CONTROL_CHANGE : {
+                    engine->synth.set_channel_cc(command.channel, command.data1, command.data2);
+                    break;
+                }
+                case SynthesizerCommandType::STOP_ALL_VOICES : {
+                    engine->synth.stop();
+                    break;
+                }
+                default : {
+                    std::cerr << "Warning: Unhandled synthesizer command type " << static_cast<int>(command.type) << std::endl;
+                    break;
+                }
+            }
+        }
+
+        // Then process new audio data
         float *buffer = static_cast<float *>(output_buffer);
         engine->synth.process_audio_buffer(buffer, num_frames);
     }

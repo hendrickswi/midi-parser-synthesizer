@@ -83,8 +83,6 @@ void VoiceManager::set_channel_pressure(const uint8_t channel, const uint8_t pre
 }
 
 void VoiceManager::set_channel_cc(uint8_t channel, uint8_t cc_number, uint8_t cc_value) {
-    std::lock_guard<std::mutex> lock(audio_mutex);
-
     if (channel >= NUM_CHANNELS) return;
     channel_cc_states[channel][cc_number] = cc_value;
 
@@ -97,8 +95,6 @@ void VoiceManager::set_channel_cc(uint8_t channel, uint8_t cc_number, uint8_t cc
 }
 
 void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
-    std::lock_guard<std::mutex> lock(audio_mutex);
-
     if (channel >= NUM_CHANNELS) return;
     if (velocity == 0) {
         note_off(channel, pitch);
@@ -159,7 +155,6 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
 
 void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
     if (channel >= NUM_CHANNELS) return;
-    std::lock_guard<std::mutex> lock(audio_mutex);
 
     // Only turn off the oldest voice that is currently held, with matching channel and pitch.
     int target_voice = -1;
@@ -178,8 +173,6 @@ void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
 }
 
 void VoiceManager::process_audio_buffer(float* buffer, const unsigned int num_samples) {
-    std::lock_guard<std::mutex> lock(audio_mutex);
-
     for (int i = 0; i < num_samples; i++) {
         buffer[i] = 0.0f;
     }
@@ -205,8 +198,6 @@ void VoiceManager::stop() {
 }
 
 void VoiceManager::reset_state() {
-    std::lock_guard<std::mutex> lock(audio_mutex);
-
     stop();
     channel_pitch_bends.fill(8192);
     channel_pressures.fill(0);
@@ -218,4 +209,12 @@ void VoiceManager::reset_state() {
         channel_cc_states[i][11] = 127; // Expression defaults to max
         channel_cc_states[i][10] = 64;  // Pan defaults to center
     }
+}
+
+bool VoiceManager::push_to_command_queue(const SynthesizerCommand& command) {
+    return command_queue.push(command);
+}
+
+bool VoiceManager::pop_from_command_queue(SynthesizerCommand& command) {
+    return command_queue.pop(command);
 }

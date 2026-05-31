@@ -106,24 +106,25 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
 
         switch (midi_event.command) {
             case PROGRAM_CHANGE: {
-                synthesizer->set_channel_patch(midi_event.channel, midi_event.data1);
+                SynthesizerCommand command { SynthesizerCommandType::SET_CHANNEL_PATCH, midi_event.channel, midi_event.data1, midi_event.data2 };
+                synthesizer->push_to_command_queue(command);
                 break;
             }
             case CONTROL_CHANGE : {
-                synthesizer->set_channel_cc(midi_event.channel, midi_event.data1, midi_event.data2);
+                SynthesizerCommand command { SynthesizerCommandType::SET_CONTROL_CHANGE, midi_event.channel, midi_event.data1, midi_event.data2 };
+                synthesizer->push_to_command_queue(command);
                 break;
             }
-
             case PITCH_BEND : {
-                synthesizer->set_channel_pitch_bend(midi_event.channel, (midi_event.data1 & 0x7F) | ((midi_event.data2 & 0x7F ) << 7));
+                SynthesizerCommand command { SynthesizerCommandType::SET_CHANNEL_PITCH_BEND, midi_event.channel, midi_event.data1, midi_event.data2 };
+                synthesizer->push_to_command_queue(command);
                 break;
             }
-
             case CHANNEL_PRESSURE : {
-                synthesizer->set_channel_pressure(midi_event.channel, midi_event.data1);
+                SynthesizerCommand command { SynthesizerCommandType::SET_CHANNEL_PRESSURE, midi_event.channel, midi_event.data1, midi_event.data2 };
+                synthesizer->push_to_command_queue(command);
                 break;
             }
-
             default : {
                 break;
             }
@@ -139,7 +140,8 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         indices.note_idx++;
 
         if (!is_skipping_flag) {
-            synthesizer->note_on(note.channel, note.pitch, note.volume);
+            SynthesizerCommand command { SynthesizerCommandType::NOTE_ON, note.channel, note.pitch, note.volume };
+            synthesizer->push_to_command_queue(command);
             active_notes.emplace(note);
         }
     }
@@ -189,18 +191,6 @@ void MidiSequencer::skip_microseconds(uint64_t micros_to_skip) {
 void MidiSequencer::start() {
     if (!synthesizer || !track_sequence) return;
     is_playing_flag = true;
-
-    // "Wake up" all suspended notes
-    // std::vector<ActiveNote> suspended_notes;
-    // while (!active_notes.empty()) {
-    //     auto note = active_notes.top();
-    //     active_notes.pop();
-    //     synthesizer->note_on(note.channel, note.pitch, note.volume);
-    //     suspended_notes.push_back(note);
-    // }
-    // for (const auto& note : suspended_notes) {
-    //     active_notes.push(note);
-    // }
 
     // Reanchor
     prev_tick_time = std::chrono::high_resolution_clock::now();
@@ -255,7 +245,8 @@ void MidiSequencer::update() {
     // Remove expired notes
     while (!active_notes.empty() && active_notes.top().end_time <= current_tick) {
         auto& note = active_notes.top();
-        synthesizer->note_off(note.channel, note.pitch);
+        SynthesizerCommand command { SynthesizerCommandType::NOTE_OFF, note.channel, note.pitch, note.volume };
+        synthesizer->push_to_command_queue(command);
         active_notes.pop();
     }
 

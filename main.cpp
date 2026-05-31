@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <QApplication>
 #include <xmmintrin.h>
+#include <pmmintrin.h>
 
 #include "DirectoryManipulator.h"
 #include "AudioEngine/AudioEngine.h"

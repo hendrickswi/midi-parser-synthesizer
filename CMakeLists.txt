@@ -112,6 +112,8 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Synthesizer/Oscillators/Base Implementations/Composite/CompositeOscillatorNode.h"
         "AudioEngine/Synthesizer/Sample Loading/RawAudioData.h"
         AudioEngine/Parser/UnfinishedNote.h
+        AudioEngine/Synthesizer/LockFreeQueue.h
+        AudioEngine/Synthesizer/SynthesizerCommand.h
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE

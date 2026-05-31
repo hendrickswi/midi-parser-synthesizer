@@ -6,6 +6,9 @@
 #include <functional>
 #include <memory>
 
+#include "LockFreeQueue.h"
+#include "SynthesizerCommand.h"
+
 class InstrumentRegistry;
 class Envelope;
 class Voice;
@@ -18,7 +21,7 @@ private:
     std::array<std::unique_ptr<Voice>, NUM_VOICES> voices;
     std::array<uint8_t, NUM_CHANNELS> channel_patches;
     std::unique_ptr<InstrumentRegistry> registry;
-    std::mutex audio_mutex;
+    LockFreeQueue<SynthesizerCommand, 1024> command_queue;
 
     // Midi-event specific data
     std::array<uint16_t, NUM_CHANNELS> channel_pitch_bends;
@@ -52,6 +55,10 @@ public:
     void process_audio_buffer(float* buffer, unsigned int num_samples);
     void stop();
     void reset_state();
+
+    // Sequencer controls
+    bool push_to_command_queue(const SynthesizerCommand& command);
+    bool pop_from_command_queue(SynthesizerCommand& command);
 };
 
 
