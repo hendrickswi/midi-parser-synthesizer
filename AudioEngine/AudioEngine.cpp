@@ -4,6 +4,24 @@
 #include <iostream>
 #include <set>
 
+static float resolve_hardware_sample_rate(float requested_rate) {
+    try {
+        RtAudio rtaudio;
+        if (rtaudio.getDeviceCount() > 0) {
+            unsigned int device = rtaudio.getDefaultOutputDevice();
+            RtAudio::DeviceInfo info = rtaudio.getDeviceInfo(device);
+            if (info.preferredSampleRate > 0) {
+                return static_cast<float>(info.preferredSampleRate);
+            }
+        }
+    }
+    catch (std::exception& e) {
+        std::cerr << "Warning: Failed to resolve hardware sample rate. "
+                     "Falling back to the request rate of " << requested_rate << std::endl;
+    }
+    return requested_rate;
+}
+
 void AudioEngine::init(float sample_rate, unsigned int num_channels) {
     sequencer.set_synthesizer(&synth);
 
@@ -18,11 +36,11 @@ void AudioEngine::init(float sample_rate, unsigned int num_channels) {
     parameters.firstChannel = 0;
     unsigned int buffer_size = 1024;
     try {
-        rt_audio.openStream(&parameters, nullptr,
-            RTAUDIO_FLOAT32, sample_rate, &buffer_size, &audio_callback, &synth);
+        rt_audio.openStream(&parameters, nullptr, RTAUDIO_FLOAT32,
+            static_cast<unsigned int>(sample_rate), &buffer_size, &audio_callback, &synth);
         rt_audio.startStream();
 
-        std::cout << "Audio engine now running." << std::endl << std::endl;
+        std::cout << "Audio engine now running at " << sample_rate << " Hz. " <<  std::endl << std::endl;
     }
     catch (const std::exception& e) {
         throw std::runtime_error(std::string("AudioEngine::init() failed during RtAudio stream opening/starting. Error:") += e.what());
@@ -52,13 +70,13 @@ void AudioEngine::sequencer_thread_loop() {
     }
 }
 
-AudioEngine::AudioEngine() : parser(), sequencer(), synth() {
-    init();
+AudioEngine::AudioEngine() : parser(), sequencer(), synth(resolve_hardware_sample_rate(44100.0f), 1.0f) {
+    init(resolve_hardware_sample_rate(48000.0f));
 }
 
-AudioEngine::AudioEngine(float sample_rate, unsigned int num_channels, float global_volume)
-: parser(), sequencer(), synth(sample_rate, global_volume) {
-    init(sample_rate, num_channels);
+AudioEngine::AudioEngine(float fallback_sample_rate, unsigned int num_channels, float global_volume)
+: parser(), sequencer(), synth(resolve_hardware_sample_rate(fallback_sample_rate), global_volume) {
+    init(resolve_hardware_sample_rate(fallback_sample_rate), num_channels);
 }
 
 AudioEngine::~AudioEngine() {
