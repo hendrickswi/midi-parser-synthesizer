@@ -48,6 +48,17 @@ public:
         read_idx.store((current_read + 1 >= N) ? 0 : current_read + 1, std::memory_order_release);
         return true;
     }
+
+    bool peek(T& item) {
+        const auto current_read = read_idx.load(std::memory_order_relaxed);
+
+        if (current_read == write_idx.load(std::memory_order_acquire)) {
+            return false;
+        }
+
+        item = buffer[current_read];
+        return true;
+    }
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_LOCKFREEQUEUE_H

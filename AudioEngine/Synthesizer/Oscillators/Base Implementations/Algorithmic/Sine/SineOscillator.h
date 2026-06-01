@@ -9,7 +9,7 @@ public:
     SineOscillator(float hz, float sample_rate);
     SineOscillator(const SineOscillator& other);
 
-    float get_sample() override;
+    void process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) override;
 };
 
 

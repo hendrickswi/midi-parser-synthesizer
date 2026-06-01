@@ -21,6 +21,7 @@ private:
     bool midi_file_ended_flag;
 
     // Helper variables for timing.
+    float sample_rate;
     uint32_t micros_per_tick;
     uint32_t current_tick;
     std::chrono::high_resolution_clock::time_point prev_tick_time;
@@ -35,14 +36,14 @@ private:
     // Cached tempo change events
     std::vector<MetaEvent> tempo_events;
 
-    void init();
+    void init(float sample_rate = 48000.0f);
     void process_events(const Track& track, TrackIndices& indices);
     void skip_microseconds(uint64_t micros_to_skip);
     [[nodiscard]] bool has_more_events() const;
 
 public:
     MidiSequencer();
-    MidiSequencer(TrackSequence* track_sequence, VoiceManager* synthesizer);
+    MidiSequencer(float sample_rate);
     MidiSequencer(const MidiSequencer& other);
 
     void start();
@@ -96,6 +97,7 @@ public:
 
     [[nodiscard]] float get_current_time_seconds() const;
     [[nodiscard]] float get_total_duration_seconds() const;
+    [[nodiscard]] uint64_t get_total_elapsed_micros() const;
 };
 
 

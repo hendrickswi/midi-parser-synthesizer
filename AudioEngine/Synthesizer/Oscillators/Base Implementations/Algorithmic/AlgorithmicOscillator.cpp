@@ -1,6 +1,8 @@
 #include "AlgorithmicOscillator.h"
 
 void AlgorithmicOscillator::init(float hz, float sample_rate) {
+    base_hz = hz;
+    this->sample_rate = sample_rate;
     phase_increment = calculate_phase_increment(hz, sample_rate);
 }
 

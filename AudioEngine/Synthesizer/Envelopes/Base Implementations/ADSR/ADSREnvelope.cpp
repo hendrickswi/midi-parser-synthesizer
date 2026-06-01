@@ -63,43 +63,50 @@ void ADSREnvelope::off() {
     release_increment = current_multiplier / (std::max(release_time, 0.00001f) * std::max(sample_rate, 0.00001f));
 }
 
-float ADSREnvelope::get_multiplier() {
-    switch (state) {
-        case ADSREnvelopeState::IDLE: {
-            current_multiplier = 0.0;
-            break;
-        }
-        case ADSREnvelopeState::ATTACK: {
-            current_multiplier += attack_increment;
-            if (current_multiplier >= attack_max_level) {
-                current_multiplier = attack_max_level;
-                state = ADSREnvelopeState::DECAY;
-            }
-            break;
-        }
-        case ADSREnvelopeState::DECAY: {
-            current_multiplier -= decay_increment;
-            if (current_multiplier <= sustain_level) {
-                current_multiplier = sustain_level;
-                state = ADSREnvelopeState::SUSTAIN;
-            }
-            break;
-        }
-        case ADSREnvelopeState::SUSTAIN: {
-            current_multiplier = sustain_level;
-            break;
-        }
-        case ADSREnvelopeState::RELEASE : {
-            current_multiplier -= release_increment;
-            if (current_multiplier <= release_min_level) {
-                current_multiplier = release_min_level;
-                state = ADSREnvelopeState::IDLE;
-            }
-            break;
-        }
+void ADSREnvelope::apply_to_block(float* buffer, unsigned int num_frames) {
+    if (state == ADSREnvelopeState::IDLE) {
+        std::fill(buffer, buffer + num_frames, 0.0f);
+        return;
     }
 
-    return current_multiplier;
+    for (int i = 0; i < num_frames; i++) {
+        switch (state) {
+            case ADSREnvelopeState::IDLE: {
+                current_multiplier = 0.0;
+                break;
+            }
+            case ADSREnvelopeState::ATTACK: {
+                current_multiplier += attack_increment;
+                if (current_multiplier >= attack_max_level) {
+                    current_multiplier = attack_max_level;
+                    state = ADSREnvelopeState::DECAY;
+                }
+                break;
+            }
+            case ADSREnvelopeState::DECAY: {
+                current_multiplier -= decay_increment;
+                if (current_multiplier <= sustain_level) {
+                    current_multiplier = sustain_level;
+                    state = ADSREnvelopeState::SUSTAIN;
+                }
+                break;
+            }
+            case ADSREnvelopeState::SUSTAIN: {
+                current_multiplier = sustain_level;
+                break;
+            }
+            case ADSREnvelopeState::RELEASE : {
+                current_multiplier -= release_increment;
+                if (current_multiplier <= release_min_level) {
+                    current_multiplier = release_min_level;
+                    state = ADSREnvelopeState::IDLE;
+                }
+                break;
+            }
+        }
+
+        buffer[i] *= current_multiplier;
+    }
 }
 
 bool ADSREnvelope::is_idle() const {

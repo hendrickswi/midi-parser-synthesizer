@@ -56,9 +56,10 @@ public:
     void stop();
     void reset_state();
 
-    // Sequencer controls
+    // Sequencer/AudioEngine::audio_callback() controls
     bool push_to_command_queue(const SynthesizerCommand& command);
     bool pop_from_command_queue(SynthesizerCommand& command);
+    bool peek_from_command_queue(SynthesizerCommand& command);
 };
 
 

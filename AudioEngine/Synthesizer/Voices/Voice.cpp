@@ -132,14 +132,17 @@ void Voice::update_cc(uint8_t cc_number, uint8_t cc_value) {
     return key_held_flag;
 }
 
-float Voice::process() {
-    if (!(is_active && oscillator && envelope)) return 0.0f;
+
+void Voice::process_block(float* buffer, unsigned int num_frames) {
+    if (!(is_active && oscillator && envelope)) return;
     if (envelope->is_idle()) {
         is_active = false;
-        return 0.0f;
+        return;
     }
 
-    float raw_instruction = oscillator->get_sample();
-    float multiplier = envelope->get_multiplier();
-    return raw_instruction * multiplier * volume * cc_volume * cc_expression;
+    oscillator->process_sample_block(voice_buffer.data(), num_frames);
+    envelope->apply_to_block(voice_buffer.data(), num_frames);
+    for (int i = 0; i < num_frames; i++) {
+        buffer[i] += voice_buffer[i] * volume * cc_volume * cc_expression;
+    }
 }

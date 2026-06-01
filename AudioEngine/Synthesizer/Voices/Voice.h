@@ -14,6 +14,8 @@ private:
     std::unique_ptr<Oscillator> oscillator;
     std::unique_ptr<Envelope> envelope;
 
+    std::array<float, 2048> voice_buffer;
+
     bool is_active;
     std::chrono::high_resolution_clock::time_point note_activation_time;
     uint8_t channel;
@@ -79,7 +81,7 @@ public:
     [[nodiscard]] bool is_sustained() const;
     [[nodiscard]] bool is_key_held() const;
 
-    float process();
+    void process_block(float* buffer, unsigned int num_samples);
 };
 
 

@@ -8,16 +8,15 @@ void SampleOscillator::init(const std::vector<float>* sample, float raw_sample_r
     this->target_sample_rate = target_sample_rate;
     this->base_frequency = base_frequency;
 
-    if (repeat_low == nullptr) {
-        this->repeat_low = -1.0f;
-    } else {
-        this->repeat_low = *repeat_low;
+    if (repeat_low != nullptr && repeat_high != nullptr && sample != nullptr) {
+        repeat_enabled = true;
+        this->repeat_low_idx = *repeat_low * sample->size();
+        this->repeat_high_idx = *repeat_high * sample->size();
     }
-
-    if (repeat_high == nullptr) {
-        this->repeat_high = -1.0f;
-    } else {
-        this->repeat_high = *repeat_high;
+    else {
+        repeat_enabled = false;
+        this->repeat_low_idx = -1;
+        this->repeat_high_idx = -1;
     }
 
     sample_index = 0;
@@ -32,30 +31,43 @@ SampleOscillator::SampleOscillator(const std::vector<float>* sample, float raw_s
     init(sample, raw_sample_rate, target_sample_rate, base_frequency, repeat_low, repeat_high);
 }
 
-float SampleOscillator::get_sample() {
-    if (!sample || sample->empty() || sample_index >= sample->size()) return 0.0f;
-
-    int idx_1 = std::floor(sample_index);
-    int idx_2 = idx_1 + 1;
-    if (idx_2 >= sample->size()) {
-        idx_2 = idx_1;
+void SampleOscillator::process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) {
+    if (!sample || sample->empty()) {
+        std::fill(buffer, buffer + num_frames, 0.0f);
+        return;
     }
 
-    // Linear interpolation
-    float frac = sample_index - idx_1;
-    float sample_1 = sample->at(idx_1);
-    float sample_2 = sample->at(idx_2);
-    float interpolated_sample = sample_1 + frac * (sample_2 - sample_1);
+    for (unsigned int i = 0; i < num_frames; i++) {
+        if (static_cast<size_t>(sample_index) >= sample->size()) {
+            buffer[i] = 0.0f;
+        }
+        else {
+            int idx_1 = std::floor(sample_index);
+            int idx_2 = idx_1 + 1;
+            if (idx_2 >= sample->size()) {
+                idx_2 = idx_1;
+            }
 
-    // Repeat logic
-    sample_index += playback_speed;
-    if (repeat_low >= 0.0f && repeat_high >= 0.0f) {
-        if (sample_index >= sample->size() * repeat_high) {
-            sample_index = sample->size() * repeat_low;
+            // Linear interpolation
+            float frac = sample_index - idx_1;
+            float sample_1 = sample->at(idx_1);
+            float sample_2 = sample->at(idx_2);
+            buffer[i] = sample_1 + frac * (sample_2 - sample_1);
+
+            // Account for different playback speed due to frequency modulation
+            float new_playback_speed = playback_speed;
+            if (fm_buffer != nullptr) {
+                float current_hz = base_frequency + fm_buffer[i];
+                new_playback_speed = current_hz / base_frequency * raw_sample_rate / target_sample_rate;
+            }
+
+            // Repeat logic
+            sample_index += new_playback_speed;
+            if (repeat_enabled && sample_index >= repeat_high_idx) {
+                sample_index = repeat_low_idx;
+            }
         }
     }
-
-    return interpolated_sample;
 }
 
 void SampleOscillator::set_modulation_depth(float depth) {

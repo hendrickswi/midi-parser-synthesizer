@@ -13,6 +13,10 @@
     return mpqn / division;
 }
 
+[[nodiscard]] inline uint64_t micros_to_samples(uint64_t micros, float sample_rate) {
+    return static_cast<uint64_t>(micros / 1000000.0 * sample_rate);
+}
+
 uint32_t parse_mpt_from_tempo_event(const MetaEvent& tempo_event, uint16_t division) {
     if (tempo_event.type != TEMPO_SETTING) return 0;
 
@@ -24,16 +28,11 @@ uint32_t parse_mpt_from_tempo_event(const MetaEvent& tempo_event, uint16_t divis
 }
 
 MidiSequencer::MidiSequencer() { // NOLINT
-    track_sequence = nullptr;
-    synthesizer = nullptr;
-
     // Defer init() call until set_track_sequence() in this case
 }
 
-MidiSequencer::MidiSequencer(TrackSequence* track_sequence, VoiceManager* synthesizer) { // NOLINT
-    this->track_sequence = track_sequence;
-    this->synthesizer = synthesizer;
-    init();
+MidiSequencer::MidiSequencer(float sample_rate) { // NOLINT
+    init(sample_rate);
 }
 
 MidiSequencer::MidiSequencer(const MidiSequencer& other) {
@@ -48,7 +47,8 @@ MidiSequencer::MidiSequencer(const MidiSequencer& other) {
     track_indices = other.track_indices;
 }
 
-void MidiSequencer::init() {
+void MidiSequencer::init(float sample_rate) {
+    this->sample_rate = sample_rate;
     is_playing_flag = false;
     is_skipping_flag = false;
     midi_file_ended_flag = false;
@@ -96,6 +96,8 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         }
     }
 
+    uint64_t current_absolute_sample = micros_to_samples(total_elapsed_micros, sample_rate);
+
     // Midi event processing
     const auto& midi_events = track.get_midi_events();
     while (indices.midi_event_idx < midi_events.size()
@@ -106,22 +108,46 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
 
         switch (midi_event.command) {
             case PROGRAM_CHANGE: {
-                SynthesizerCommand command { SynthesizerCommandType::SET_CHANNEL_PATCH, midi_event.channel, midi_event.data1, midi_event.data2 };
+                SynthesizerCommand command {
+                    SynthesizerCommandType::SET_CHANNEL_PATCH,
+                    midi_event.channel,
+                    midi_event.data1,
+                    midi_event.data2,
+                    current_absolute_sample
+                };
                 synthesizer->push_to_command_queue(command);
                 break;
             }
             case CONTROL_CHANGE : {
-                SynthesizerCommand command { SynthesizerCommandType::SET_CONTROL_CHANGE, midi_event.channel, midi_event.data1, midi_event.data2 };
+                SynthesizerCommand command {
+                    SynthesizerCommandType::SET_CONTROL_CHANGE,
+                    midi_event.channel,
+                    midi_event.data1,
+                    midi_event.data2,
+                    current_absolute_sample
+                };
                 synthesizer->push_to_command_queue(command);
                 break;
             }
             case PITCH_BEND : {
-                SynthesizerCommand command { SynthesizerCommandType::SET_CHANNEL_PITCH_BEND, midi_event.channel, midi_event.data1, midi_event.data2 };
+                SynthesizerCommand command {
+                    SynthesizerCommandType::SET_CHANNEL_PITCH_BEND,
+                    midi_event.channel,
+                    midi_event.data1,
+                    midi_event.data2,
+                    current_absolute_sample
+                };
                 synthesizer->push_to_command_queue(command);
                 break;
             }
             case CHANNEL_PRESSURE : {
-                SynthesizerCommand command { SynthesizerCommandType::SET_CHANNEL_PRESSURE, midi_event.channel, midi_event.data1, midi_event.data2 };
+                SynthesizerCommand command {
+                    SynthesizerCommandType::SET_CHANNEL_PRESSURE,
+                    midi_event.channel,
+                    midi_event.data1,
+                    midi_event.data2,
+                    current_absolute_sample
+                };
                 synthesizer->push_to_command_queue(command);
                 break;
             }
@@ -140,7 +166,13 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         indices.note_idx++;
 
         if (!is_skipping_flag) {
-            SynthesizerCommand command { SynthesizerCommandType::NOTE_ON, note.channel, note.pitch, note.volume };
+            SynthesizerCommand command {
+                SynthesizerCommandType::NOTE_ON,
+                note.channel,
+                note.pitch,
+                note.volume,
+                current_absolute_sample
+            };
             synthesizer->push_to_command_queue(command);
             active_notes.emplace(note);
         }
@@ -245,7 +277,13 @@ void MidiSequencer::update() {
     // Remove expired notes
     while (!active_notes.empty() && active_notes.top().end_time <= current_tick) {
         auto& note = active_notes.top();
-        SynthesizerCommand command { SynthesizerCommandType::NOTE_OFF, note.channel, note.pitch, note.volume };
+        SynthesizerCommand command {
+            SynthesizerCommandType::NOTE_OFF,
+            note.channel,
+            note.pitch,
+            note.volume,
+            micros_to_samples(total_elapsed_micros, sample_rate)
+        };
         synthesizer->push_to_command_queue(command);
         active_notes.pop();
     }
@@ -347,4 +385,8 @@ float MidiSequencer::get_total_duration_seconds() const {
     }
 
     return duration_seconds;
+}
+
+uint64_t MidiSequencer::get_total_elapsed_micros() const {
+    return total_elapsed_micros;
 }

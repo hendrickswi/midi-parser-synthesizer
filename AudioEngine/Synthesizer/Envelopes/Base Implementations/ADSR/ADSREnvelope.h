@@ -34,7 +34,7 @@ public:
 
     void on() override;
     void off() override;
-    [[nodiscard]] float get_multiplier() override;
+    void apply_to_block(float* buffer, unsigned int num_frames) override;
     [[nodiscard]] bool is_idle() const override;
     [[nodiscard]] bool is_released() const override;
 };

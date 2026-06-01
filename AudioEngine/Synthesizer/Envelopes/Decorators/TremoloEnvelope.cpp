@@ -3,21 +3,26 @@
 #include <cmath>
 
 TremoloEnvelope::TremoloEnvelope(std::unique_ptr<Envelope> env, float sample_rate, float speed_hz, float depth)
-: EnvelopeDecorator(std::move(env), sample_rate) {
-        this->speed_hz = speed_hz;
-        this->depth = depth;
-        current_phase = 0;
-        phase_increment = (speed_hz * TWO_PI) / sample_rate;
+    : EnvelopeDecorator(std::move(env), sample_rate) {
+    this->speed_hz = speed_hz;
+    this->depth = depth;
+    current_phase = 0;
+    phase_increment = (speed_hz * TWO_PI) / sample_rate;
 }
 
 TremoloEnvelope::~TremoloEnvelope() = default;
 
-float TremoloEnvelope::get_multiplier() {
-        float base_multiplier = base_envelope->get_multiplier();
-        float normalized_sine = std::sin(current_phase) * 0.5f + 0.5f;
-        float tremolo_modifier = 1.0f - (normalized_sine * depth);
+void TremoloEnvelope::apply_to_block(float *buffer, unsigned int num_frames) {
+    base_envelope->apply_to_block(buffer, num_frames);
 
-        // Wrap-around logic
-        current_phase = fmod(current_phase + phase_increment, TWO_PI);
-        return base_multiplier * tremolo_modifier;
+    for (int i = 0; i < num_frames; i++) {
+        float lfo_value = std::sin(current_phase);
+        float tremolo_multiplier = 1.0f - (depth * 0.5f * (1.0f - lfo_value));
+        buffer[i] *= tremolo_multiplier;
+
+        if (current_phase >= TWO_PI) {
+            current_phase -= TWO_PI;
+        }
+        current_phase += phase_increment;
+    }
 }

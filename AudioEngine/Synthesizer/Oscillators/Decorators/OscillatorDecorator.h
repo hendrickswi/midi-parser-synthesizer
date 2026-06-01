@@ -14,8 +14,8 @@ protected:
     ~OscillatorDecorator();
 
 public:
+    void process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) override;
     void set_frequency(float hz, float sample_rate) override;
-    float get_sample() override;
 };
 
 

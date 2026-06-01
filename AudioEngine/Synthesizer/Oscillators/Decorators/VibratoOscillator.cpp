@@ -1,5 +1,6 @@
 ﻿#include "VibratoOscillator.h"
 
+#include <array>
 #include <cmath>
 
 VibratoOscillator::VibratoOscillator(std::unique_ptr<Oscillator> osc, float sample_rate, float base_hz, float speed_hz, float depth)
@@ -22,12 +23,17 @@ void VibratoOscillator::set_modulation_depth(float depth) {
     this->depth = depth;
 }
 
-float VibratoOscillator::get_sample() {
-    float lfo_wobble = std::sin(current_phase);
-    current_phase = fmod(current_phase + phase_increment, TWO_PI);
+void VibratoOscillator::process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) {
+    auto calculated_lfo_buffer = std::array<float, 2048>();
+    for (unsigned int i = 0; i < num_frames; i++) {
+        float lfo_wobble = std::sin(current_phase);
+        float pitch_offset = lfo_wobble * depth;
 
-    float pitch_offset = lfo_wobble * depth;
-    base_oscillator->set_frequency(base_hz + pitch_offset, sample_rate);
-    return base_oscillator->get_sample();
+        if (fm_buffer != nullptr) {
+            pitch_offset += fm_buffer[i];
+        }
+        calculated_lfo_buffer[i] = pitch_offset;
+    }
 
+    base_oscillator->process_sample_block(buffer, num_frames, calculated_lfo_buffer.data());
 }

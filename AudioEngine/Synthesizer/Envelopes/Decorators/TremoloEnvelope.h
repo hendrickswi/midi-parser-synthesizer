@@ -5,7 +5,7 @@
 
 class TremoloEnvelope : public EnvelopeDecorator {
 private:
-    float TWO_PI = 2 * 3.141592;
+    const float TWO_PI = 6.283185f;
     float current_phase;
     float phase_increment;
 
@@ -17,7 +17,7 @@ public:
     TremoloEnvelope(const TremoloEnvelope& other) = delete;
     ~TremoloEnvelope();
 
-    float get_multiplier() override;
+    void apply_to_block(float* buffer, unsigned int num_frames) override;
 };
 
 

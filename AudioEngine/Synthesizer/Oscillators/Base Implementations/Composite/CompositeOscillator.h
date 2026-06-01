@@ -17,7 +17,7 @@ public:
     CompositeOscillator(float hz, float sample_rate);
 
     void add_oscillator(std::unique_ptr<Oscillator> oscillator, float mix_volume, float frequency_ratio);
-    float get_sample() override;
+    void process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) override;
     void set_modulation_depth(float depth) override;
     void set_frequency(float hz, float sample_rate) override;
 };

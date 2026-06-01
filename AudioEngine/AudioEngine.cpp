@@ -67,106 +67,40 @@ void AudioEngine::init(float sample_rate, unsigned int num_channels) {
 
 int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,
         RtAudioStreamStatus status, void *user_data) {
-    AudioEngine *engine = static_cast<AudioEngine*>(user_data);
+    auto engine = static_cast<AudioEngine*>(user_data);
+    auto buffer_to_use = static_cast<float*>(output_buffer);
 
-    if (engine->platform_requires_profiling) {
-        auto start_time = std::chrono::high_resolution_clock::now();
+    std::fill(buffer_to_use, buffer_to_use + num_frames, 0.0f);
 
-        // Drain the lock-free queue
-        SynthesizerCommand command;
-        while (engine->synth.pop_from_command_queue(command)) {
-            switch (command.type) {
-                case SynthesizerCommandType::NOTE_ON : {
-                    engine->synth.note_on(command.channel, command.data1, command.data2);
-                    break;
-                }
-                case SynthesizerCommandType::NOTE_OFF : {
-                    engine->synth.note_off(command.channel, command.data1);
-                    break;
-                }
-                case SynthesizerCommandType::SET_CHANNEL_PATCH : {
-                    engine->synth.set_channel_patch(command.channel, command.data1);
-                    break;
-                }
-                case SynthesizerCommandType::SET_CHANNEL_PITCH_BEND : {
-                    const uint16_t value = (command.data1 & 0x7F) | ((command.data2 & 0x7F) << 7);
-                    engine->synth.set_channel_pitch_bend(command.channel, value);
-                    break;
-                }
-                case SynthesizerCommandType::SET_CONTROL_CHANGE : {
-                    engine->synth.set_channel_cc(command.channel, command.data1, command.data2);
-                    break;
-                }
-                case SynthesizerCommandType::STOP_ALL_VOICES : {
-                    engine->synth.stop();
-                    break;
-                }
-                default : {
-                    std::cerr << "Warning: Unhandled synthesizer command type " << static_cast<int>(command.type) << std::endl;
-                    break;
-                }
-            }
+    unsigned int current_frame = 0;
+    uint64_t block_end_sample = engine->global_sample_count + num_frames;
+    SynthesizerCommand command;
+    while (current_frame < num_frames) {
+        uint64_t current_absolute_sample = engine->global_sample_count + current_frame;
+        if (engine->synth.peek_from_command_queue(command) && current_absolute_sample >= command.absolute_sample) {
+            engine->synth.pop_from_command_queue(command);
+            engine->execute_command(command);
+            continue; // Loop again in case multiple events on the same frame
         }
 
-        // Then process new audio data
-        float *buffer = static_cast<float *>(output_buffer);
-        engine->synth.process_audio_buffer(buffer, num_frames);
+        unsigned int frames_to_process;
+        if (engine->synth.peek_from_command_queue(command) && command.absolute_sample < block_end_sample) {
+            frames_to_process = static_cast<unsigned int>(command.absolute_sample - current_absolute_sample);
+        }
+        else {
+            frames_to_process = num_frames - current_frame;
+        }
 
-        auto end_time = std::chrono::high_resolution_clock::now();
-        auto elapsed_micros = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
-        double budget_seconds = static_cast<double>(num_frames) / engine->active_sample_rate;
-        auto budget_micros = static_cast<uint64_t>(budget_seconds * 950000.0); // 95% threshold to give OS extra time
-
-        if (elapsed_micros > budget_micros) {
-            engine->underrun_count.fetch_add(1, std::memory_order_relaxed);
+        if (frames_to_process > 0) {
+            // Pointer arithmetic to only give the part of the buffer that needs to be processed
+            engine->synth.process_audio_buffer(buffer_to_use + current_frame, frames_to_process);
+            current_frame += frames_to_process;
         }
     }
-    else {
-        // Can just use native RtAudio library
-        if (status & RTAUDIO_OUTPUT_UNDERFLOW) {
-            engine->underrun_count.fetch_add(1, std::memory_order_relaxed);
-        }
 
-        // Drain the lock-free queue
-        SynthesizerCommand command;
-        while (engine->synth.pop_from_command_queue(command)) {
-            switch (command.type) {
-                case SynthesizerCommandType::NOTE_ON : {
-                    engine->synth.note_on(command.channel, command.data1, command.data2);
-                    break;
-                }
-                case SynthesizerCommandType::NOTE_OFF : {
-                    engine->synth.note_off(command.channel, command.data1);
-                    break;
-                }
-                case SynthesizerCommandType::SET_CHANNEL_PATCH : {
-                    engine->synth.set_channel_patch(command.channel, command.data1);
-                    break;
-                }
-                case SynthesizerCommandType::SET_CHANNEL_PITCH_BEND : {
-                    const uint16_t value = (command.data1 & 0x7F) | ((command.data2 & 0x7F) << 7);
-                    engine->synth.set_channel_pitch_bend(command.channel, value);
-                    break;
-                }
-                case SynthesizerCommandType::SET_CONTROL_CHANGE : {
-                    engine->synth.set_channel_cc(command.channel, command.data1, command.data2);
-                    break;
-                }
-                case SynthesizerCommandType::STOP_ALL_VOICES : {
-                    engine->synth.stop();
-                    break;
-                }
-                default : {
-                    std::cerr << "Warning: Unhandled synthesizer command type " << static_cast<int>(command.type) << std::endl;
-                    break;
-                }
-            }
-        }
+    engine->global_sample_count += num_frames;
 
-        // Then process new audio data
-        float *buffer = static_cast<float *>(output_buffer);
-        engine->synth.process_audio_buffer(buffer, num_frames);
-    }
+    // TODO: Add back profiling (on a different thread?)
 
     return 0;
 }
@@ -179,7 +113,45 @@ void AudioEngine::sequencer_thread_loop() {
     }
 }
 
-AudioEngine::AudioEngine() : parser(), sequencer(), synth(resolve_hardware_sample_rate(44100.0f), 1.0f) {
+void AudioEngine::execute_command(const SynthesizerCommand& command) {
+    switch (command.type) {
+        case SynthesizerCommandType::NOTE_ON : {
+            synth.note_on(command.channel, command.data1, command.data2);
+            break;
+        }
+        case SynthesizerCommandType::NOTE_OFF : {
+            synth.note_off(command.channel, command.data1);
+            break;
+        }
+        case SynthesizerCommandType::SET_CHANNEL_PATCH : {
+            synth.set_channel_patch(command.channel, command.data1);
+            break;
+        }
+        case SynthesizerCommandType::SET_CHANNEL_PITCH_BEND : {
+            const uint16_t value = (command.data1 & 0x7F) | ((command.data2 & 0x7F) << 7);
+            synth.set_channel_pitch_bend(command.channel, value);
+            break;
+        }
+        case SynthesizerCommandType::SET_CHANNEL_PRESSURE : {
+            synth.set_channel_pressure(command.channel, command.data1);
+            break;
+        }
+        case SynthesizerCommandType::SET_CONTROL_CHANGE : {
+            synth.set_channel_cc(command.channel, command.data1, command.data2);
+            break;
+        }
+        case SynthesizerCommandType::STOP_ALL_VOICES : {
+            synth.stop();
+            break;
+        }
+        default : {
+            std::cerr << "Warning: Unhandled synthesizer command type " << static_cast<int>(command.type) << std::endl;
+            break;
+        }
+    }
+}
+
+AudioEngine::AudioEngine() : parser(), sequencer(resolve_hardware_sample_rate(48000.0f)), synth(resolve_hardware_sample_rate(48000.0f), 1.0f) {
     init(resolve_hardware_sample_rate(48000.0f));
 }
 
@@ -297,7 +269,7 @@ void AudioEngine::stop() {
 
 void AudioEngine::skip_seconds(float seconds) {
     bool was_playing = sequencer.is_playing();
-    stop(); // Prevent any seg faults caused by race conditions and sequencer thread
+    stop(); // Prevent thread collisions
 
     if (seconds < 0) {
         sequencer.skip_backward(-seconds);
@@ -306,6 +278,9 @@ void AudioEngine::skip_seconds(float seconds) {
         sequencer.skip_forward(seconds);
     }
 
+    uint64_t new_micros = sequencer.get_total_elapsed_micros();
+    this->global_sample_count = static_cast<uint64_t>(new_micros * active_sample_rate / 1000000.0);
+
     if (was_playing) play();
 }
 
@@ -313,6 +288,8 @@ void AudioEngine::set_track_sequence(std::size_t index) {
     if (index >= loaded_track_sequences.size()) return;
     current_track = index;
     file_has_switched = true;
+    global_sample_count.store(0, std::memory_order_relaxed);
+    underrun_count.store(0, std::memory_order_relaxed);
 }
 
 void AudioEngine::set_global_volume(float volume) {
@@ -323,6 +300,8 @@ void AudioEngine::soft_reset() {
     stop();
     sequencer.reset();
     synth.reset_state();
+    global_sample_count.store(0, std::memory_order_relaxed);
+    underrun_count.store(0, std::memory_order_relaxed);
 }
 
 bool AudioEngine::is_playing() const {

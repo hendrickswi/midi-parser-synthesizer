@@ -15,6 +15,7 @@ private:
     std::atomic<uint64_t> underrun_count;
     float active_sample_rate;
     bool platform_requires_profiling;
+    std::atomic<uint64_t> global_sample_count;
 
     std::vector<TrackSequence> loaded_track_sequences;
     std::vector<std::string> loaded_file_names;
@@ -138,6 +139,9 @@ private:
 
     // The continuous loop run by this->sequencer_thread
     void sequencer_thread_loop();
+
+    // Helper dispatcher method for processing commands
+    void execute_command(const SynthesizerCommand& command);
 
 public:
     AudioEngine();

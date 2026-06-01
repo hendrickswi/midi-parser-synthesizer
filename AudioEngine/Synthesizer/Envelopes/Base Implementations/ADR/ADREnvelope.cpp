@@ -62,39 +62,46 @@ void ADREnvelope::off() {
     release_increment = current_multiplier / (std::max(release_time, 0.00001f) * std::max(sample_rate, 0.00001f));
 }
 
-float ADREnvelope::get_multiplier() {
-    switch (state) {
-        case ADREnvelopeState::IDLE : {
-            current_multiplier = 0.0;
-            break;
-        }
-        case ADREnvelopeState::ATTACK : {
-            current_multiplier += attack_increment;
-            if (current_multiplier >= attack_max_level) {
-                current_multiplier = attack_max_level;
-                state = ADREnvelopeState::DECAY;
-            }
-            break;
-        }
-        case ADREnvelopeState::DECAY : {
-            current_multiplier -= decay_increment;
-            if (current_multiplier <= release_max_level) {
-                current_multiplier = release_max_level;
-                state = ADREnvelopeState::RELEASE;
-            }
-            break;
-        }
-        case ADREnvelopeState::RELEASE : {
-            current_multiplier -= release_increment;
-            if (current_multiplier <= release_min_level) {
-                current_multiplier = release_min_level;
-                state = ADREnvelopeState::IDLE;
-            }
-            break;
-        }
+void ADREnvelope::apply_to_block(float* buffer, unsigned int num_frames) {
+    if (state == ADREnvelopeState::IDLE) {
+        std::fill(buffer, buffer + num_frames, 0.0f);
+        return;
     }
 
-    return current_multiplier;
+    for (int i = 0; i < num_frames; i++) {
+        switch (state) {
+            case ADREnvelopeState::IDLE : {
+                current_multiplier = 0.0;
+                break;
+            }
+            case ADREnvelopeState::ATTACK : {
+                current_multiplier += attack_increment;
+                if (current_multiplier >= attack_max_level) {
+                    current_multiplier = attack_max_level;
+                    state = ADREnvelopeState::DECAY;
+                }
+                break;
+            }
+            case ADREnvelopeState::DECAY : {
+                current_multiplier -= decay_increment;
+                if (current_multiplier <= release_max_level) {
+                    current_multiplier = release_max_level;
+                    state = ADREnvelopeState::RELEASE;
+                }
+                break;
+            }
+            case ADREnvelopeState::RELEASE : {
+                current_multiplier -= release_increment;
+                if (current_multiplier <= release_min_level) {
+                    current_multiplier = release_min_level;
+                    state = ADREnvelopeState::IDLE;
+                }
+                break;
+            }
+        }
+
+        buffer[i] *= current_multiplier;
+    }
 }
 
 bool ADREnvelope::is_idle() const {

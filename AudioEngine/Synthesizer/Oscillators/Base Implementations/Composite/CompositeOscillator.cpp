@@ -18,12 +18,11 @@ void CompositeOscillator::add_oscillator(std::unique_ptr<Oscillator> oscillator,
     children.push_back(std::move(node));
 }
 
-float CompositeOscillator::get_sample() {
-    float mix = 0.0f;
+
+void CompositeOscillator::process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) {
     for (auto& child : children) {
-        mix += child.oscillator->get_sample() * child.mix_volume;
+        child.oscillator->process_sample_block(buffer, num_frames, fm_buffer);
     }
-    return mix;
 }
 
 void CompositeOscillator::set_modulation_depth(float depth) {

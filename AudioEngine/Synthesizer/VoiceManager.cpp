@@ -173,19 +173,18 @@ void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
 }
 
 void VoiceManager::process_audio_buffer(float* buffer, const unsigned int num_samples) {
-    for (int i = 0; i < num_samples; i++) {
-        buffer[i] = 0.0f;
+    std::fill(buffer, buffer + num_samples, 0.0f);
+
+    // Process by block for performance
+    for (const auto& voice : voices) {
+        if (!voice->is_free()) {
+            voice->process_block(buffer, num_samples);
+        }
     }
 
+    // Then apply volume edits
     for (int i = 0; i < num_samples; i++) {
-        float instruction = 0.0f;
-        for (const auto& voice : voices) {
-            if (!voice->is_free()) {
-                instruction += voice->process();
-            }
-        }
-
-        float safe_mix = instruction / headroom_attenuation;
+        float safe_mix = buffer[i] / headroom_attenuation;
         buffer[i] = std::tanh(safe_mix * global_volume);
     }
 }
@@ -217,4 +216,8 @@ bool VoiceManager::push_to_command_queue(const SynthesizerCommand& command) {
 
 bool VoiceManager::pop_from_command_queue(SynthesizerCommand& command) {
     return command_queue.pop(command);
+}
+
+bool VoiceManager::peek_from_command_queue(SynthesizerCommand& command) {
+    return command_queue.peek(command);
 }

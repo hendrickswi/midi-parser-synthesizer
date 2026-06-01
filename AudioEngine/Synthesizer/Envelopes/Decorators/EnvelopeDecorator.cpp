@@ -15,8 +15,8 @@ void EnvelopeDecorator::off() {
     base_envelope->off();
 }
 
-float EnvelopeDecorator::get_multiplier() {
-    return base_envelope->get_multiplier();
+void EnvelopeDecorator::apply_to_block(float* buffer, unsigned int num_frames) {
+    base_envelope->apply_to_block(buffer, num_frames);
 }
 
 bool EnvelopeDecorator::is_idle() const {

@@ -12,7 +12,7 @@ public:
     SquareOscillator(float hz, float sample_rate);
     SquareOscillator(const SquareOscillator& other);
 
-    float get_sample() override;
+    void process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) override;
 };
 
 
