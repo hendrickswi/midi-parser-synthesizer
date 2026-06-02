@@ -12,6 +12,8 @@ private:
     float current_hz;
     float sample_rate;
 
+    std::vector<float> child_buffer;
+
 public:
     CompositeOscillator();
     CompositeOscillator(float hz, float sample_rate);

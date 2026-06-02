@@ -6,6 +6,8 @@
 #include "Parser/MidiParser.h"
 #include "Sequencer/MidiSequencer.h"
 
+constexpr unsigned int BUFFER_SIZE = 1024;
+
 class AudioEngine {
 private:
     MidiParser parser;

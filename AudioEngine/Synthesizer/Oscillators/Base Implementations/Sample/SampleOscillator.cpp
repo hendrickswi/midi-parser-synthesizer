@@ -42,7 +42,7 @@ void SampleOscillator::process_sample_block(float* buffer, unsigned int num_fram
             buffer[i] = 0.0f;
         }
         else {
-            int idx_1 = std::floor(sample_index);
+            int idx_1 = static_cast<int>(sample_index);
             int idx_2 = idx_1 + 1;
             if (idx_2 >= sample->size()) {
                 idx_2 = idx_1;

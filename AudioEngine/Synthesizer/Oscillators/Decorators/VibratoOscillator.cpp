@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cmath>
+#include <vector>
 
 VibratoOscillator::VibratoOscillator(std::unique_ptr<Oscillator> osc, float sample_rate, float base_hz, float speed_hz, float depth)
         : OscillatorDecorator(std::move(osc), sample_rate) {
@@ -10,6 +11,7 @@ VibratoOscillator::VibratoOscillator(std::unique_ptr<Oscillator> osc, float samp
     this->depth = depth;
     current_phase = 0;
     phase_increment = (speed_hz * TWO_PI) / sample_rate;
+    calculated_lfo_buffer = std::vector<float>(4096); // Safe estimate to prevent resizing
 }
 
 VibratoOscillator::~VibratoOscillator() = default;
@@ -24,7 +26,6 @@ void VibratoOscillator::set_modulation_depth(float depth) {
 }
 
 void VibratoOscillator::process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) {
-    auto calculated_lfo_buffer = std::array<float, 2048>();
     for (unsigned int i = 0; i < num_frames; i++) {
         float lfo_wobble = std::sin(current_phase);
         float pitch_offset = lfo_wobble * depth;

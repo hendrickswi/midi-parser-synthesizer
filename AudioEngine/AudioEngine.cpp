@@ -22,6 +22,13 @@ static float resolve_hardware_sample_rate(float requested_rate) {
     return requested_rate;
 }
 
+static bool is_high_priority_command(SynthesizerCommandType type) {
+    return type == SynthesizerCommandType::NOTE_ON ||
+        type == SynthesizerCommandType::NOTE_OFF ||
+        type == SynthesizerCommandType::SET_CHANNEL_PATCH ||
+        type == SynthesizerCommandType::STOP_ALL_VOICES;
+}
+
 void AudioEngine::init(float sample_rate, unsigned int num_channels) {
     sequencer.set_synthesizer(&synth);
 
@@ -34,7 +41,7 @@ void AudioEngine::init(float sample_rate, unsigned int num_channels) {
     parameters.deviceId = rt_audio.getDefaultOutputDevice();
     parameters.nChannels = num_channels;
     parameters.firstChannel = 0;
-    unsigned int buffer_size = 1024;
+    unsigned int buffer_size = BUFFER_SIZE;
     active_sample_rate = sample_rate;
     try {
         rt_audio.openStream(&parameters, nullptr, RTAUDIO_FLOAT32,
@@ -77,18 +84,31 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
     SynthesizerCommand command;
     while (current_frame < num_frames) {
         uint64_t current_absolute_sample = engine->global_sample_count + current_frame;
-        if (engine->synth.peek_from_command_queue(command) && current_absolute_sample >= command.absolute_sample) {
-            engine->synth.pop_from_command_queue(command);
-            engine->execute_command(command);
-            continue; // Loop again in case multiple events on the same frame
+        while (engine->synth.peek_from_command_queue(command)) {
+            bool is_due_now = command.absolute_sample <= current_absolute_sample;
+            bool is_high_priority = is_high_priority_command(command.type);
+            bool is_due_this_block = command.absolute_sample < block_end_sample;
+
+            if (is_due_now || (!is_high_priority && is_due_this_block)) {
+                engine->synth.pop_from_command_queue(command);
+                engine->execute_command(command);
+            }
+            else {
+                break;
+            }
         }
 
-        unsigned int frames_to_process;
+        unsigned int frames_to_process = num_frames - current_frame;
         if (engine->synth.peek_from_command_queue(command) && command.absolute_sample < block_end_sample) {
             frames_to_process = static_cast<unsigned int>(command.absolute_sample - current_absolute_sample);
         }
-        else {
-            frames_to_process = num_frames - current_frame;
+
+        if (frames_to_process > BUFFER_SIZE) {
+            frames_to_process = BUFFER_SIZE;
+        }
+
+        if (frames_to_process < 32 && (current_frame + 32 <= num_frames)) {
+            frames_to_process = 32;
         }
 
         if (frames_to_process > 0) {
@@ -99,6 +119,11 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
     }
 
     engine->global_sample_count += num_frames;
+
+    if (status & RTAUDIO_OUTPUT_UNDERFLOW) {
+        engine->underrun_count.fetch_add(1, std::memory_order_relaxed);
+        std::cerr << "Warning: Audio underflow detected. " << engine->underrun_count << " underruns since last reset." << std::endl;
+    }
 
     // TODO: Add back profiling (on a different thread?)
 
