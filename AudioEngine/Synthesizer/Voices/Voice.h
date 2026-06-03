@@ -1,6 +1,5 @@
 #ifndef MIDI_PARSERSYNTHESIZER_VOICE_H
 #define MIDI_PARSERSYNTHESIZER_VOICE_H
-#include <memory>
 #include <chrono>
 #include "../Oscillators/Base Implementations/Algorithmic/Sawtooth/SawtoothOscillator.h"
 #include "../Oscillators/Base Implementations/Algorithmic/Sine/SineOscillator.h"

@@ -104,6 +104,8 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
     volume = byte_to_scale_float(velocity);
     one_shot_flag = config->is_one_shot;
 
+    float target_hz = pitch_to_hz(pitch);
+
     switch (config->oscillator_type) {
         case OscillatorType::SAMPLE : {
             const Sample* selected_sample = nullptr;
@@ -117,6 +119,11 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
                 selected_sample->repeat_low,
                 selected_sample->repeat_high
             );
+
+            if (channel == 9) {
+                target_hz = selected_sample->base_frequency;
+            }
+
             active_oscillator = &sample_oscillator;
             break;
         }
@@ -226,7 +233,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
     }
 
     if (active_envelope && active_oscillator) {
-        active_oscillator->set_frequency(pitch_to_hz(pitch), sample_rate);
+        active_oscillator->set_frequency(target_hz, sample_rate);
         active_envelope->on();
 
         is_active = true;
