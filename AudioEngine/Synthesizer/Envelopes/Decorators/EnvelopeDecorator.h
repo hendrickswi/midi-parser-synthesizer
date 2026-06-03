@@ -1,14 +1,13 @@
 #ifndef MIDI_PARSERSYNTHESIZER_ENVELOPEDECORATOR_H
 #define MIDI_PARSERSYNTHESIZER_ENVELOPEDECORATOR_H
 #include "../Envelope.h"
-#include <memory>
 
 class EnvelopeDecorator : public Envelope {
 protected:
-    std::unique_ptr<Envelope> base_envelope;
+    Envelope* base_envelope;
     float sample_rate;
 
-    EnvelopeDecorator(std::unique_ptr<Envelope> env, float sample_rate = 44100.0f);
+    EnvelopeDecorator();
     ~EnvelopeDecorator();
 
 public:
@@ -17,6 +16,7 @@ public:
     void apply_to_block(float* buffer, unsigned int num_frames) override;
     [[nodiscard]] bool is_idle() const override;
     [[nodiscard]] bool is_released() const override;
+    void set_base_envelope(Envelope* envelope);
 };
 
 

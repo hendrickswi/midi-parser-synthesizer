@@ -1,16 +1,14 @@
 ﻿#include "VibratoOscillator.h"
 
-#include <array>
 #include <cmath>
 #include <vector>
 
-VibratoOscillator::VibratoOscillator(std::unique_ptr<Oscillator> osc, float sample_rate, float base_hz, float speed_hz, float depth)
-        : OscillatorDecorator(std::move(osc), sample_rate) {
-    this->base_hz = base_hz;
-    this->speed_hz = speed_hz;
-    this->depth = depth;
+VibratoOscillator::VibratoOscillator() {
+    this->base_hz = 4.0f;
+    this->speed_hz = 5.0f;
+    this->depth = 0.5f;
     current_phase = 0;
-    phase_increment = (speed_hz * TWO_PI) / sample_rate;
+    phase_increment = speed_hz * TWO_PI / sample_rate;
     calculated_lfo_buffer = std::vector<float>(4096); // Safe estimate to prevent resizing
 }
 
@@ -18,7 +16,8 @@ VibratoOscillator::~VibratoOscillator() = default;
 
 void VibratoOscillator::set_frequency(float hz, float sample_rate) {
     base_hz = hz;
-    OscillatorDecorator::set_frequency(hz, sample_rate);
+    base_oscillator->set_frequency(base_hz, sample_rate);
+    current_phase = 0;
 }
 
 void VibratoOscillator::set_modulation_depth(float depth) {
@@ -37,4 +36,12 @@ void VibratoOscillator::process_sample_block(float* buffer, unsigned int num_fra
     }
 
     base_oscillator->process_sample_block(buffer, num_frames, calculated_lfo_buffer.data());
+}
+
+void VibratoOscillator::set_params(float sample_rate, float base_hz, float speed_hz, float depth) {
+    this->sample_rate = sample_rate;
+    this->base_hz = base_hz;
+    this->speed_hz = speed_hz;
+    this->depth = depth;
+    phase_increment = speed_hz * TWO_PI / sample_rate;
 }

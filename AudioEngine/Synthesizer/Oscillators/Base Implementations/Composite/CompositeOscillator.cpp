@@ -2,43 +2,84 @@
 #include "CompositeOscillatorNode.h"
 
 CompositeOscillator::CompositeOscillator() {
-    children = std::vector<CompositeOscillatorNode>();
-    current_hz = 440.0f;
-    sample_rate = 44100.0f;
-    child_buffer = std::vector<float>(4096); // Safe estimate to prevent resizing
+    children = std::array<CompositeOscillatorNode, MAX_CHILDREN_IN_COMPOSITE>();
+    num_children = 0;
+    child_buffer = std::array<float, 4096>();
 }
 
 CompositeOscillator::CompositeOscillator(float hz, float sample_rate) {
-    children = std::vector<CompositeOscillatorNode>();
-    current_hz = hz;
-    this->sample_rate = sample_rate;
+    children = std::array<CompositeOscillatorNode, MAX_CHILDREN_IN_COMPOSITE>();
+    num_children = 0;
+    child_buffer = std::array<float, 4096>();
 }
 
-void CompositeOscillator::add_oscillator(std::unique_ptr<Oscillator> oscillator, float mix_volume, float frequency_ratio) {
-    CompositeOscillatorNode node = CompositeOscillatorNode(std::move(oscillator), mix_volume, frequency_ratio);
-    children.push_back(std::move(node));
-}
+void CompositeOscillator::configure(const CompositeOscillatorParams& params, float base_hz, float sample_rate) {
+    for (int i = 0; i < params.num_children; i++) {
+        auto& child = children[i];
+        child.mix_volume = params.mix_volumes[i];
+        child.frequency_ratio = params.child_frequency_ratios[i];
 
+        switch (params.child_types[i]) {
+            case OscillatorType::SAWTOOTH : {
+                child.oscillator = SawtoothOscillator();
+                std::get<SawtoothOscillator>(child.oscillator).set_frequency(base_hz * child.frequency_ratio, sample_rate);
+                break;
+            }
+            case OscillatorType::SQUARE : {
+                child.oscillator = SquareOscillator();
+                std::get<SquareOscillator>(child.oscillator).set_frequency(base_hz * child.frequency_ratio, sample_rate);
+                break;
+            }
+            case OscillatorType::SINE : {
+                child.oscillator = SineOscillator();
+                std::get<SineOscillator>(child.oscillator).set_frequency(base_hz * child.frequency_ratio, sample_rate);
+                break;
+            }
+            case OscillatorType::TRIANGLE : {
+                child.oscillator = TriangleOscillator();
+                std::get<TriangleOscillator>(child.oscillator).set_frequency(base_hz * child.frequency_ratio, sample_rate);
+                break;
+            }
+            case OscillatorType::NOISE : {
+                child.oscillator = NoiseOscillator();
+                std::get<NoiseOscillator>(child.oscillator).set_frequency(base_hz * child.frequency_ratio, sample_rate);
+                break;
+            }
+        }
+    }
+    num_children = params.num_children;
+    set_frequency(base_hz, sample_rate);
+}
 
 void CompositeOscillator::process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) {
-    for (auto& child : children) {
-        child.oscillator->process_sample_block(child_buffer.data(), num_frames, fm_buffer);
-        for (unsigned int i = 0; i < num_frames; i++) {
-            buffer[i] += child_buffer[i] * child.mix_volume;
+    std::fill(buffer, buffer + num_frames, 0.0f);
+
+    for (int i = 0; i < num_children; i++) {
+        auto& child = children[i];
+        std::visit([&](auto& oscillator) -> void {
+                oscillator.process_sample_block(child_buffer.data(), num_frames, fm_buffer);
+            }, child.oscillator);
+
+        for (unsigned int j = 0; j < num_frames; j++) {
+            buffer[j] += child_buffer[j] * child.mix_volume;
         }
     }
 }
 
 void CompositeOscillator::set_modulation_depth(float depth) {
-    for (auto& child : children) {
-        child.oscillator->set_modulation_depth(depth);
+    for (int i = 0; i < num_children; i++) {
+        auto& child = children[i];
+        std::visit([&](auto& oscillator) -> void {
+                oscillator.set_modulation_depth(depth);
+            }, child.oscillator);
     }
 }
 
 void CompositeOscillator::set_frequency(float hz, float sample_rate) {
-    current_hz = hz;
-    this->sample_rate = sample_rate;
-    for (auto& child : children) {
-        child.oscillator->set_frequency(hz * child.frequency_ratio, sample_rate);
+    for (int i = 0; i < num_children; i++) {
+        auto& child = children[i];
+        std::visit([&](auto& oscillator) -> void {
+                oscillator.set_frequency(hz * child.frequency_ratio, sample_rate);
+        }, child.oscillator);
     }
 }

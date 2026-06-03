@@ -5,16 +5,7 @@
 #include <memory>
 #include <nlohmann/json.hpp>
 
-#include "PatchFactory.h"
-#include "../Synthesizer/Envelopes/Base Implementations/ADR/ADREnvelope.h"
-#include "../Synthesizer/Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
-#include "../Synthesizer/Oscillators/Base Implementations/Noise/NoiseOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/Sample/SampleOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Sawtooth/SawtoothOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Sine/SineOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Square/SquareOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/Algorithmic/Triangle/TriangleOscillator.h"
-#include "../Synthesizer/Oscillators/Base Implementations/Composite/CompositeOscillator.h"
+#include "../Synthesizer/Envelopes/EnvelopeParsingType.h"
 #include "../Synthesizer/Sample Loading/Sample.h"
 #include "../Synthesizer/Sample Loading/SampleLoader.h"
 #include "../Synthesizer/Voices/Voice.h"
@@ -22,152 +13,87 @@
 
 using json = nlohmann::json;
 
-void InstrumentRegistry::init(float sample_rate) {
-    this->sample_rate = sample_rate;
-    init_samples();
-    init_leads();
-    init_pads();
-
-    // Melodic sample handling
-    for (int patch_id = 0; patch_id < 128; patch_id++) {
-        if (melodic_patch_configs[patch_id].samples.empty() || melodic_patch_factories[patch_id] != nullptr) continue;
-
-        melodic_patch_factories[patch_id] = [this, patch_id](Voice* v, uint8_t pitch, uint8_t velocity) {
-            /*
-             * Sample selection logic:
-             *      1st pass: Try to find a sample with matching pitch *and* velocity
-             *      2nd pass: Try to find a sample with matching pitch and any velocity
-             *      Else: Use the first sample in the list of available samples (confirmed to not be empty)
-             */
-
-            const auto& samples = this->melodic_patch_configs[patch_id].samples;
-            const Sample* selected_sample = nullptr;
-
-            for (const auto& sample : samples ) {
-                if (pitch >= sample.min_pitch && pitch <= sample.max_pitch &&
-                    velocity >= sample.min_velocity && velocity <= sample.max_velocity) {
-                    selected_sample = &sample;
-                    break;
-                }
-            }
-
-            if (selected_sample == nullptr) {
-                for (const auto& sample : samples ) {
-                    if (pitch >= sample.min_pitch && pitch <= sample.max_pitch) {
-                        selected_sample = &sample;
-                        break;
-                    }
-                }
-            }
-
-            if (selected_sample == nullptr) {
-               selected_sample = &samples.front();
-            }
-
-            // Safe estimate for repeat logic until implemented properly
-            // Could keep it like this indefinitely, as ADSR vs. ADR envelope
-            // already handles sustained instrument vs percussive instrument
-            float repeat_low = 0.3f;
-            float repeat_high = 0.7f;
-
-            v->set_oscillator(PatchFactory::create_sample_oscillator(
-                &selected_sample->audio_buffer,
-                selected_sample->sample_rate,
-                this->sample_rate,
-                selected_sample->base_frequency,
-                &repeat_low,
-                &repeat_high
-            ));
-
-            const auto& env_data = melodic_patch_configs[patch_id].envelope_data;
-            v->set_envelope(PatchFactory::create_envelope(env_data, this->sample_rate));
-            v->set_one_shot(melodic_patch_configs[patch_id].one_shot);
-        };
+void parse_envelope_config(const json& config, PatchDefinition* patch_config) {
+    if (config.is_null() || !config.contains("type")) {
+        std::cerr << "WARNING: Invalid envelope config in parse_envelope_config(...): " << config.dump() << std::endl;
     }
 
-    // Drum sample handling
-    for (int drum_key = 0; drum_key < 128; drum_key++) {
-        if (drum_patch_configs[drum_key].samples.empty()) continue;
-
-        drum_patch_factories[drum_key] = [this, drum_key](Voice* v, uint8_t pitch, uint8_t velocity) {
-            /*
-             * Sample selection logic:
-             *      1st pass: Try to find a sample with matching velocity
-             *      Else: Use the first loaded sample
-             */
-
-            const auto& samples = this->drum_patch_configs[drum_key].samples;
-            const Sample* selected_sample = nullptr;
-
-            for (const auto& sample : samples) {
-                if (velocity >= sample.min_velocity && velocity <= sample.max_velocity) {
-                    selected_sample = &sample;
-                    break;
-                }
-            }
-
-            if (selected_sample == nullptr) {
-                selected_sample = &samples.front();
-            }
-
-            // Force 1.0x playback for drums
-            float target_freq = 440.0f * std::pow(2.0f, (pitch - 69.0f) / 12.0f);
-
-            v->set_oscillator(PatchFactory::create_sample_oscillator(
-                &selected_sample->audio_buffer,
-                selected_sample->sample_rate,
-                this->sample_rate,
-                target_freq,
-                nullptr,
-                nullptr
-            ));
-
-            const auto& env_data = drum_patch_configs[drum_key].envelope_data;
-            v->set_envelope(PatchFactory::create_envelope(env_data, this->sample_rate));
-            v->set_one_shot(drum_patch_configs[drum_key].one_shot);
-        };
+    if (patch_config == nullptr) {
+        std::cerr << "WARNING: null pointer for parameter patch_config passed into parse_envelope_config(...). " << std::endl;
+        return;
     }
 
-    for (auto& factory : melodic_patch_factories) {
-        if (factory == nullptr) {
-            // Fallback
-            factory = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-                v->set_oscillator(PatchFactory::create_sine_oscillator(440.0, this->sample_rate));
-                v->set_envelope(PatchFactory::create_adsr_envelope(this->sample_rate, 0.001f, 0.8f, 0.1f,
-                0.7f, 0.03f, 0.0f));
-                v->set_one_shot(false);
-            };
+    ParsingEnvelopeType type = config["type"];
+    switch (type) {
+        case ParsingEnvelopeType::ADSR : {
+            patch_config->envelope_type = EnvelopeType::ADSR;
+            patch_config->adsr_envelope_params.attack_time = config.value("attack_time", 0.005f);
+            patch_config->adsr_envelope_params.attack_max = config.value("attack_max", 1.0f);
+            patch_config->adsr_envelope_params.decay_time = config.value("decay_time", 1.0f);
+            patch_config->adsr_envelope_params.sustain_level = config.value("sustain_level", 0.025f);
+            patch_config->adsr_envelope_params.release_time = config.value("release_time", 0.2f);
+            patch_config->adsr_envelope_params.release_min = config.value("release_min", 0.0f);
+            break;
         }
-    }
+        case ParsingEnvelopeType::ADR : {
+            patch_config->envelope_type = EnvelopeType::ADR;
+            patch_config->adr_envelope_params.attack_time = config.value("attack_time", 0.005f);
+            patch_config->adr_envelope_params.attack_max = config.value("attack_max", 1.0f);
+            patch_config->adr_envelope_params.decay_time = config.value("decay_time", 0.1f);
+            patch_config->adr_envelope_params.release_time = config.value("release_time", 0.1f);
+            patch_config->adr_envelope_params.release_max = config.value("release_time", 0.1f);
+            patch_config->adr_envelope_params.release_min = config.value("release_min", 0.0f);
+            break;
+        }
+        case ParsingEnvelopeType::TREMOLO : {
+            patch_config->envelope_decorator_type = EnvelopeDecoratorType::TREMOLO;
+            patch_config->tremolo_decorator_params.speed_hz = config.value("speed_hz", 5.0f);
+            patch_config->tremolo_decorator_params.depth = config.value("depth", 0.5f);
 
-    for (auto& factory : drum_patch_factories) {
-        if (factory == nullptr) {
-            // Fallback
-            factory = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-                v->set_oscillator(PatchFactory::create_noise_oscillator());
-                v->set_envelope(PatchFactory::create_adr_envelope(this->sample_rate, 0.005f, 0.4f,
-                    0.1f, 0.1f, 0.1f, 0.0f));
-                v->set_one_shot(true);
-            };
+            if (config.contains("base_envelope")) {
+                parse_envelope_config(config["base_envelope"], patch_config);
+            }
+            else {
+                // Continue with a fallback ADSR base envelope
+                std::cerr << "WARNING: No base envelope specified for tremolo decorator. "
+                             "ADSR envelope fallback will be used." << std::endl;
+                patch_config->envelope_type = EnvelopeType::ADSR;
+                patch_config->adsr_envelope_params = ADSREnvelopeParams(0.005f, 1.0f, 1.0f, 0.025f, 0.2f, 0.0f);
+            }
+            break;
+        }
+        case ParsingEnvelopeType::UNKNOWN :
+        default: {
+            std::cerr << "WARNING: Unknown ParsingEnvelopeType enum in selected json. "
+                         "ADSR envelope fallback will be used." << std::endl;
+            patch_config->envelope_type = EnvelopeType::ADSR;
+            patch_config->adsr_envelope_params = ADSREnvelopeParams(0.005f, 1.0f, 1.0f, 0.025f, 0.2f, 0.0f);
+            break;
         }
     }
 }
 
 void InstrumentRegistry::init_samples() {
     SampleLoader loader;
-    std::string instrument_map_file_path = "Assets/instrument_map.json";
-    std::ifstream file = std::ifstream(get_sanitized_file_path(instrument_map_file_path));
+    std::ifstream file = std::ifstream(get_sanitized_file_path("Assets/instrument_map.json"));
     if (!file.is_open()) {
         std::cerr << "Failed to open instrument map file. Samples loading will be skipped." << std::endl;
         return;
     }
+
     json config = json::parse(file);
 
     // Loading melodic samples
     for (const auto& [patch_id_str, melodic_patch_data] : config["melodic_instruments"].items()) {
         int patch_id = std::stoi(patch_id_str);
+        PatchDefinition* patch = &melodic_patches[patch_id];
 
-        melodic_patch_configs[patch_id].envelope_data = melodic_patch_data["envelope"];
+        patch->oscillator_type = OscillatorType::SAMPLE;
+        patch->is_one_shot = melodic_patch_data.value("one_shot", false);
+
+        if (melodic_patch_data.contains("envelope")) {
+            parse_envelope_config(melodic_patch_data["envelope"], patch);
+        }
 
         for (const auto& zone : melodic_patch_data.value("zones", json::array())) {
             std::string file_path = zone["file"];
@@ -179,20 +105,28 @@ void InstrumentRegistry::init_samples() {
 
             auto raw_sample = loader.load_wav_mono(file_path);
             if (raw_sample.audio_buffer.empty()) {
-                std::cerr << "Audio buffer is completely empty for file: " << file_path << std::endl;
+                std::cerr << "WARNING: Audio buffer is completely empty for file: " << file_path << std::endl;
             }
-            melodic_patch_configs[patch_id].samples.push_back(Sample(
+
+            patch->sample_oscillator_params.samples.push_back(Sample(
                 raw_sample.audio_buffer, raw_sample.sample_rate, base_freq, min_pitch, max_pitch, min_velocity, max_velocity)
             );
         }
-        melodic_patch_configs[patch_id].one_shot = melodic_patch_data.value("one_shot", false);
+
+        patch->is_initialized = true;
     }
 
     // Loading drum samples
     for (const auto& [drum_key_str, drum_patch_data] : config["drum_instruments"].items()) {
         int drum_key = std::stoi(drum_key_str);
+        PatchDefinition* patch = &drum_patches[drum_key];
 
-        drum_patch_configs[drum_key].envelope_data = drum_patch_data["envelope"];
+        patch->oscillator_type = OscillatorType::SAMPLE;
+        patch->is_one_shot = drum_patch_data.value("one_shot", true);
+
+        if (drum_patch_data.contains("envelope")) {
+            parse_envelope_config(drum_patch_data["envelope"], patch);
+        }
 
         for (const auto& zone : drum_patch_data.value("zones", json::array())) {
             std::string file_path = zone["file"];
@@ -204,189 +138,314 @@ void InstrumentRegistry::init_samples() {
             if (raw_sample.audio_buffer.empty()) {
                 std::cerr << "Audio buffer is completely empty for file: " << file_path << std::endl;
             }
-            drum_patch_configs[drum_key].samples.push_back(Sample(
+
+            patch->sample_oscillator_params.samples.push_back(Sample(
                 raw_sample.audio_buffer, raw_sample.sample_rate, base_freq, 0, 127, min_velocity, max_velocity)
             );
         }
-        drum_patch_configs[drum_key].one_shot = drum_patch_data.value("one_shot", true);
+
+        patch->is_initialized = true;
     }
 }
 
 void InstrumentRegistry::init_leads() {
     // Square lead
-    melodic_patch_factories[80] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        v->set_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.2f,
-            0.25f, 0.1f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& square_lead = melodic_patches[80];
+    square_lead.oscillator_type = OscillatorType::SQUARE;
+    square_lead.square_oscillator_params = SquareOscillatorParams(440.0f, sample_rate);
+    square_lead.envelope_type = EnvelopeType::ADSR;
+    square_lead.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.005f, 0.6f, 0.2f, 0.25f, 0.1f, 0.0f
+    );
+    square_lead.is_one_shot = false;
+    square_lead.is_initialized = true;
 
     // Sawtooth lead
-    melodic_patch_factories[81] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        v->set_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.2f,
-            0.25f, 0.1f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& sawtooth_lead = melodic_patches[81];
+    sawtooth_lead.oscillator_type = OscillatorType::SAWTOOTH;
+    sawtooth_lead.sawtooth_oscillator_params = SawtoothOscillatorParams(440.0f, sample_rate);
+    sawtooth_lead.envelope_type = EnvelopeType::ADSR;
+    sawtooth_lead.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.005, 0.6f, 0.2f, 0.25f, 0.1f, 0.0f
+    );
+    sawtooth_lead.is_one_shot = false;
+    sawtooth_lead.is_initialized = true;
 
     // Calliope lead
-    melodic_patch_factories[82] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        v->set_oscillator(PatchFactory::create_triangle_oscillator(440, sample_rate));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.02f, 0.6f, 0.1f, 0.7f, 0.2f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& calliope_lead = melodic_patches[82];
+    calliope_lead.oscillator_type = OscillatorType::TRIANGLE;
+    calliope_lead.triangle_oscillator_params = TriangleOscillatorParams(440.0f, sample_rate);
+    calliope_lead.envelope_type = EnvelopeType::ADSR;
+    calliope_lead.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.02f, 0.6f, 0.1f, 0.7f, 0.2f, 0.0f
+    );
+    calliope_lead.is_one_shot = false;
+    calliope_lead.is_initialized = true;
 
     // Chiff lead
-    melodic_patch_factories[83] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        v->set_oscillator(PatchFactory::create_sine_oscillator(440.0f, sample_rate));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& chiff_lead = melodic_patches[83];
+    chiff_lead.oscillator_type = OscillatorType::SINE;
+    chiff_lead.sine_oscillator_params = SineOscillatorParams(440.0f, sample_rate);
+    chiff_lead.envelope_type = EnvelopeType::ADSR;
+    chiff_lead.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f
+    );
+    chiff_lead.is_one_shot = false;
+    chiff_lead.is_initialized = true;
 
     // Charang lead
-    melodic_patch_factories[84] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        v->set_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.3f, 0.2f, 0.15f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& charang_lead = melodic_patches[84];
+    charang_lead.oscillator_type = OscillatorType::SQUARE;
+    charang_lead.square_oscillator_params = SquareOscillatorParams(440.0f, sample_rate);
+    charang_lead.envelope_type = EnvelopeType::ADSR;
+    charang_lead.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.005f, 0.6f, 0.3f, 0.2f, 0.15f, 0.0f
+    );
+    charang_lead.is_one_shot = false;
+    charang_lead.is_initialized = true;
 
     // Voice lead
-    melodic_patch_factories[85] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        v->set_oscillator(PatchFactory::create_triangle_oscillator(440.0f, sample_rate));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.06f, 0.6f, 0.1f, 0.7f, 0.25f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& voice_lead = melodic_patches[85];
+    voice_lead.oscillator_type = OscillatorType::TRIANGLE;
+    voice_lead.triangle_oscillator_params = TriangleOscillatorParams(440.0f, sample_rate);
+    voice_lead.envelope_type = EnvelopeType::ADSR;
+    voice_lead.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.06f, 0.6f, 0.1f, 0.7f, 0.25f, 0.0f
+    );
+    voice_lead.is_one_shot = false;
+    voice_lead.is_initialized = true;
 
     // Fifths lead
-    melodic_patch_factories[86] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        auto composite = std::make_unique<CompositeOscillator>();
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.6f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.4f, std::pow(2.0f, 7.0f / 12.0f));
-        v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& fifths_lead = melodic_patches[86];
+    fifths_lead.oscillator_type = OscillatorType::COMPOSITE;
+    fifths_lead.composite_oscillator_params = CompositeOscillatorParams(
+        440.0f,
+        sample_rate,
+        { OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH },
+        { 0.6f, 0.4f },
+        { 1.0f, std::pow(2.0f, 7.0f / 12.0f) },
+        2
+    );
+    fifths_lead.envelope_type = EnvelopeType::ADSR;
+    fifths_lead.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f
+    );
+    fifths_lead.is_one_shot = false;
+    fifths_lead.is_initialized = true;
 
     // Bass + lead
-    melodic_patch_factories[87] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        auto composite = std::make_unique<CompositeOscillator>();
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.45f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate), 0.55f, 0.5f);
-
-        v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.005f, 0.8f, 0.2f, 0.5f, 0.1f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& bass_lead = melodic_patches[87];
+    bass_lead.oscillator_type = OscillatorType::COMPOSITE;
+    bass_lead.composite_oscillator_params = CompositeOscillatorParams(
+        440.0f,
+        sample_rate,
+        { OscillatorType::SAWTOOTH, OscillatorType::SQUARE },
+        { 0.45f, 0.55f },
+        { 1.0f, 0.5f },
+        2
+    );
+    bass_lead.envelope_type = EnvelopeType::ADSR;
+    bass_lead.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.005f, 0.8f, 0.2f, 0.5f, 0.1f, 0.0f
+    );
+    bass_lead.is_one_shot = false;
+    bass_lead.is_initialized = true;
 }
 
 void InstrumentRegistry::init_pads() {
     // Pad 1 (New age)
-    melodic_patch_factories[88] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        auto composite = std::make_unique<CompositeOscillator>();
-        composite->add_oscillator(PatchFactory::create_triangle_oscillator(440.0f, sample_rate), 0.5f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_sine_oscillator(440.0f, sample_rate), 0.2f, 2.0f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.2f, 1.003f);
-
-        v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.2f, 1.0f, 0.001f, 1.0f, 0.2f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& new_age_pad = melodic_patches[88];
+    new_age_pad.oscillator_type = OscillatorType::COMPOSITE;
+    new_age_pad.composite_oscillator_params = CompositeOscillatorParams(
+        440.0f,
+        sample_rate,
+        { OscillatorType::TRIANGLE, OscillatorType::SINE, OscillatorType::SAWTOOTH },
+        { 0.5f, 0.2f, 0.2f },
+        { 1.0f, 2.0f, 1.003f },
+        3
+    );
+    new_age_pad.envelope_type = EnvelopeType::ADSR;
+    new_age_pad.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.2f, 1.0f, 0.001f, 1.0f, 0.2f, 0.0f
+    );
+    new_age_pad.is_one_shot = false;
+    new_age_pad.is_initialized = true;
 
     // Pad 2 (Warm)
-    melodic_patch_factories[89] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        auto composite = std::make_unique<CompositeOscillator>();
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.34f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.33f, 0.996f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.33f, 1.004f);
-
-        v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.4f, 0.6f, 0.001f, 0.6f, 0.4f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& warm_pad = melodic_patches[89];
+    warm_pad.oscillator_type = OscillatorType::COMPOSITE;
+    warm_pad.composite_oscillator_params = CompositeOscillatorParams(
+        440.0f,
+        sample_rate,
+        { OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH },
+        { 0.34f, 0.33f, 0.33f },
+        { 1.0f, 0.996f, 1.004f },
+        3
+    );
+    warm_pad.envelope_type = EnvelopeType::ADSR;
+    warm_pad.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.4f, 0.6f, 0.001f, 0.6f, 0.4f, 0.0f
+    );
+    warm_pad.is_one_shot = false;
+    warm_pad.is_initialized = true;
 
     // Pad 3 (Polysynth)
-    melodic_patch_factories[90] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        auto composite = std::make_unique<CompositeOscillator>();
-        composite->add_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate), 0.4f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.003f);
+    auto& polysynth_pad = melodic_patches[90];
+    polysynth_pad.oscillator_type = OscillatorType::COMPOSITE;
+    polysynth_pad.composite_oscillator_params = CompositeOscillatorParams(
+        440.0f,
+        sample_rate,
+        { OscillatorType::SQUARE, OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH },
+        { 0.4f, 0.3f, 0.3f },
+        { 1.0f, 1.0f, 1.003f },
+        3
+    );
+    polysynth_pad.envelope_type = EnvelopeType::ADSR;
+    polysynth_pad.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.05f, 0.6f, 0.3f, 0.6f, 0.3f, 0.0f
+    );
+    polysynth_pad.is_one_shot = false;
+    polysynth_pad.is_initialized = true;
 
-        v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.05f, 0.6f, 0.3f, 0.6f, 0.3f, 0.0f));
-        v->set_one_shot(false);
-    };
-
-    // Pad (Choir)
-    melodic_patch_factories[91] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        auto composite = std::make_unique<CompositeOscillator>();
-        composite->add_oscillator(PatchFactory::create_triangle_oscillator(440.0f, sample_rate), 0.4f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.002f);
-
-        v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.6f, 0.6f, 0.001f, 0.6f, 0.6f, 0.0f));
-        v->set_one_shot(false);
-    };
+    // Pad 4 (Choir)
+    auto& choir_pad = melodic_patches[91];
+    choir_pad.oscillator_type = OscillatorType::COMPOSITE;
+    choir_pad.composite_oscillator_params = CompositeOscillatorParams(
+        440.0f,
+        sample_rate,
+        { OscillatorType::TRIANGLE, OscillatorType::SAWTOOTH },
+        { 0.4f, 0.3f },
+        { 1.0f, 1.002f },
+        2
+    );
+    choir_pad.envelope_type = EnvelopeType::ADSR;
+    choir_pad.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.6f, 0.6f, 0.001f, 0.6f, 0.6f, 0.0f
+    );
+    choir_pad.is_one_shot = false;
+    choir_pad.is_initialized = true;
 
     // Pad 5 (Bowed)
-    melodic_patch_factories[92] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        auto composite = std::make_unique<CompositeOscillator>();
-        composite->add_oscillator(PatchFactory::create_triangle_oscillator(440.0f, sample_rate), 0.4f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.3f, 1.005f);
-
-        v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.5f, 0.6f, 0.1f, 0.4f, 0.5f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& bowed_pad = melodic_patches[92];
+    bowed_pad.oscillator_type = OscillatorType::COMPOSITE;
+    bowed_pad.composite_oscillator_params = CompositeOscillatorParams(
+        440.0f,
+        sample_rate,
+        { OscillatorType::TRIANGLE, OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH },
+        { 0.4f, 0.3f, 0.3f },
+        { 1.0f, 1.0f, 1.005f },
+        3
+    );
+    bowed_pad.envelope_type = EnvelopeType::ADSR;
+    bowed_pad.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.5f, 0.6f, 0.1f, 0.4f, 0.5f, 0.0f
+    );
+    bowed_pad.is_one_shot = false;
+    bowed_pad.is_initialized = true;
 
     // Pad 6 (Metallic)
-    melodic_patch_factories[93] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        auto composite = std::make_unique<CompositeOscillator>();
-        composite->add_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate), 0.4f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_square_oscillator(440.0f, sample_rate), 0.4f, 2.0f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.2f, 4.0f);
-
-        v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.1f, 0.6f, 0.5f, 0.3f, 0.5f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& metallic_pad = melodic_patches[93];
+    metallic_pad.oscillator_type = OscillatorType::COMPOSITE;
+    metallic_pad.composite_oscillator_params = CompositeOscillatorParams(
+        440.0f,
+        sample_rate,
+        { OscillatorType::SQUARE, OscillatorType::SQUARE, OscillatorType::SAWTOOTH },
+        { 0.4f, 0.4f, 0.2f },
+        { 1.0f, 2.0f, 4.0f },
+        3
+    );
+    metallic_pad.envelope_type = EnvelopeType::ADSR;
+    metallic_pad.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.1f, 0.6f, 0.5f, 0.3f, 0.5f, 0.0f
+    );
+    metallic_pad.is_one_shot = false;
+    metallic_pad.is_initialized = true;
 
     // Pad 7 (Halo)
-    melodic_patch_factories[94] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        auto composite = std::make_unique<CompositeOscillator>();
-        composite->add_oscillator(PatchFactory::create_sine_oscillator(440.0f, sample_rate), 0.5f, 1.0f);
-        composite->add_oscillator(PatchFactory::create_sine_oscillator(440.0f, sample_rate), 0.3f, 2.0f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.2f, 1.0f);
-
-        v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 0.5f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& halo_pad = melodic_patches[94];
+    halo_pad.oscillator_type = OscillatorType::COMPOSITE;
+    halo_pad.composite_oscillator_params = CompositeOscillatorParams(
+        440.0f,
+        sample_rate,
+        { OscillatorType::SINE, OscillatorType::SINE, OscillatorType::SAWTOOTH },
+        { 0.5f, 0.3f, 0.2f },
+        { 1.0f, 2.0f, 1.0f },
+        3
+    );
+    halo_pad.envelope_type = EnvelopeType::ADSR;
+    halo_pad.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 0.5f, 0.0f
+    );
+    halo_pad.is_one_shot = false;
+    halo_pad.is_initialized = true;
 
     // Pad 8 (Sweep)
-    melodic_patch_factories[95] = [this](Voice* v, uint8_t pitch, uint8_t velocity) {
-        auto composite = std::make_unique<CompositeOscillator>();
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.5f, 0.992f);
-        composite->add_oscillator(PatchFactory::create_sawtooth_oscillator(440.0f, sample_rate), 0.5f, 1.008f);
-
-        v->set_oscillator(std::move(composite));
-        v->set_envelope(PatchFactory::create_adsr_envelope(sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 1.0f, 0.0f));
-        v->set_one_shot(false);
-    };
+    auto& sweep_pad = melodic_patches[95];
+    sweep_pad.oscillator_type = OscillatorType::COMPOSITE;
+    sweep_pad.composite_oscillator_params = CompositeOscillatorParams(
+        440.0f,
+        sample_rate,
+        { OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH },
+        { 0.5f, 0.5f },
+        { 0.992f, 1.008f },
+        2
+    );
+    sweep_pad.envelope_type = EnvelopeType::ADSR;
+    sweep_pad.adsr_envelope_params = ADSREnvelopeParams(
+        sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 1.0f, 0.0f
+    );
+    sweep_pad.is_one_shot = false;
+    sweep_pad.is_initialized = true;
 }
 
-InstrumentRegistry::InstrumentRegistry() { // NOLINT
-    init();
+void InstrumentRegistry::set_fallbacks() {
+    for (auto& patch : melodic_patches) {
+        if (!patch.is_initialized) {
+            patch.oscillator_type = OscillatorType::SINE;
+            patch.sine_oscillator_params = SineOscillatorParams(440.0f, sample_rate);
+            patch.envelope_type = EnvelopeType::ADSR;
+            patch.adsr_envelope_params = ADSREnvelopeParams(
+                sample_rate, 0.005f, 0.6f, 0.2f, 0.25f, 0.1f, 0.0f
+            );
+
+            patch.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+            patch.envelope_decorator_type = EnvelopeDecoratorType::NONE;
+
+            patch.is_one_shot = false;
+            patch.is_initialized = true;
+        }
+    }
+
+    for (auto& patch : drum_patches) {
+        if (!patch.is_initialized) {
+            patch.oscillator_type = OscillatorType::NOISE;
+            patch.noise_oscillator_params = NoiseOscillatorParams();
+            patch.envelope_type = EnvelopeType::ADR;
+            patch.adr_envelope_params = ADREnvelopeParams(
+                sample_rate, 0.001f, 0.6f, 0.05f, 0.05f, 0.1f, 0.0f
+            );
+
+            patch.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+            patch.envelope_decorator_type = EnvelopeDecoratorType::NONE;
+
+            patch.is_one_shot = true;
+            patch.is_initialized = true;
+        }
+    }
 }
 
 InstrumentRegistry::InstrumentRegistry(float sample_rate) { // NOLINT
-    init(sample_rate);
+    this->sample_rate = sample_rate;
+    init_samples();
+    init_leads();
+    init_pads();
+    set_fallbacks();
 }
 
-void InstrumentRegistry::configure_melodic_voice(std::uint8_t patch_id, Voice* voice, uint8_t pitch, uint8_t velocity) {
-    melodic_patch_factories[patch_id](voice, pitch, velocity);
+const PatchDefinition* InstrumentRegistry::get_melodic_patch_config(uint8_t patch_id) const {
+    return &melodic_patches[patch_id];
 }
 
-void InstrumentRegistry::configure_drum_voice(std::uint8_t patch_id, Voice* voice, uint8_t pitch, uint8_t velocity) {
-    drum_patch_factories[pitch](voice, pitch, velocity);
+const PatchDefinition* InstrumentRegistry::get_drum_patch_config(uint8_t pitch_key) const {
+    return &drum_patches[pitch_key];
 }

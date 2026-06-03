@@ -50,6 +50,11 @@ ADREnvelope::ADREnvelope(const ADREnvelope& other) {
     release_increment = other.release_increment;
 }
 
+void ADREnvelope::set_params(float sample_rate, float attack_time, float attack_max_level, float decay_time, // NOLINT
+        float release_time, float release_max_level, float release_min_level) {
+    init(sample_rate, attack_time, attack_max_level, decay_time, release_time, release_max_level, release_min_level);
+}
+
 void ADREnvelope::on() {
     state = ADREnvelopeState::ATTACK;
 }

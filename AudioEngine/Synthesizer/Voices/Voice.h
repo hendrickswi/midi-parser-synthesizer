@@ -2,19 +2,45 @@
 #define MIDI_PARSERSYNTHESIZER_VOICE_H
 #include <memory>
 #include <chrono>
-
-// pimpl forward declarations
-class Envelope;
-class Oscillator;
+#include "../Oscillators/Base Implementations/Algorithmic/Sawtooth/SawtoothOscillator.h"
+#include "../Oscillators/Base Implementations/Algorithmic/Sine/SineOscillator.h"
+#include "../Oscillators/Base Implementations/Algorithmic/Square/SquareOscillator.h"
+#include "../Oscillators/Base Implementations/Algorithmic/Triangle/TriangleOscillator.h"
+#include "../Oscillators/Base Implementations/Composite/CompositeOscillator.h"
+#include "../Oscillators/Base Implementations/Noise/NoiseOscillator.h"
+#include "../Oscillators/Base Implementations/Sample/SampleOscillator.h"
+#include "../Oscillators/Decorators/VibratoOscillator.h"
+#include "../Envelopes/Base Implementations/ADR/ADREnvelope.h"
+#include "../Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
+#include "../Envelopes/Decorators/TremoloEnvelope.h"
+#include "../../Patch Configuration/PatchDefinition.h"
 
 class Voice {
 private:
-    // Need std::unique_ptr as these are abstract classes
-    // (i.e., cannot instantiate an abstract class)
-    std::unique_ptr<Oscillator> oscillator;
-    std::unique_ptr<Envelope> envelope;
+    // All of the possible oscillators
+    SawtoothOscillator sawtooth_oscillator;
+    SineOscillator sine_oscillator;
+    SquareOscillator square_oscillator;
+    TriangleOscillator triangle_oscillator;
+    CompositeOscillator composite_oscillator;
+    NoiseOscillator noise_oscillator;
+    SampleOscillator sample_oscillator;
 
-    std::array<float, 2048> voice_buffer;
+    // All of the possible envelopes
+    ADREnvelope adr_envelope;
+    ADSREnvelope adsr_envelope;
+
+    // All of the possible oscillator decorators
+    VibratoOscillator vibrato_oscillator_decorator;
+
+    // All of the possible envelope decorators
+    TremoloEnvelope tremolo_envelope_decorator;
+
+    // The currently active oscillator & envelope
+    Oscillator* active_oscillator;
+    Envelope* active_envelope;
+
+    std::vector<float> voice_buffer;
 
     bool is_active;
     std::chrono::high_resolution_clock::time_point note_activation_time;
@@ -28,52 +54,19 @@ private:
     bool sustained_flag;
     bool one_shot_flag;
 
-    void init(std::unique_ptr<Oscillator> oscillator = nullptr, std::unique_ptr<Envelope> envelope = nullptr);
-
 public:
     Voice();
-    Voice(std::unique_ptr<Oscillator> oscillator, std::unique_ptr<Envelope> envelope);
     Voice(const Voice& other) = delete;
 
     ~Voice();
 
     Voice& operator=(const Voice& other) = delete;
 
-    /**
-     * Sets the oscillator for the voice object.
-     *
-     * Replaces the current oscillator with the provided oscillator instance.
-     * Takes ownership of the oscillator using a unique pointer.
-     *
-     * @param oscillator A unique pointer to an Oscillator object that will
-     *                   be used for sound generation.
-     */
-    void set_oscillator(std::unique_ptr<Oscillator> oscillator);
-
-    /**
-     * Sets the envelope for the voice object.
-     *
-     * Replaces the current envelope with the provided envelope instance.
-     * Takes ownership of the envelope using a unique pointer.
-     *
-     * @param envelope A unique pointer to an Envelope object that will
-     *                 control the amplitude shape of the voice over time.
-     */
-    void set_envelope(std::unique_ptr<Envelope> envelope);
-
-    /**
-     * Sets the "one-shot" status of <tt>this</tt>.
-     * @param is_one_shot
-     *      If true, @c note_off() will not call @c this->envelope->off(). If false,
-     *      @c note_off() will resume its normal logic.
-     */
-    void set_one_shot(bool is_one_shot);
-
     [[nodiscard]] const std::chrono::high_resolution_clock::time_point& get_note_activation_time() const;
     [[nodiscard]] const uint8_t& get_channel() const;
     [[nodiscard]] const uint8_t& get_pitch() const;
 
-    void note_on(uint8_t channel, uint8_t pitch, uint8_t velocity, float sample_rate);
+    void configure_and_note_on(const PatchDefinition* config, uint8_t channel, uint8_t pitch, uint8_t velocity, float sample_rate);
     void note_off();
     void update_cc(uint8_t cc_number, uint8_t cc_value);
     [[nodiscard]] bool is_free() const;

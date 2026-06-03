@@ -2,10 +2,10 @@
 
 #include <cmath>
 
-TremoloEnvelope::TremoloEnvelope(std::unique_ptr<Envelope> env, float sample_rate, float speed_hz, float depth)
-    : EnvelopeDecorator(std::move(env), sample_rate) {
-    this->speed_hz = speed_hz;
-    this->depth = depth;
+TremoloEnvelope::TremoloEnvelope() {
+    // Default values
+    speed_hz = 5.0f;
+    depth = 0.5f;
     current_phase = 0;
     phase_increment = (speed_hz * TWO_PI) / sample_rate;
 }
@@ -25,4 +25,11 @@ void TremoloEnvelope::apply_to_block(float *buffer, unsigned int num_frames) {
         }
         current_phase += phase_increment;
     }
+}
+
+void TremoloEnvelope::set_params(float sample_rate, float speed_hz, float depth) {
+    this->sample_rate = sample_rate;
+    this->speed_hz = speed_hz;
+    this->depth = depth;
+    phase_increment = (speed_hz * TWO_PI) / sample_rate;
 }

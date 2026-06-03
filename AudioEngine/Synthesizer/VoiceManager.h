@@ -2,25 +2,20 @@
 #define MIDI_PARSERSYNTHESIZER_VOICEMANAGER_H
 #include <array>
 #include <cstdint>
-#include <mutex>
-#include <functional>
-#include <memory>
 
 #include "LockFreeQueue.h"
 #include "SynthesizerCommand.h"
+#include "../Patch Configuration/InstrumentRegistry.h"
+#include "../Synthesizer/Voices/Voice.h"
 
-class InstrumentRegistry;
-class Envelope;
-class Voice;
-class Oscillator;
+static constexpr int NUM_VOICES = 128;
+static constexpr int NUM_CHANNELS = 16;
 
 class VoiceManager {
 private:
-    static constexpr int NUM_VOICES = 128;
-    static constexpr int NUM_CHANNELS = 16;
-    std::array<std::unique_ptr<Voice>, NUM_VOICES> voices;
+    std::array<Voice*, NUM_VOICES> voices;
     std::array<uint8_t, NUM_CHANNELS> channel_patches;
-    std::unique_ptr<InstrumentRegistry> registry;
+    InstrumentRegistry registry;
     LockFreeQueue<SynthesizerCommand, 1024> command_queue;
 
     // Midi-event specific data

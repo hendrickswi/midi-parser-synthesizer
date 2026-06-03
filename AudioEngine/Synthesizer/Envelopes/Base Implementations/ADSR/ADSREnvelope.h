@@ -32,6 +32,8 @@ public:
         float sustain_level, float release_time, float release_min_level);
     ADSREnvelope(const ADSREnvelope& other);
 
+    void set_params(float sample_rate, float attack_time, float attack_max_level, float decay_time,
+        float sustain_level, float release_time, float release_min_level);
     void on() override;
     void off() override;
     void apply_to_block(float* buffer, unsigned int num_frames) override;

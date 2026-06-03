@@ -1,33 +1,28 @@
 #ifndef MIDI_PARSERSYNTHESIZER_INSTRUMENTREGISTRY_H
 #define MIDI_PARSERSYNTHESIZER_INSTRUMENTREGISTRY_H
+#include <array>
 #include <cstdint>
-#include <functional>
 
-#include "InstrumentConfig.h"
+#include "PatchDefinition.h"
 
 class Voice;
 
 class InstrumentRegistry {
 private:
     float sample_rate;
+    std::array<PatchDefinition, 128> melodic_patches;
+    std::array<PatchDefinition, 128> drum_patches;
 
-    std::array<InstrumentConfig, 128> melodic_patch_configs;
-    std::array<InstrumentConfig, 128> drum_patch_configs;
-    std::array<std::function<void(Voice*, uint8_t, uint8_t)>, 128> melodic_patch_factories;
-    std::array<std::function<void(Voice*, uint8_t, uint8_t)>, 128> drum_patch_factories;
-
-    void init(float sample_rate = 44100.0f);
     void init_samples();
     void init_leads();
     void init_pads();
+    void set_fallbacks();
 
 public:
-    InstrumentRegistry();
-    InstrumentRegistry(float sample_rate);
-    InstrumentRegistry(const InstrumentRegistry& other) = delete;
+    explicit InstrumentRegistry(float sample_rate = 48000.0f);
 
-    void configure_melodic_voice(std::uint8_t patch_id, Voice* voice, uint8_t pitch, uint8_t velocity);
-    void configure_drum_voice(std::uint8_t patch_id, Voice* voice, uint8_t pitch, uint8_t velocity);
+    [[nodiscard]] const PatchDefinition* get_melodic_patch_config(uint8_t patch_id) const;
+    [[nodiscard]] const PatchDefinition* get_drum_patch_config(uint8_t pitch_key) const;
 };
 
 

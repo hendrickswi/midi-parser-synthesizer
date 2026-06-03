@@ -50,6 +50,11 @@ ADSREnvelope::ADSREnvelope(const ADSREnvelope& other) {
     release_increment = other.release_increment;
 }
 
+void ADSREnvelope::set_params(float sample_rate, float attack_time, float attack_max_level, float decay_time, // NOLINT
+    float sustain_level, float release_time, float release_min_level) {
+    init(sample_rate, attack_time, attack_max_level, decay_time, sustain_level, release_time, release_min_level);
+}
+
 void ADSREnvelope::on() {
     state = ADSREnvelopeState::ATTACK;
 }

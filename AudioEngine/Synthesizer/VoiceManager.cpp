@@ -5,18 +5,21 @@
 #include <iostream>
 
 #include "../Patch Configuration/InstrumentRegistry.h"
-#include "Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
 #include "../../EventTypeEnums/ContinuousControllers.h"
-#include "Oscillators/Base Implementations/Algorithmic/Sine/SineOscillator.h"
 
 void VoiceManager::init(float sample_rate, float global_volume) {
     this->sample_rate = sample_rate;
     this->global_volume = global_volume;
     headroom_attenuation = std::sqrt(static_cast<float>(NUM_VOICES));
 
-    voices = std::array<std::unique_ptr<Voice>, NUM_VOICES>();
+    registry = InstrumentRegistry(sample_rate);
     channel_patches = std::array<uint8_t, NUM_CHANNELS>();
-    registry = std::make_unique<InstrumentRegistry>(sample_rate);
+
+    // Initialization of voices
+    voices = std::array<Voice*, NUM_VOICES>();
+    for (auto& voice : voices) {
+        voice = new Voice();
+    }
 
     // Midi event specific data
     channel_pitch_bends = std::array<uint16_t, NUM_CHANNELS>();
@@ -34,13 +37,6 @@ void VoiceManager::init(float sample_rate, float global_volume) {
         channel_cc_states[i][11] = 127; // Expression defaults to max
         channel_cc_states[i][10] = 64;  // Pan defaults to center
     }
-
-    // Creating all the voices
-    for (auto& voice : voices) {
-        auto oscillator = std::make_unique<SineOscillator>();
-        auto envelope = std::make_unique<ADSREnvelope>();
-        voice = std::make_unique<Voice>(std::move(oscillator), std::move(envelope));
-    }
 }
 
 VoiceManager::VoiceManager() { // NOLINT
@@ -56,7 +52,11 @@ VoiceManager::VoiceManager(float sample_rate, float global_volume) { // NOLINT
     init(sample_rate, global_volume);
 }
 
-VoiceManager::~VoiceManager() = default;
+VoiceManager::~VoiceManager() {
+    for (auto& voice : voices) {
+        delete voice;
+    }
+}
 
 void VoiceManager::set_sample_rate(float sample_rate) {
     this->sample_rate = sample_rate;
@@ -101,6 +101,16 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
         return;
     }
 
+    // Fetch patch config from the registry
+    uint8_t patch_id = channel_patches[channel];
+    const PatchDefinition* patch_config = nullptr;
+    if (channel == 9) {
+        patch_config = registry.get_drum_patch_config(pitch);
+    }
+    else {
+        patch_config = registry.get_melodic_patch_config(patch_id);
+    }
+
     // Look for a free voice, but also track the oldest voices in case none are free
     int voice_idx = -1, oldest_released_voice_idx = 0, oldest_sustained_voice_idx = 0, oldest_active_voice_idx = 0;
     for (int i = 0; i < NUM_VOICES; i++) {
@@ -141,16 +151,7 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
         voices[voice_idx]->update_cc(i, channel_cc_states[channel][i]);
     }
 
-    // Ensure the voice has the correct oscillator/envelope
-    if (channel == 9) {
-        registry->configure_drum_voice(channel_patches[channel], voices[voice_idx].get(), pitch, velocity);
-    }
-    else {
-        // Index by patch id
-        registry->configure_melodic_voice(channel_patches[channel], voices[voice_idx].get(), pitch, velocity);
-    }
-
-    voices[voice_idx]->note_on(channel, pitch, velocity, sample_rate);
+    voices[voice_idx]->configure_and_note_on(patch_config, channel, pitch, velocity, sample_rate);
 }
 
 void VoiceManager::note_off(uint8_t channel, uint8_t pitch) {
