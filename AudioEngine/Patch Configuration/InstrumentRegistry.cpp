@@ -157,6 +157,8 @@ void InstrumentRegistry::init_leads() {
     square_lead.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.005f, 0.6f, 0.2f, 0.25f, 0.1f, 0.0f
     );
+    square_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    square_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     square_lead.is_one_shot = false;
     square_lead.is_initialized = true;
 
@@ -168,6 +170,8 @@ void InstrumentRegistry::init_leads() {
     sawtooth_lead.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.005, 0.6f, 0.2f, 0.25f, 0.1f, 0.0f
     );
+    sawtooth_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    sawtooth_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     sawtooth_lead.is_one_shot = false;
     sawtooth_lead.is_initialized = true;
 
@@ -179,6 +183,8 @@ void InstrumentRegistry::init_leads() {
     calliope_lead.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.02f, 0.6f, 0.1f, 0.7f, 0.2f, 0.0f
     );
+    calliope_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    calliope_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     calliope_lead.is_one_shot = false;
     calliope_lead.is_initialized = true;
 
@@ -190,6 +196,8 @@ void InstrumentRegistry::init_leads() {
     chiff_lead.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f
     );
+    chiff_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    chiff_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     chiff_lead.is_one_shot = false;
     chiff_lead.is_initialized = true;
 
@@ -201,6 +209,8 @@ void InstrumentRegistry::init_leads() {
     charang_lead.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.005f, 0.6f, 0.3f, 0.2f, 0.15f, 0.0f
     );
+    charang_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    charang_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     charang_lead.is_one_shot = false;
     charang_lead.is_initialized = true;
 
@@ -212,6 +222,8 @@ void InstrumentRegistry::init_leads() {
     voice_lead.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.06f, 0.6f, 0.1f, 0.7f, 0.25f, 0.0f
     );
+    voice_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    voice_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     voice_lead.is_one_shot = false;
     voice_lead.is_initialized = true;
 
@@ -230,6 +242,8 @@ void InstrumentRegistry::init_leads() {
     fifths_lead.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f
     );
+    fifths_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    fifths_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     fifths_lead.is_one_shot = false;
     fifths_lead.is_initialized = true;
 
@@ -248,6 +262,8 @@ void InstrumentRegistry::init_leads() {
     bass_lead.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.005f, 0.8f, 0.2f, 0.5f, 0.1f, 0.0f
     );
+    bass_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    bass_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     bass_lead.is_one_shot = false;
     bass_lead.is_initialized = true;
 }
@@ -268,6 +284,8 @@ void InstrumentRegistry::init_pads() {
     new_age_pad.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.2f, 1.0f, 0.001f, 1.0f, 0.2f, 0.0f
     );
+    new_age_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    new_age_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     new_age_pad.is_one_shot = false;
     new_age_pad.is_initialized = true;
 
@@ -286,6 +304,8 @@ void InstrumentRegistry::init_pads() {
     warm_pad.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.4f, 0.6f, 0.001f, 0.6f, 0.4f, 0.0f
     );
+    warm_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    warm_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     warm_pad.is_one_shot = false;
     warm_pad.is_initialized = true;
 
@@ -304,6 +324,8 @@ void InstrumentRegistry::init_pads() {
     polysynth_pad.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.05f, 0.6f, 0.3f, 0.6f, 0.3f, 0.0f
     );
+    polysynth_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    polysynth_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     polysynth_pad.is_one_shot = false;
     polysynth_pad.is_initialized = true;
 
@@ -322,6 +344,8 @@ void InstrumentRegistry::init_pads() {
     choir_pad.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.6f, 0.6f, 0.001f, 0.6f, 0.6f, 0.0f
     );
+    choir_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    choir_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     choir_pad.is_one_shot = false;
     choir_pad.is_initialized = true;
 
@@ -340,6 +364,8 @@ void InstrumentRegistry::init_pads() {
     bowed_pad.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.5f, 0.6f, 0.1f, 0.4f, 0.5f, 0.0f
     );
+    bowed_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    bowed_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     bowed_pad.is_one_shot = false;
     bowed_pad.is_initialized = true;
 
@@ -358,6 +384,8 @@ void InstrumentRegistry::init_pads() {
     metallic_pad.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.1f, 0.6f, 0.5f, 0.3f, 0.5f, 0.0f
     );
+    metallic_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    metallic_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     metallic_pad.is_one_shot = false;
     metallic_pad.is_initialized = true;
 
@@ -376,6 +404,8 @@ void InstrumentRegistry::init_pads() {
     halo_pad.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 0.5f, 0.0f
     );
+    halo_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    halo_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     halo_pad.is_one_shot = false;
     halo_pad.is_initialized = true;
 
@@ -394,6 +424,8 @@ void InstrumentRegistry::init_pads() {
     sweep_pad.adsr_envelope_params = ADSREnvelopeParams(
         sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 1.0f, 0.0f
     );
+    sweep_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
+    sweep_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
     sweep_pad.is_one_shot = false;
     sweep_pad.is_initialized = true;
 }
