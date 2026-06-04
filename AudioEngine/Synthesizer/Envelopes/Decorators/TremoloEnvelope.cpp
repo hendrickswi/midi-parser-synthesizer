@@ -1,6 +1,6 @@
 #include "TremoloEnvelope.h"
 
-#include <cmath>
+#include "../../Lookup Tables/SineLookupTable.h"
 
 TremoloEnvelope::TremoloEnvelope() {
     // Default values
@@ -15,8 +15,10 @@ TremoloEnvelope::~TremoloEnvelope() = default;
 void TremoloEnvelope::apply_to_block(float *buffer, unsigned int num_frames) {
     base_envelope->apply_to_block(buffer, num_frames);
 
+    float table_size = static_cast<float>(SineLookupTable::TABLE_SIZE);
     for (int i = 0; i < num_frames; i++) {
-        float lfo_value = std::sin(current_phase);
+        float normalized_phase = current_phase / TWO_PI;
+        float lfo_value = SineLookupTable::sin(table_size * normalized_phase);
         float tremolo_multiplier = 1.0f - (depth * 0.5f * (1.0f - lfo_value));
         buffer[i] *= tremolo_multiplier;
 

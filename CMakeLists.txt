@@ -112,6 +112,7 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine/Synthesizer/LockFreeQueue.h
         AudioEngine/Synthesizer/SynthesizerCommand.h
         "AudioEngine/Patch Configuration/PatchDefinition.h"
+        "AudioEngine/Synthesizer/Lookup Tables/SineLookupTable.h"
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE

@@ -1,5 +1,5 @@
 #include "SineOscillator.h"
-#include <cmath>
+#include "../../../../Lookup Tables/SineLookupTable.h"
 
 SineOscillator::SineOscillator() = default;
 
@@ -10,8 +10,11 @@ SineOscillator::SineOscillator(float hz, float sample_rate)
 SineOscillator::SineOscillator(const SineOscillator& other) = default;
 
 void SineOscillator::process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) {
+    float table_size = static_cast<float>(SineLookupTable::TABLE_SIZE);
+
     for (int i = 0; i < num_frames; i++) {
-        buffer[i] = std::sin(current_phase);
+        float normalized_phase = current_phase / TWO_PI;
+        buffer[i] = SineLookupTable::sin(table_size * normalized_phase);
 
         float new_phase_increment = phase_increment;
         if (fm_buffer != nullptr) {

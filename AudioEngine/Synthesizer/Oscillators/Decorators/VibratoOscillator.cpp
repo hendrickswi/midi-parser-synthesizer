@@ -1,6 +1,6 @@
 ﻿#include "VibratoOscillator.h"
 
-#include <cmath>
+#include "../../Lookup Tables/SineLookupTable.h"
 #include <vector>
 
 VibratoOscillator::VibratoOscillator() {
@@ -25,8 +25,11 @@ void VibratoOscillator::set_modulation_depth(float depth) {
 }
 
 void VibratoOscillator::process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) {
+    float table_size = static_cast<float>(SineLookupTable::TABLE_SIZE);
+
     for (unsigned int i = 0; i < num_frames; i++) {
-        float lfo_wobble = std::sin(current_phase);
+        float normalized_phase = current_phase / TWO_PI;
+        float lfo_wobble = SineLookupTable::sin(table_size * normalized_phase);
         float pitch_offset = lfo_wobble * depth;
 
         if (fm_buffer != nullptr) {
