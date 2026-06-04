@@ -1,6 +1,7 @@
 #include "MidiSequencer.h"
 
 #include <algorithm>
+#include <iostream>
 
 #include "../../EventTypeEnums/MetaEventType.h"
 #include "../../EventTypeEnums/MidiEventType.h"
@@ -263,7 +264,7 @@ float MidiSequencer::calculate_current_track_sequence_gain() const {
     // O(n*log(n)) algorithm
     auto temp_active_notes = std::priority_queue<ActiveNote, std::vector<ActiveNote>, std::greater<>>();
     const auto& notes = all_notes.get_notes();
-    while (!notes.empty() && current_note_idx < notes.size()) {
+    while (current_note_idx < notes.size()) {
         const auto& note = notes[current_note_idx];
         while (current_note_idx < notes.size() && temp_current_tick >= notes[current_note_idx].absolute_time) {
             temp_active_notes.emplace(note);
@@ -280,11 +281,8 @@ float MidiSequencer::calculate_current_track_sequence_gain() const {
             max_intensity = current_intensity;
         }
 
-        if (!all_notes.get_notes().empty()) {
+        if (current_note_idx < notes.size()) {
             temp_current_tick = all_notes.get_notes()[current_note_idx].absolute_time;
-        }
-        else {
-            temp_current_tick++;
         }
     }
 
@@ -292,7 +290,7 @@ float MidiSequencer::calculate_current_track_sequence_gain() const {
     float safe_headroom = 4.0f;
     float gain_multiplier = 1.0f;
     if (max_intensity > 0.0f) {
-        gain_multiplier = safe_headroom / static_cast<float>(max_intensity) / 127.0f;
+        gain_multiplier = safe_headroom / (static_cast<float>(max_intensity) / 127.0f);
     }
     else {
         gain_multiplier = 1.0f;
@@ -303,6 +301,7 @@ float MidiSequencer::calculate_current_track_sequence_gain() const {
         gain_multiplier = 3.0f;
     }
 
+    std::cout << "Calculated gain multiplier: " << gain_multiplier << std::endl; // debug
     return gain_multiplier;
 }
 
