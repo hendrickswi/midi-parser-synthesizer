@@ -37,13 +37,13 @@ private:
     std::vector<MetaEvent> tempo_events;
 
     void init(float sample_rate = 48000.0f);
+    void setup_for_new_track_sequence();
     void process_events(const Track& track, TrackIndices& indices);
     void skip_microseconds(uint64_t micros_to_skip);
     [[nodiscard]] bool has_more_events() const;
 
 public:
-    MidiSequencer();
-    MidiSequencer(float sample_rate);
+    explicit MidiSequencer(float sample_rate = 48000.0f);
     MidiSequencer(const MidiSequencer& other);
 
     void start();
@@ -51,6 +51,17 @@ public:
     void skip_forward(float seconds);
     void skip_backward(float seconds);
     void update();
+
+    /**
+     * Completely resets @c this by invoking constructor logic. This includes synthesizer
+     * and track sequence pointers.
+     *
+     * @remarks After calling this method, ensure
+     * @code set_track_sequence(TrackSequence* sequence)@endcode and
+     * @code set_synthesizer(VoiceManager* synth)@endcode are called before
+     * attempting to call other methods that may be reliant on a
+     * synthesizer or track sequence being present, such as @code update()@endcode.
+     */
     void reset();
 
     /**

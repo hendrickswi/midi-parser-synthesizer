@@ -277,6 +277,8 @@ void AudioEngine::play() {
     }
     else if (sequencer.midi_file_ended()) {
         sequencer.reset();
+        sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
+        sequencer.set_synthesizer(&synth);
     }
 
     // Start the playback
@@ -323,7 +325,11 @@ void AudioEngine::set_global_volume(float volume) {
 
 void AudioEngine::soft_reset() {
     stop();
+
     sequencer.reset();
+    sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
+    sequencer.set_synthesizer(&synth);
+
     synth.reset_state();
     global_sample_count.store(0, std::memory_order_relaxed);
     underrun_count.store(0, std::memory_order_relaxed);

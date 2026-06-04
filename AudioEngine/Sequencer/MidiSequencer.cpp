@@ -27,10 +27,6 @@ uint32_t parse_mpt_from_tempo_event(const MetaEvent& tempo_event, uint16_t divis
     return calculate_mpt(mpqn, division);
 }
 
-MidiSequencer::MidiSequencer() { // NOLINT
-    // Defer init() call until set_track_sequence() in this case
-}
-
 MidiSequencer::MidiSequencer(float sample_rate) { // NOLINT
     init(sample_rate);
 }
@@ -38,20 +34,40 @@ MidiSequencer::MidiSequencer(float sample_rate) { // NOLINT
 MidiSequencer::MidiSequencer(const MidiSequencer& other) {
     track_sequence = other.track_sequence;
     synthesizer = other.synthesizer;
-    is_playing_flag = other.is_playing(); // Assignment operator '=' is removed for std::atomic
+    is_playing_flag = other.is_playing_flag.load();
     midi_file_ended_flag = other.midi_file_ended_flag;
+    this->sample_rate = other.sample_rate;
     micros_per_tick = other.micros_per_tick;
     current_tick = other.current_tick;
     prev_tick_time = other.prev_tick_time;
     micros_since_last_tick = other.micros_since_last_tick;
     track_indices = other.track_indices;
+    active_notes = other.active_notes;
+    tempo_events = other.tempo_events;
 }
 
 void MidiSequencer::init(float sample_rate) {
-    this->sample_rate = sample_rate;
-    is_playing_flag = false;
+    track_sequence = nullptr;
+    synthesizer = nullptr;
+    is_playing_flag.store(false);
     is_skipping_flag = false;
     midi_file_ended_flag = false;
+    this->sample_rate = sample_rate;
+    micros_per_tick = 0;
+    current_tick = 0;
+    prev_tick_time = std::chrono::high_resolution_clock::now();
+    micros_since_last_tick = 0;
+    total_elapsed_micros = 0;
+    track_indices = std::vector<TrackIndices>();
+    active_notes = std::priority_queue<ActiveNote, std::vector<ActiveNote>, std::greater<>>();
+    tempo_events = std::vector<MetaEvent>();
+}
+
+void MidiSequencer::setup_for_new_track_sequence() {
+    is_playing_flag.store(false);
+    is_skipping_flag = false;
+    midi_file_ended_flag = false;
+
     micros_per_tick = calculate_mpt(calculate_mpqn(120), track_sequence->get_division());
     current_tick = 0;
     prev_tick_time = std::chrono::high_resolution_clock::now();
@@ -259,11 +275,9 @@ void MidiSequencer::skip_backward(float seconds) {
     uint64_t target_micros = (total_elapsed_micros - skip_amount) ? (total_elapsed_micros - skip_amount) : 0;
 
     // Wipe everything and start from the beginning
-    init();
+    setup_for_new_track_sequence();
     is_skipping_flag = true;
-
     skip_microseconds(target_micros);
-
     is_skipping_flag = false;
     prev_tick_time = std::chrono::high_resolution_clock::now();
 }
@@ -312,8 +326,6 @@ void MidiSequencer::update() {
 }
 
 void MidiSequencer::reset() {
-    if (!synthesizer || !track_sequence) return;
-    is_playing_flag = false;
     init();
 }
 
@@ -323,7 +335,32 @@ const TrackSequence* const MidiSequencer::get_track_sequence() const {
 
 void MidiSequencer::set_track_sequence(TrackSequence* sequence) {
     track_sequence = sequence;
-    init();
+    setup_for_new_track_sequence();
+
+    micros_per_tick = calculate_mpt(calculate_mpqn(120), track_sequence->get_division());
+    current_tick = 0;
+    prev_tick_time = std::chrono::high_resolution_clock::now();
+    micros_since_last_tick = 0;
+    total_elapsed_micros = 0;
+
+    track_indices.clear();
+    // This also does default instantiation of TrackIndices structs
+    track_indices.resize(track_sequence->get_tracks().size());
+
+    while (!active_notes.empty()) active_notes.pop();
+
+    // Cache all tempo change events in order for later usage in multiple methods
+    tempo_events = std::vector<MetaEvent>();
+    for (const auto& track : track_sequence->get_tracks()) {
+        for (const auto& meta_event : track.get_meta_events()) {
+            if (meta_event.type == TEMPO_SETTING) {
+                tempo_events.push_back(meta_event);
+            }
+        }
+    }
+    std::sort(tempo_events.begin(), tempo_events.end(), [](const MetaEvent& a, const MetaEvent& b) {
+        return a.absolute_time < b.absolute_time;
+    });
 }
 
 const VoiceManager* const MidiSequencer::get_synthesizer() const {
