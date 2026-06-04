@@ -41,6 +41,7 @@ private:
     void process_events(const Track& track, TrackIndices& indices);
     void skip_microseconds(uint64_t micros_to_skip);
     [[nodiscard]] bool has_more_events() const;
+    [[nodiscard]] float calculate_current_track_sequence_gain() const;
 
 public:
     explicit MidiSequencer(float sample_rate = 48000.0f);

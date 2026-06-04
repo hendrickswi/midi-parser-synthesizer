@@ -25,9 +25,9 @@ private:
 
     float sample_rate;
     float global_volume;
-    float headroom_attenuation;
+    float static_gain;
 
-    void init(float sample_rate = 44100.0f, float global_volume = 1.0f);
+    void init(float sample_rate = 48000.0f, float global_volume = 1.0f);
 
 public:
     VoiceManager();
@@ -44,6 +44,7 @@ public:
     void set_channel_pitch_bend(uint8_t channel, uint16_t pitch_bend);
     void set_channel_pressure(uint8_t channel, uint8_t pressure);
     void set_channel_cc(uint8_t channel, uint8_t cc_number, uint8_t cc_value);
+    void set_static_gain(float gain);
 
     void note_on(uint8_t channel, uint8_t pitch, uint8_t velocity);
     void note_off(uint8_t channel, uint8_t pitch);

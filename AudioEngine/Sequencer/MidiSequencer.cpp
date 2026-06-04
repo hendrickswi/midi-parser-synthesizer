@@ -68,6 +68,8 @@ void MidiSequencer::setup_for_new_track_sequence() {
     is_skipping_flag = false;
     midi_file_ended_flag = false;
 
+    if (!track_sequence) return;
+
     micros_per_tick = calculate_mpt(calculate_mpqn(120), track_sequence->get_division());
     current_tick = 0;
     prev_tick_time = std::chrono::high_resolution_clock::now();
@@ -92,6 +94,10 @@ void MidiSequencer::setup_for_new_track_sequence() {
     std::sort(tempo_events.begin(), tempo_events.end(), [](const MetaEvent& a, const MetaEvent& b) {
         return a.absolute_time < b.absolute_time;
     });
+
+    if (synthesizer) {
+        synthesizer->set_static_gain(calculate_current_track_sequence_gain());
+    }
 }
 
 void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
@@ -234,6 +240,70 @@ void MidiSequencer::skip_microseconds(uint64_t micros_to_skip) {
     }
 
     return false;
+}
+
+float MidiSequencer::calculate_current_track_sequence_gain() const {
+    if (!track_sequence) return 1.0f;
+
+    auto all_notes = Track();
+    for (const auto& track : track_sequence->get_tracks()) {
+        for (const auto& note : track.get_notes()) {
+            all_notes.add_note(note);
+        }
+    }
+    all_notes.sort_notes();
+
+    uint32_t max_intensity = 0;
+    uint32_t current_intensity = 0;
+    uint32_t temp_current_tick = 0;
+    std::size_t current_note_idx = 0;
+
+    // Use temporary collections to prevent conflicts with instance variables
+    // in case this method is called when they are not empty
+    // O(n*log(n)) algorithm
+    auto temp_active_notes = std::priority_queue<ActiveNote, std::vector<ActiveNote>, std::greater<>>();
+    const auto& notes = all_notes.get_notes();
+    while (!notes.empty() && current_note_idx < notes.size()) {
+        const auto& note = notes[current_note_idx];
+        while (current_note_idx < notes.size() && temp_current_tick >= notes[current_note_idx].absolute_time) {
+            temp_active_notes.emplace(note);
+            current_intensity += note.volume;
+            current_note_idx++;
+        }
+
+        while (!temp_active_notes.empty() && temp_current_tick >= temp_active_notes.top().end_time) {
+            current_intensity -= temp_active_notes.top().volume;
+            temp_active_notes.pop();
+        }
+
+        if (current_intensity > max_intensity) {
+            max_intensity = current_intensity;
+        }
+
+        if (!all_notes.get_notes().empty()) {
+            temp_current_tick = all_notes.get_notes()[current_note_idx].absolute_time;
+        }
+        else {
+            temp_current_tick++;
+        }
+    }
+
+    // Calculate gain multiplier
+    float safe_headroom = 4.0f;
+    float gain_multiplier = 1.0f;
+    if (max_intensity > 0.0f) {
+        gain_multiplier = safe_headroom / static_cast<float>(max_intensity) / 127.0f;
+    }
+    else {
+        gain_multiplier = 1.0f;
+    }
+
+    // Prevent extreme boosting causing noise floor to become prominent
+    if (gain_multiplier > 3.0f) {
+        gain_multiplier = 3.0f;
+    }
+
+    return gain_multiplier;
 }
 
 void MidiSequencer::start() {
