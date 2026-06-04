@@ -326,7 +326,7 @@ void MidiSequencer::update() {
 }
 
 void MidiSequencer::reset() {
-    init();
+    init(sample_rate);
 }
 
 const TrackSequence* const MidiSequencer::get_track_sequence() const {
@@ -336,31 +336,6 @@ const TrackSequence* const MidiSequencer::get_track_sequence() const {
 void MidiSequencer::set_track_sequence(TrackSequence* sequence) {
     track_sequence = sequence;
     setup_for_new_track_sequence();
-
-    micros_per_tick = calculate_mpt(calculate_mpqn(120), track_sequence->get_division());
-    current_tick = 0;
-    prev_tick_time = std::chrono::high_resolution_clock::now();
-    micros_since_last_tick = 0;
-    total_elapsed_micros = 0;
-
-    track_indices.clear();
-    // This also does default instantiation of TrackIndices structs
-    track_indices.resize(track_sequence->get_tracks().size());
-
-    while (!active_notes.empty()) active_notes.pop();
-
-    // Cache all tempo change events in order for later usage in multiple methods
-    tempo_events = std::vector<MetaEvent>();
-    for (const auto& track : track_sequence->get_tracks()) {
-        for (const auto& meta_event : track.get_meta_events()) {
-            if (meta_event.type == TEMPO_SETTING) {
-                tempo_events.push_back(meta_event);
-            }
-        }
-    }
-    std::sort(tempo_events.begin(), tempo_events.end(), [](const MetaEvent& a, const MetaEvent& b) {
-        return a.absolute_time < b.absolute_time;
-    });
 }
 
 const VoiceManager* const MidiSequencer::get_synthesizer() const {

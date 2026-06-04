@@ -262,8 +262,7 @@ std::vector<std::string> AudioEngine::get_instrument_names_of_current_track_sequ
 }
 
 void AudioEngine::play() {
-    if (current_track < 0 || current_track >= loaded_track_sequences.size() ||
-        sequencer.is_playing()) return;
+    if (current_track >= loaded_track_sequences.size() || sequencer.is_playing()) return;
 
     // Thread cleanup
     if (sequencer_thread.joinable()) {
@@ -325,6 +324,10 @@ void AudioEngine::set_global_volume(float volume) {
 
 void AudioEngine::soft_reset() {
     stop();
+
+    if (current_track >= loaded_track_sequences.size()) {
+        return;
+    }
 
     sequencer.reset();
     sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
