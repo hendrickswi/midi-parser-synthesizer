@@ -185,8 +185,19 @@ void VoiceManager::process_audio_buffer(float* buffer, const unsigned int num_sa
 
     // Then apply volume edits
     for (int i = 0; i < num_samples; i++) {
-        float safe_mix = buffer[i] / headroom_attenuation;
-        buffer[i] = std::tanh(safe_mix * global_volume);
+        const float mix = buffer[i] / headroom_attenuation * global_volume;
+
+        const float sign = (mix > 0.0f) ? 1.0f : -1.0f;
+        const float abs_mix = mix * sign;
+
+        if (abs_mix > 1.0f) {
+            buffer[i] = sign * 1.0f;
+        }
+        else {
+            // [3/4] Pade approximation for std::tanh
+            const float mix_squared = abs_mix * abs_mix;
+            buffer[i] = sign * (abs_mix * (27.0f + mix_squared) / (27.0f + 9.0f * mix_squared));
+        }
     }
 }
 
