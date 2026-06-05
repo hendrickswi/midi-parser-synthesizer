@@ -19,8 +19,11 @@ void MainWindow::init_top_bar() {
     
     // Playback menu
     playback_menu = menuBar()->addMenu("Playback");
-    playback_menu->addAction(toggle_peak_amplitude_action);
+    playback_menu->addAction(toggle_repeat_action);
+    playback_menu->addAction(toggle_shuffle_action);
     playback_menu->addAction(toggle_autoplay_action);
+    playback_menu->addSeparator();
+    playback_menu->addAction(toggle_peak_amplitude_action);
 }
 
 void MainWindow::init_top_ui(QHBoxLayout* layout) {
@@ -138,16 +141,26 @@ void MainWindow::init_actions() {
     
     exit_action = new QAction("Exit", this);
     exit_action->setStatusTip("Exit the application");
-    
-    toggle_peak_amplitude_action = new QAction("Peak Amplitude Normalization", this);
-    toggle_peak_amplitude_action->setStatusTip("Toggle peak amplitude normalization on or off\nThis will make all tracks have similar max volume levels when on");
-    toggle_peak_amplitude_action->setCheckable(true);
-    toggle_peak_amplitude_action->setChecked(true);
+
+    toggle_repeat_action = new QAction("Repeat", this);
+    toggle_repeat_action->setStatusTip("Toggle repeat on or off");
+    toggle_repeat_action->setCheckable(true);
+    toggle_repeat_action->setChecked(false);
+
+    toggle_shuffle_action = new QAction("Shuffle", this);
+    toggle_shuffle_action->setStatusTip("Toggle shuffle on or off");
+    toggle_shuffle_action->setCheckable(true);
+    toggle_shuffle_action->setChecked(false);
     
     toggle_autoplay_action = new QAction("Autoplay", this);
     toggle_autoplay_action->setStatusTip("Toggle autoplay on or off");
     toggle_autoplay_action->setCheckable(true);
     toggle_autoplay_action->setChecked(true);
+
+    toggle_peak_amplitude_action = new QAction("Peak Amplitude Normalization", this);
+    toggle_peak_amplitude_action->setStatusTip("Toggle peak amplitude normalization on or off\nThis will make all tracks have similar max volume levels when on");
+    toggle_peak_amplitude_action->setCheckable(true);
+    toggle_peak_amplitude_action->setChecked(true);
 }
 
 void MainWindow::init_connections() {
@@ -209,6 +222,12 @@ void MainWindow::init_connections() {
     // Toggle autoplay action
     connect(toggle_autoplay_action, &QAction::triggered, playback_controller, &PlaybackController::toggle_autoplay);
     connect(playback_controller, &PlaybackController::autoplay_changed, this, &MainWindow::on_autoplay_changed);
+
+    // Toggle shuffle action
+    connect(toggle_shuffle_action, &QAction::triggered, playback_controller, &PlaybackController::toggle_shuffle);
+
+    // Toggle repeat action
+    connect(toggle_repeat_action, &QAction::triggered, playback_controller, &PlaybackController::toggle_repeat);
 }
 
 void MainWindow::on_add_directory_button_clicked() {

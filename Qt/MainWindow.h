@@ -57,8 +57,10 @@ private:
 
     // UI element: playback menu in top bar
     QMenu* playback_menu;
-    QAction* toggle_peak_amplitude_action;
+    QAction* toggle_repeat_action;
+    QAction* toggle_shuffle_action;
     QAction* toggle_autoplay_action;
+    QAction* toggle_peak_amplitude_action;
 
     // UI element: dropdown box for track selection
     QComboBox* track_selector;
