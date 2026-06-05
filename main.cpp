@@ -1,6 +1,5 @@
 #include <filesystem>
 #include <QApplication>
-#include <QStyleFactory>
 #include <xmmintrin.h>
 #include <pmmintrin.h>
 
@@ -19,7 +18,6 @@ int main(int argc, char* argv[]) {
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
 
     QApplication app(argc, argv);
-    QApplication::setStyle(QStyleFactory::create("Fusion"));
 
     AudioEngine engine = AudioEngine(fallback_sample_rate, num_channels, volume);
     PlaybackController playback_controller = PlaybackController(&engine);
