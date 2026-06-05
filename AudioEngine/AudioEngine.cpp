@@ -173,7 +173,7 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     sequencer.set_synthesizer(&synth);
     underrun_count.store(0, std::memory_order_relaxed);
     active_sample_rate = resolve_hardware_sample_rate(fallback_sample_rate);
-    this->num_channels = resolve_hardware_num_channels(1);
+    num_channels = resolve_hardware_num_channels(1);
     global_sample_count.store(0, std::memory_order_relaxed);
 
     loaded_track_sequences = std::vector<TrackSequence>();

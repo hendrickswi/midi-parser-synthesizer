@@ -7,29 +7,25 @@
 #include "../Patch Configuration/InstrumentRegistry.h"
 #include "../../EventTypeEnums/ContinuousControllers.h"
 
-void VoiceManager::init(float sample_rate, float global_volume) {
-    this->sample_rate = sample_rate;
-    this->global_volume = global_volume;
-    static_gain = std::sqrt(static_cast<float>(NUM_VOICES));
-    peak_amplitude_normalization_on = true;
-
-    registry = InstrumentRegistry(sample_rate);
-    channel_patches = std::array<uint8_t, NUM_CHANNELS>();
-
-    // Initialization of voices
+VoiceManager::VoiceManager(float sample_rate, float global_volume)
+    : command_queue() {
     voices = std::array<Voice*, NUM_VOICES>();
     for (auto& voice : voices) {
         voice = new Voice();
     }
 
-    // Midi event specific data
-    channel_pitch_bends = std::array<uint16_t, NUM_CHANNELS>();
-    channel_pressures = std::array<uint8_t, NUM_CHANNELS>();
-    channel_cc_states = std::array<std::array<uint8_t, 128>, NUM_CHANNELS>();
-
-    // Initialize default values for midi event data
+    channel_patches = std::array<uint8_t, NUM_CHANNELS>();
     channel_patches.fill(0);
+
+    registry = InstrumentRegistry(sample_rate);
+
+    channel_pitch_bends = std::array<uint16_t, NUM_CHANNELS>();
     channel_pitch_bends.fill(8192);
+
+    channel_pressures = std::array<uint8_t, NUM_CHANNELS>();
+    channel_pressures.fill(0);
+
+    channel_cc_states = std::array<std::array<uint8_t, 128>, NUM_CHANNELS>();
     for (auto& channel_state : channel_cc_states) {
         channel_state.fill(0);
     }
@@ -38,19 +34,17 @@ void VoiceManager::init(float sample_rate, float global_volume) {
         channel_cc_states[i][11] = 127; // Expression defaults to max
         channel_cc_states[i][10] = 64;  // Pan defaults to center
     }
-}
 
-VoiceManager::VoiceManager() { // NOLINT
-    init();
-}
+    this->sample_rate = sample_rate;
 
-VoiceManager::VoiceManager(float sample_rate, float global_volume) { // NOLINT
     if (global_volume < 0.0f || global_volume > 2.0f) {
-        init(sample_rate);
-        return;
+        std::cout << "WARNING: Invalid global volume value, defaulting to 1.0" << std::endl;
+        global_volume = 1.0f;
     }
+    this->global_volume = global_volume;
 
-    init(sample_rate, global_volume);
+    static_gain = std::sqrt(static_cast<float>(NUM_VOICES)); // Somewhat safe default
+    peak_amplitude_normalization_on = true;
 }
 
 VoiceManager::~VoiceManager() {

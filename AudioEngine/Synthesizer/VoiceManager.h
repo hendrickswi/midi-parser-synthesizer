@@ -28,11 +28,8 @@ private:
     float static_gain;
     bool peak_amplitude_normalization_on;
 
-    void init(float sample_rate = 48000.0f, float global_volume = 1.0f);
-
 public:
-    VoiceManager();
-    VoiceManager(float sample_rate, float global_volume);
+    explicit VoiceManager(float sample_rate = 48000.0f, float global_volume = 1.0f);
     VoiceManager(const VoiceManager& other) = delete;
 
     ~VoiceManager();
