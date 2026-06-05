@@ -25,7 +25,7 @@ void SampleOscillator::init(const std::vector<float>* sample, float raw_sample_r
 }
 
 SampleOscillator::SampleOscillator() {
-    init(nullptr, 0.0f, 44100.0f, 440.0f, -1.0f, -1.0f);
+    init(nullptr, 0.0f, 48000.0f, 440.0f, -1.0f, -1.0f);
 }
 
 SampleOscillator::SampleOscillator(const std::vector<float>* sample, float raw_sample_rate, float target_sample_rate, float base_frequency, float repeat_low, float repeat_high) {

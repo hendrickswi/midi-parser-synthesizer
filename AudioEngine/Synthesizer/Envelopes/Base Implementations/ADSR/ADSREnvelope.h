@@ -23,7 +23,7 @@ private:
     float release_increment;
 
     void calculate_increments();
-    void init(float sample_rate = 44100.0f, float attack_time = 0.1f, float attack_max_level = 1.0f,
+    void init(float sample_rate = 48000.0f, float attack_time = 0.1f, float attack_max_level = 1.0f,
         float decay_time = 0.1f, float sustain_level = 0.5f, float release_time = 0.1f, float release_min_level = 0.0f);
 
 public:

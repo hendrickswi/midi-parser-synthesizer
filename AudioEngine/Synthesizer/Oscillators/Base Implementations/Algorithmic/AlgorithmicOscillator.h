@@ -12,7 +12,7 @@ inline float calculate_phase_increment(float hz, float sample_rate) {
 class AlgorithmicOscillator : public Oscillator {
 
 private:
-    void init(float hz = 440.0f, float sample_rate = 44100.0f);
+    void init(float hz = 440.0f, float sample_rate = 48000.0f);
 
 protected:
     float base_hz;
