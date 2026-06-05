@@ -4,7 +4,7 @@
 #include <iostream>
 #include <set>
 
-float AudioEngine::resolve_hardware_sample_rate(float requested_rate) {
+float AudioEngine::resolve_hardware_sample_rate(float fallback_sample_rate) {
     try {
         RtAudio rtaudio;
         if (rtaudio.getDeviceCount() > 0) {
@@ -17,9 +17,27 @@ float AudioEngine::resolve_hardware_sample_rate(float requested_rate) {
     }
     catch (std::exception& e) {
         std::cerr << "Warning: Failed to resolve hardware sample rate. "
-                     "Falling back to the request rate of " << requested_rate << std::endl;
+                     "Falling back to the fallback rate of " << fallback_sample_rate << std::endl;
     }
-    return requested_rate;
+    return fallback_sample_rate;
+}
+
+unsigned int AudioEngine::resolve_hardware_num_channels(unsigned int fallback_num_channels) {
+    try {
+        RtAudio rtaudio;
+        if (rtaudio.getDeviceCount() > 0) {
+            unsigned int device = rtaudio.getDefaultOutputDevice();
+            RtAudio::DeviceInfo info = rtaudio.getDeviceInfo(device);
+            if (info.outputChannels > 0) {
+                return info.outputChannels;
+            }
+        }
+    }
+    catch (std::exception& e) {
+        std::cerr << "Warning: Failed to resolve hardware number of output channels. "
+                     "Falling back to the fallback number of channels: " << fallback_num_channels << std::endl;
+    }
+    return fallback_num_channels;
 }
 
 bool AudioEngine::is_high_priority_command(SynthesizerCommandType type) {
@@ -27,52 +45,6 @@ bool AudioEngine::is_high_priority_command(SynthesizerCommandType type) {
         type == SynthesizerCommandType::NOTE_OFF ||
         type == SynthesizerCommandType::SET_CHANNEL_PATCH ||
         type == SynthesizerCommandType::STOP_ALL_VOICES;
-}
-
-void AudioEngine::init(float sample_rate, unsigned int num_channels) {
-    sequencer.set_synthesizer(&synth);
-    underrun_count.store(0, std::memory_order_relaxed);
-    active_sample_rate = sample_rate;
-    this->num_channels = num_channels;
-    global_sample_count.store(0, std::memory_order_relaxed);
-
-    loaded_track_sequences = std::vector<TrackSequence>();
-    loaded_file_names = std::vector<std::string>();
-    current_track = -1;
-    file_has_switched = false;
-
-    // RtAudio setup
-    if (rt_audio.getDeviceCount() < 1) {
-        std::cerr << "Warning: No audio devices found" << std::endl;
-    }
-
-    RtAudio::StreamParameters parameters;
-    parameters.deviceId = rt_audio.getDefaultOutputDevice();
-    parameters.nChannels = num_channels;
-    parameters.firstChannel = 0;
-    unsigned int buffer_size = BUFFER_SIZE;
-    try {
-        rt_audio.openStream(&parameters, nullptr, RTAUDIO_FLOAT32,
-            static_cast<unsigned int>(sample_rate), &buffer_size, &audio_callback, this);
-
-        auto current_api = rt_audio.getCurrentApi();
-        // if (current_api == RtAudio::WINDOWS_WASAPI || current_api == RtAudio::WINDOWS_DS) {
-        //     platform_requires_profiling = true;
-        // }
-        // else {
-        //     platform_requires_profiling = false;
-        // }
-
-        rt_audio.startStream();
-        std::cout << "Audio engine now running at " << sample_rate << " Hz, "
-            "using " << RtAudio::getApiDisplayName(current_api) << std::endl << std::endl;
-    }
-    catch (const std::exception& e) {
-        throw std::runtime_error(std::string("AudioEngine::init() failed during RtAudio stream opening/starting. Error:") += e.what());
-    }
-
-    // Instantiate with the potentially modified buffer_size
-    mono_buffer = std::vector<float>(buffer_size);
 }
 
 int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,
@@ -196,13 +168,52 @@ void AudioEngine::execute_command(const SynthesizerCommand& command) {
     }
 }
 
-AudioEngine::AudioEngine() : parser(), sequencer(resolve_hardware_sample_rate(48000.0f)), synth(resolve_hardware_sample_rate(48000.0f), 1.0f) {
-    init(resolve_hardware_sample_rate(48000.0f));
-}
-
-AudioEngine::AudioEngine(float fallback_sample_rate, unsigned int num_channels, float global_volume)
+AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
 : parser(), sequencer(), synth(resolve_hardware_sample_rate(fallback_sample_rate), global_volume) {
-    init(resolve_hardware_sample_rate(fallback_sample_rate), num_channels);
+    sequencer.set_synthesizer(&synth);
+    underrun_count.store(0, std::memory_order_relaxed);
+    active_sample_rate = resolve_hardware_sample_rate(fallback_sample_rate);
+    this->num_channels = resolve_hardware_num_channels(1);
+    global_sample_count.store(0, std::memory_order_relaxed);
+
+    loaded_track_sequences = std::vector<TrackSequence>();
+    loaded_file_names = std::vector<std::string>();
+    current_track = -1;
+    file_has_switched = false;
+
+    // RtAudio setup
+    if (rt_audio.getDeviceCount() < 1) {
+        std::cerr << "Warning: No audio devices found" << std::endl;
+    }
+
+    RtAudio::StreamParameters parameters;
+    parameters.deviceId = rt_audio.getDefaultOutputDevice();
+    parameters.nChannels = num_channels;
+    parameters.firstChannel = 0;
+    unsigned int buffer_size = BUFFER_SIZE;
+    try {
+        rt_audio.openStream(&parameters, nullptr, RTAUDIO_FLOAT32,
+            static_cast<unsigned int>(active_sample_rate), &buffer_size, &audio_callback, this);
+
+        auto current_api = rt_audio.getCurrentApi();
+        // if (current_api == RtAudio::WINDOWS_WASAPI || current_api == RtAudio::WINDOWS_DS) {
+        //     platform_requires_profiling = true;
+        // }
+        // else {
+        //     platform_requires_profiling = false;
+        // }
+
+        rt_audio.startStream();
+        std::cout << "Audio engine now running at " << active_sample_rate << " Hz, "
+            << num_channels << " channels, " << buffer_size << " frames, "
+            "using " << RtAudio::getApiDisplayName(current_api) << std::endl << std::endl;
+    }
+    catch (const std::exception& e) {
+        throw std::runtime_error(std::string("AudioEngine::init() failed during RtAudio stream opening/starting. Error:") += e.what());
+    }
+
+    // Instantiate with the potentially modified buffer_size
+    mono_buffer = std::vector<float>(buffer_size);
 }
 
 AudioEngine::~AudioEngine() {

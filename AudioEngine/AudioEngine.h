@@ -135,9 +135,9 @@ private:
     "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped"
 };
 
-    static float resolve_hardware_sample_rate(float requested_rate);
+    static float resolve_hardware_sample_rate(float fallback_sample_rate);
+    static unsigned int resolve_hardware_num_channels(unsigned int fallback_num_channels);
     static bool is_high_priority_command(SynthesizerCommandType type);
-    void init(float sample_rate, unsigned int num_channels = 1);
 
     // RtAudio mandated callback function
     static int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,
@@ -154,8 +154,7 @@ private:
 
 
 public:
-    AudioEngine();
-    AudioEngine(float fallback_sample_rate, unsigned int num_channels, float global_volume);
+    explicit AudioEngine(float fallback_sample_rate = 48000.0f, float global_volume = 1.0f);
     AudioEngine(const AudioEngine& other) = delete;
     ~AudioEngine();
 

@@ -301,7 +301,7 @@ float MidiSequencer::calculate_current_track_sequence_gain() const {
         gain_multiplier = 3.0f;
     }
 
-    std::cout << "Calculated gain multiplier: " << gain_multiplier << std::endl; // debug
+    // std::cout << "Calculated gain multiplier: " << gain_multiplier << std::endl; // debug
     return gain_multiplier;
 }
 
