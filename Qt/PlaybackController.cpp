@@ -146,6 +146,12 @@ void PlaybackController::toggle_autoplay() {
     autoplay_changed(autoplay_flag);
 }
 
+void PlaybackController::toggle_peak_amplitude_normalization() {
+    bool new_status = !engine->get_peak_amplitude_normalization();
+    engine->set_peak_amplitude_normalization(new_status);
+    peak_amplitude_normalization_changed(new_status);
+}
+
 void PlaybackController::load_directory(const std::string& directory_path) {
     if (directory_path.empty()) return;
 

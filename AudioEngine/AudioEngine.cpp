@@ -261,6 +261,10 @@ std::vector<std::string> AudioEngine::get_instrument_names_of_current_track_sequ
     return instrument_names;
 }
 
+bool AudioEngine::get_peak_amplitude_normalization() const {
+    return synth.get_peak_amplitude_normalization();
+}
+
 void AudioEngine::play() {
     if (current_track >= loaded_track_sequences.size() || sequencer.is_playing()) return;
 
@@ -320,6 +324,10 @@ void AudioEngine::set_track_sequence(std::size_t index) {
 
 void AudioEngine::set_global_volume(float volume) {
     synth.set_global_volume(volume);
+}
+
+void AudioEngine::set_peak_amplitude_normalization(bool enabled) {
+    synth.set_peak_amplitude_normalization(enabled);
 }
 
 void AudioEngine::soft_reset() {

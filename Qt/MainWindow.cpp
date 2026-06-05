@@ -1,12 +1,27 @@
 #include "MainWindow.h"
 #include <QHBoxLayout>
 #include <QStatusBar>
+#include <QMenuBar>
 #include <QFileDialog>
 #include <QSizePolicy>
 
 #include "PlaybackController.h"
 #include "../AudioEngine/AudioEngine.h"
 #include "../DirectoryManipulator.h"
+
+void MainWindow::init_top_bar() {
+    // File menu
+    file_menu = menuBar()->addMenu("File");
+    file_menu->addAction(add_file_action);
+    file_menu->addAction(add_directory_action);
+    file_menu->addSeparator();
+    file_menu->addAction(exit_action);
+    
+    // Playback menu
+    playback_menu = menuBar()->addMenu("Playback");
+    playback_menu->addAction(toggle_peak_amplitude_action);
+    playback_menu->addAction(toggle_autoplay_action);
+}
 
 void MainWindow::init_top_ui(QHBoxLayout* layout) {
     // File select dropdown
@@ -80,14 +95,6 @@ void MainWindow::init_bottom_ui(QHBoxLayout* layout) {
     shuffle_button->setStyleSheet(transparent_button_style);
     shuffle_button->setCursor(Qt::PointingHandCursor);
 
-    // Autoplay button
-    autoplay_off_icon = QIcon(":/Assets/img/autoplay.png");
-    autoplay_on_icon = QIcon(":/Assets/img/autoplay_on.png");
-    autoplay_button = new QPushButton(autoplay_on_icon, "", this);
-    autoplay_button->setIconSize(icon_size);
-    autoplay_button->setStyleSheet(transparent_button_style);
-    autoplay_button->setCursor(Qt::PointingHandCursor);
-
     // Previous track sequence button
     skip_back_icon = QIcon(":/Assets/img/skip_back.png");
     skip_back_button = new QPushButton(skip_back_icon, "", this);
@@ -110,16 +117,44 @@ void MainWindow::init_bottom_ui(QHBoxLayout* layout) {
     skip_fwd_button->setStyleSheet(transparent_button_style);
     skip_fwd_button->setCursor(Qt::PointingHandCursor);
 
-    layout->addSpacing(20);
-    layout->addWidget(repeat_button);
-    layout->addWidget(shuffle_button);
     layout->addStretch();
+    layout->addWidget(repeat_button);
+    layout->addSpacing(50);
     layout->addWidget(skip_back_button);
     layout->addWidget(play_pause_button);
     layout->addWidget(skip_fwd_button);
+    layout->addSpacing(50);
+    layout->addWidget(shuffle_button);
     layout->addStretch();
-    layout->addWidget(autoplay_button);
-    layout->addSpacing(20);
+}
+
+void MainWindow::init_status_bar() {
+    // Underrun label on the bottom
+    underrun_label = new QLabel("Underrun Warning!", this);
+    underrun_label->setStyleSheet("QLabel { color: red; }");
+    underrun_label->setVisible(false);
+    statusBar()->addPermanentWidget(underrun_label);
+}
+
+void MainWindow::init_actions() {
+    add_file_action = new QAction("Add File", this);
+    add_file_action->setStatusTip("Add a MIDI file to the track list");
+    
+    add_directory_action = new QAction("Add Directory", this);
+    add_directory_action->setStatusTip("Add a directory of MIDI (.mid) files to the track list");
+    
+    exit_action = new QAction("Exit", this);
+    exit_action->setStatusTip("Exit the application");
+    
+    toggle_peak_amplitude_action = new QAction("Peak Amplitude Normalization", this);
+    toggle_peak_amplitude_action->setStatusTip("Toggle peak amplitude normalization on or off\nThis will make all tracks have similar max volume levels when on");
+    toggle_peak_amplitude_action->setCheckable(true);
+    toggle_peak_amplitude_action->setChecked(true);
+    
+    toggle_autoplay_action = new QAction("Autoplay", this);
+    toggle_autoplay_action->setStatusTip("Toggle autoplay on or off");
+    toggle_autoplay_action->setCheckable(true);
+    toggle_autoplay_action->setChecked(true);
 }
 
 void MainWindow::init_connections() {
@@ -159,10 +194,6 @@ void MainWindow::init_connections() {
     connect(shuffle_button, &QPushButton::clicked, playback_controller, &PlaybackController::toggle_shuffle);
     connect(playback_controller, &PlaybackController::shuffle_changed, this, &MainWindow::on_shuffle_changed);
 
-    // Autoplay button
-    connect(autoplay_button, &QPushButton::clicked, playback_controller, &PlaybackController::toggle_autoplay);
-    connect(playback_controller, &PlaybackController::autoplay_changed, this, &MainWindow::on_autoplay_changed);
-
     // Previous and next track sequence buttons
     connect(skip_back_button, &QPushButton::clicked, playback_controller, &PlaybackController::skip_backward);
     connect(skip_fwd_button, &QPushButton::clicked, playback_controller, &PlaybackController::skip_forward);
@@ -174,6 +205,25 @@ void MainWindow::init_connections() {
 
     // Audio underrun warning
     connect(playback_controller, &PlaybackController::underrun_detected, this, &MainWindow::on_underrun_detected);
+    
+    // Open file action
+    connect(add_file_action, &QAction::triggered, this, &MainWindow::on_add_file_button_clicked);
+    // Button mapping above already handles the controller mapping
+    
+    // Open directory action
+    connect(add_directory_action, &QAction::triggered, this, &MainWindow::on_add_directory_button_clicked);
+    // Button mapping above already handles the controller mapping
+    
+    // Exit action
+    connect(exit_action, &QAction::triggered, this, &MainWindow::close);
+    
+    // Toggle peak amplitude normalization action
+    connect(toggle_peak_amplitude_action, &QAction::triggered, playback_controller, &PlaybackController::toggle_peak_amplitude_normalization);
+    connect(playback_controller, &PlaybackController::peak_amplitude_normalization_changed, this, &MainWindow::on_peak_amplitude_normalization_changed);
+    
+    // Toggle autoplay action
+    connect(toggle_autoplay_action, &QAction::triggered, playback_controller, &PlaybackController::toggle_autoplay);
+    connect(playback_controller, &PlaybackController::autoplay_changed, this, &MainWindow::on_autoplay_changed);
 }
 
 void MainWindow::on_add_directory_button_clicked() {
@@ -207,12 +257,10 @@ MainWindow::MainWindow(PlaybackController* playback_controller, QWidget *parent)
     init_bottom_ui(bottom_layout);
     main_layout->addLayout(bottom_layout);
 
-    underrun_label = new QLabel("Underrun Warning!", this);
-    underrun_label->setStyleSheet("QLabel { color: red; }");
-    underrun_label->setVisible(false);
-    this->statusBar()->addPermanentWidget(underrun_label);
-
+    init_actions();
     init_connections();
+    init_top_bar();
+    init_status_bar();
     setCentralWidget(central_widget);
 }
 
@@ -241,11 +289,7 @@ void MainWindow::on_shuffle_changed(bool shuffle_flag) {
 }
 
 void MainWindow::on_autoplay_changed(bool autoplay_flag) {
-    if (autoplay_flag) {
-        autoplay_button->setIcon(autoplay_on_icon);
-    } else {
-        autoplay_button->setIcon(autoplay_off_icon);
-    }
+    toggle_peak_amplitude_action->setChecked(autoplay_flag);
 }
 
 void MainWindow::on_track_list_updated(const std::vector<std::string>& file_paths) {
@@ -294,10 +338,9 @@ void MainWindow::on_time_updated(float current_seconds, float total_seconds) {
 }
 
 void MainWindow::on_underrun_detected(bool status) {
-    if (status) {
-        underrun_label->setVisible(true);
-    }
-    else {
-        underrun_label->setVisible(false);
-    }
+    underrun_label->setVisible(status);
+}
+
+void MainWindow::on_peak_amplitude_normalization_changed(bool status) {
+    toggle_peak_amplitude_action->setChecked(status);
 }

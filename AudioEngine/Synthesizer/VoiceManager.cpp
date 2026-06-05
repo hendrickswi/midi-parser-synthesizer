@@ -11,6 +11,7 @@ void VoiceManager::init(float sample_rate, float global_volume) {
     this->sample_rate = sample_rate;
     this->global_volume = global_volume;
     static_gain = std::sqrt(static_cast<float>(NUM_VOICES));
+    peak_amplitude_normalization_on = true;
 
     registry = InstrumentRegistry(sample_rate);
     channel_patches = std::array<uint8_t, NUM_CHANNELS>();
@@ -58,6 +59,10 @@ VoiceManager::~VoiceManager() {
     }
 }
 
+bool VoiceManager::get_peak_amplitude_normalization() const {
+    return peak_amplitude_normalization_on;
+}
+
 void VoiceManager::set_sample_rate(float sample_rate) {
     this->sample_rate = sample_rate;
 }
@@ -96,6 +101,10 @@ void VoiceManager::set_channel_cc(uint8_t channel, uint8_t cc_number, uint8_t cc
 
 void VoiceManager::set_static_gain(float gain) {
     static_gain = gain;
+}
+
+void VoiceManager::set_peak_amplitude_normalization(bool enabled) {
+    peak_amplitude_normalization_on = enabled;
 }
 
 void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
@@ -189,7 +198,11 @@ void VoiceManager::process_audio_buffer(float* buffer, const unsigned int num_sa
 
     // Then apply volume edits
     for (int i = 0; i < num_samples; i++) {
-        const float mix = buffer[i] * static_gain * global_volume;
+        float mix = buffer[i] * global_volume;
+        if (peak_amplitude_normalization_on) {
+            mix *= static_gain;
+        }
+
 
         const float sign = (mix > 0.0f) ? 1.0f : -1.0f;
         const float abs_mix = mix * sign;

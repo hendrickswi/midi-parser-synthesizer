@@ -155,12 +155,16 @@ public:
     [[nodiscard]] const std::vector<std::string>& get_loaded_file_names() const;
     [[nodiscard]] std::size_t get_current_track_sequence_index() const;
     [[nodiscard]] std::vector<std::string> get_instrument_names_of_current_track_sequence() const;
+    [[nodiscard]] bool get_peak_amplitude_normalization() const;
+
     void play();
     void stop();
     void skip_seconds(float seconds);
     void set_track_sequence(std::size_t index);
     void set_global_volume(float volume);
+    void set_peak_amplitude_normalization(bool enabled);
     void soft_reset();
+
     [[nodiscard]] bool is_playing() const;
     [[nodiscard]] float get_track_sequence_current_time_seconds() const;
     [[nodiscard]] float get_track_sequence_length_seconds() const;

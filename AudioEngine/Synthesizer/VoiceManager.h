@@ -26,6 +26,7 @@ private:
     float sample_rate;
     float global_volume;
     float static_gain;
+    bool peak_amplitude_normalization_on;
 
     void init(float sample_rate = 48000.0f, float global_volume = 1.0f);
 
@@ -38,6 +39,8 @@ public:
 
     VoiceManager& operator=(const VoiceManager& other) = delete;
 
+    bool get_peak_amplitude_normalization() const;
+
     void set_sample_rate(float sample_rate);
     void set_global_volume(float global_volume);
     void set_channel_patch(uint8_t channel, uint8_t program_number);
@@ -45,6 +48,7 @@ public:
     void set_channel_pressure(uint8_t channel, uint8_t pressure);
     void set_channel_cc(uint8_t channel, uint8_t cc_number, uint8_t cc_value);
     void set_static_gain(float gain);
+    void set_peak_amplitude_normalization(bool enabled);
 
     void note_on(uint8_t channel, uint8_t pitch, uint8_t velocity);
     void note_off(uint8_t channel, uint8_t pitch);

@@ -37,6 +37,7 @@ signals:
     void repeat_changed(bool repeat_flag);
     void shuffle_changed(bool shuffle_flag);
     void autoplay_changed(bool autoplay_flag);
+    void peak_amplitude_normalization_changed(bool enabled);
     void track_list_updated(const std::vector<std::string>& tracks);
     void current_track_changed(std::size_t idx);
     void volume_changed(int volume);
@@ -52,6 +53,7 @@ public slots:
     void toggle_repeat();
     void toggle_shuffle();
     void toggle_autoplay();
+    void toggle_peak_amplitude_normalization();
     void load_directory(const std::string& directory_path);
     void load_file(const std::string& file_path);
     void select_track(std::size_t index);
