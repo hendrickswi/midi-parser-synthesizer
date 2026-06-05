@@ -40,12 +40,6 @@ private:
     QIcon shuffle_on_icon;
     QPushButton* shuffle_button;
 
-    // UI element: add directory
-    QPushButton* add_directory_button;
-
-    // UI element: add singular file
-    QPushButton* add_file_button;
-
     // UI element: volume icon
     QIcon volume_mute_icon;
     QIcon volume_low_icon;

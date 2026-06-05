@@ -27,16 +27,9 @@ void MainWindow::init_top_ui(QHBoxLayout* layout) {
     // File select dropdown
     track_selector = new QComboBox(this);
 
-    // Add directory button
-    add_directory_button = new QPushButton("Add Directory", this);
-    add_directory_button->setFixedWidth(150);
-
-    // Add file button
-    add_file_button = new QPushButton("Add File", this);
-
+    layout->addSpacing(10);
     layout->addWidget(track_selector);
-    layout->addWidget(add_directory_button);
-    layout->addWidget(add_file_button);
+    layout->addSpacing(10);
 }
 
 void MainWindow::init_middle_ui(QHBoxLayout* layout) {
@@ -170,14 +163,6 @@ void MainWindow::init_connections() {
     connect(playback_controller, &PlaybackController::current_track_changed, this, &MainWindow::on_current_track_changed);
     connect(playback_controller, &PlaybackController::first_loaded, this, &MainWindow::on_current_track_changed);
 
-    // Add directory button
-    connect(add_directory_button, &QPushButton::clicked, this, &MainWindow::on_add_directory_button_clicked);
-    connect(playback_controller, &PlaybackController::track_list_updated, this, &MainWindow::on_track_list_updated);
-
-    // Add file button
-    connect(add_file_button, &QPushButton::clicked, this, &MainWindow::on_add_file_button_clicked);
-    connect(playback_controller, &PlaybackController::track_list_updated, this, &MainWindow::on_track_list_updated);
-
     // Volume slider
     connect(volume_slider, &QAbstractSlider::valueChanged, playback_controller, &PlaybackController::set_volume);
     connect(playback_controller, &PlaybackController::volume_changed, this, &MainWindow::on_volume_changed);
@@ -208,7 +193,7 @@ void MainWindow::init_connections() {
     
     // Open file action
     connect(add_file_action, &QAction::triggered, this, &MainWindow::on_add_file_button_clicked);
-    // Button mapping above already handles the controller mapping
+    connect(playback_controller, &PlaybackController::track_list_updated, this, &MainWindow::on_track_list_updated);
     
     // Open directory action
     connect(add_directory_action, &QAction::triggered, this, &MainWindow::on_add_directory_button_clicked);
@@ -227,12 +212,12 @@ void MainWindow::init_connections() {
 }
 
 void MainWindow::on_add_directory_button_clicked() {
-    QString directory_path = QFileDialog::getExistingDirectory(this, "Select Directory");
+    QString directory_path = QFileDialog::getExistingDirectory(this, "Select Directory", QDir::homePath());
     playback_controller->load_directory(directory_path.toStdString());
 }
 
 void MainWindow::on_add_file_button_clicked() {
-    QString file_path = QFileDialog::getOpenFileName(this, "Select a file");
+    QString file_path = QFileDialog::getOpenFileName(this, "Select a File", QDir::homePath(), "MIDI Files (*.mid)");
     playback_controller->load_file(file_path.toStdString());
 }
 
