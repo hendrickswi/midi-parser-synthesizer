@@ -227,6 +227,12 @@ void VoiceManager::stop() {
 
 void VoiceManager::reset_state() {
     stop();
+
+    // Clear the command queue
+    SynthesizerCommand command;
+    while (pop_from_command_queue(command)) {
+    }
+
     channel_pitch_bends.fill(8192);
     channel_pressures.fill(0);
     for (auto& channel_state : channel_cc_states) {

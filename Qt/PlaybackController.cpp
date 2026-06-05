@@ -8,19 +8,15 @@ void PlaybackController::on_song_end() {
     engine->stop();
 
     if (autoplay_flag) {
-        if (shuffle_flag) {
-            std::size_t random_idx = std::rand() % engine->get_loaded_file_names().size();
-            on_track_sequence_change(random_idx);
-
-            if (!play_history.empty() && random_idx == play_history.back()) {
-                on_song_start();
-            }
-            else {
-                on_song_unique_start();
-            }
-        }
-        else if (repeat_flag) {
+        if (repeat_flag) {
             on_song_start();
+        }
+        else if (shuffle_flag) {
+            std::size_t random_idx = std::rand() % engine->get_loaded_file_names().size();
+            while (!play_history.empty() && random_idx == play_history.back()) {
+                random_idx = std::rand() % engine->get_loaded_file_names().size();
+            }
+            on_track_sequence_change(random_idx);
         }
         else {
             std::size_t next_idx = 0;
@@ -28,7 +24,6 @@ void PlaybackController::on_song_end() {
                 next_idx = (play_history.back() + 1) % engine->get_loaded_file_names().size();
             }
             on_track_sequence_change(next_idx);
-            on_song_unique_start();
         }
     }
     else {

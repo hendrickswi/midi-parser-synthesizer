@@ -48,12 +48,12 @@ void AudioEngine::init(float sample_rate, unsigned int num_channels) {
             static_cast<unsigned int>(sample_rate), &buffer_size, &audio_callback, this);
 
         auto current_api = rt_audio.getCurrentApi();
-        if (current_api == RtAudio::WINDOWS_WASAPI || current_api == RtAudio::WINDOWS_DS) {
-            platform_requires_profiling = true;
-        }
-        else {
-            platform_requires_profiling = false;
-        }
+        // if (current_api == RtAudio::WINDOWS_WASAPI || current_api == RtAudio::WINDOWS_DS) {
+        //     platform_requires_profiling = true;
+        // }
+        // else {
+        //     platform_requires_profiling = false;
+        // }
 
         rt_audio.startStream();
         std::cout << "Audio engine now running at " << sample_rate << " Hz, "
@@ -337,10 +337,13 @@ void AudioEngine::soft_reset() {
         return;
     }
 
+
+    // Soft reset sequencer
     sequencer.reset();
     sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
     sequencer.set_synthesizer(&synth);
 
+    // Soft reset synthesizer
     synth.reset_state();
     global_sample_count.store(0, std::memory_order_relaxed);
     underrun_count.store(0, std::memory_order_relaxed);

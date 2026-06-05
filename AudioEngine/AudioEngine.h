@@ -16,7 +16,7 @@ private:
     RtAudio rt_audio;
     std::atomic<uint64_t> underrun_count;
     float active_sample_rate;
-    bool platform_requires_profiling;
+    // bool platform_requires_profiling;
     std::atomic<uint64_t> global_sample_count;
 
     std::vector<TrackSequence> loaded_track_sequences;
