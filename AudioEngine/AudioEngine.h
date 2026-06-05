@@ -14,8 +14,10 @@ private:
     MidiSequencer sequencer;
     VoiceManager synth;
     RtAudio rt_audio;
+    std::vector<float> mono_buffer;
     std::atomic<uint64_t> underrun_count;
     float active_sample_rate;
+    unsigned int num_channels;
     // bool platform_requires_profiling;
     std::atomic<uint64_t> global_sample_count;
 
@@ -133,17 +135,23 @@ private:
     "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped"
 };
 
+    static float resolve_hardware_sample_rate(float requested_rate);
+    static bool is_high_priority_command(SynthesizerCommandType type);
     void init(float sample_rate, unsigned int num_channels = 1);
 
     // RtAudio mandated callback function
     static int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,
         RtAudioStreamStatus status, void *user_data);
 
+    // Convert mono processed samples to multiple channel audio by interleaving
+    static void interleave(const float* mono_buffer, unsigned int mono_num_frames, float* interleaved_buffer, unsigned int interleaved_num_frames);
+
     // The continuous loop run by this->sequencer_thread
     void sequencer_thread_loop();
 
     // Helper dispatcher method for processing commands
     void execute_command(const SynthesizerCommand& command);
+
 
 public:
     AudioEngine();

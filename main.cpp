@@ -10,7 +10,7 @@
 
 const std::string auto_test_folder = get_sanitized_file_path("Testing files");
 constexpr float fallback_sample_rate = 48000.0f;
-constexpr unsigned int num_channels = 1;
+constexpr unsigned int num_channels = 2;
 constexpr float volume = 1.0f;
 
 int main(int argc, char* argv[]) {

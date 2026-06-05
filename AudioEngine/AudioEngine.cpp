@@ -4,7 +4,7 @@
 #include <iostream>
 #include <set>
 
-static float resolve_hardware_sample_rate(float requested_rate) {
+float AudioEngine::resolve_hardware_sample_rate(float requested_rate) {
     try {
         RtAudio rtaudio;
         if (rtaudio.getDeviceCount() > 0) {
@@ -22,7 +22,7 @@ static float resolve_hardware_sample_rate(float requested_rate) {
     return requested_rate;
 }
 
-static bool is_high_priority_command(SynthesizerCommandType type) {
+bool AudioEngine::is_high_priority_command(SynthesizerCommandType type) {
     return type == SynthesizerCommandType::NOTE_ON ||
         type == SynthesizerCommandType::NOTE_OFF ||
         type == SynthesizerCommandType::SET_CHANNEL_PATCH ||
@@ -31,6 +31,15 @@ static bool is_high_priority_command(SynthesizerCommandType type) {
 
 void AudioEngine::init(float sample_rate, unsigned int num_channels) {
     sequencer.set_synthesizer(&synth);
+    underrun_count.store(0, std::memory_order_relaxed);
+    active_sample_rate = sample_rate;
+    this->num_channels = num_channels;
+    global_sample_count.store(0, std::memory_order_relaxed);
+
+    loaded_track_sequences = std::vector<TrackSequence>();
+    loaded_file_names = std::vector<std::string>();
+    current_track = -1;
+    file_has_switched = false;
 
     // RtAudio setup
     if (rt_audio.getDeviceCount() < 1) {
@@ -42,7 +51,6 @@ void AudioEngine::init(float sample_rate, unsigned int num_channels) {
     parameters.nChannels = num_channels;
     parameters.firstChannel = 0;
     unsigned int buffer_size = BUFFER_SIZE;
-    active_sample_rate = sample_rate;
     try {
         rt_audio.openStream(&parameters, nullptr, RTAUDIO_FLOAT32,
             static_cast<unsigned int>(sample_rate), &buffer_size, &audio_callback, this);
@@ -63,19 +71,20 @@ void AudioEngine::init(float sample_rate, unsigned int num_channels) {
         throw std::runtime_error(std::string("AudioEngine::init() failed during RtAudio stream opening/starting. Error:") += e.what());
     }
 
-    // Other instance variables
-    underrun_count = 0;
-    loaded_track_sequences = std::vector<TrackSequence>();
-    loaded_file_names = std::vector<std::string>();
-    current_track = -1;
-    file_has_switched = false;
-    // Do not spawn a sequencer thread here; it will join instantly because the sequencer is not playing yet
+    // Instantiate with the potentially modified buffer_size
+    mono_buffer = std::vector<float>(buffer_size);
 }
 
 int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,
         RtAudioStreamStatus status, void *user_data) {
     auto engine = static_cast<AudioEngine*>(user_data);
-    auto buffer_to_use = static_cast<float*>(output_buffer);
+
+    // Safety check for length
+    if (num_frames > engine->mono_buffer.size()) {
+        std::cerr << "Warning: Audio buffer size mismatch. " << num_frames << " frames requested, " << engine->mono_buffer.size() << " available." << std::endl;
+        engine->mono_buffer.resize(num_frames);
+    }
+    auto buffer_to_use = engine->mono_buffer.data();
 
     std::fill(buffer_to_use, buffer_to_use + num_frames, 0.0f);
 
@@ -119,6 +128,7 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
     }
 
     engine->global_sample_count += num_frames;
+    interleave(buffer_to_use, num_frames, static_cast<float*>(output_buffer), num_frames * engine->num_channels);
 
     if (status & RTAUDIO_OUTPUT_UNDERFLOW) {
         engine->underrun_count.fetch_add(1, std::memory_order_relaxed);
@@ -128,6 +138,16 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
     // TODO: Add back profiling (on a different thread?)
 
     return 0;
+}
+
+void AudioEngine::interleave(const float* mono_buffer, unsigned int mono_num_frames, float* interleaved_buffer, unsigned int interleaved_num_frames) {
+    unsigned int channel_ratio = interleaved_num_frames / mono_num_frames;
+
+    for (unsigned int i = 0; i < mono_num_frames; i++) {
+        for (unsigned int j = 0; j < channel_ratio; j++) {
+            interleaved_buffer[i * channel_ratio + j] = mono_buffer[i];
+        }
+    }
 }
 
 void AudioEngine::sequencer_thread_loop() {
