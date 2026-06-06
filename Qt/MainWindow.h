@@ -86,6 +86,10 @@ private:
     void on_add_directory_button_clicked();
     void on_add_file_button_clicked();
 
+    // Icon handling
+    static bool is_dark_theme();
+    QIcon load_icon(const QString& icon_name);
+
 private slots:
     void on_playback_state_changed(bool is_playing);
     void on_repeat_changed(bool repeat_flag);

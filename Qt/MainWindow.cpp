@@ -6,6 +6,7 @@
 #include <QSizePolicy>
 
 #include "PlaybackController.h"
+#include "qguiapplication.h"
 #include "../AudioEngine/AudioEngine.h"
 #include "../DirectoryManipulator.h"
 
@@ -48,9 +49,9 @@ void MainWindow::init_middle_ui(QHBoxLayout* layout) {
     volume_slider->setFixedHeight(100);
 
     // Creating the volume icon
-    volume_mute_icon = QIcon(":/Assets/img/volume_mute.png");
-    volume_low_icon = QIcon(":/Assets/img/volume_low.png");
-    volume_max_icon = QIcon(":/Assets/img/volume_max.png");
+    volume_mute_icon = load_icon(":/Assets/img/volume_mute.png");
+    volume_low_icon = load_icon(":/Assets/img/volume_low.png");
+    volume_max_icon = load_icon(":/Assets/img/volume_max.png");
     volume_label = new QLabel(this);
     volume_label->setPixmap(volume_low_icon.pixmap(20, 20));
 
@@ -76,38 +77,38 @@ void MainWindow::init_bottom_ui(QHBoxLayout* layout) {
         "QPushButton:hover { background: rgba(128, 128, 128, 0.2); border-radius:5px; }";
 
     // Repeat button
-    repeat_off_icon = QIcon(":/Assets/img/repeat.png");
-    repeat_on_icon = QIcon(":/Assets/img/repeat_on.png");
+    repeat_off_icon = load_icon(":/Assets/img/repeat.png");
+    repeat_on_icon = load_icon(":/Assets/img/repeat_on.png");
     repeat_button = new QPushButton(repeat_off_icon,"", this);
     repeat_button->setIconSize(icon_size);
     repeat_button->setStyleSheet(transparent_button_style);
     repeat_button->setCursor(Qt::PointingHandCursor);
 
     // Shuffle button
-    shuffle_off_icon = QIcon(":/Assets/img/shuffle.png");
-    shuffle_on_icon = QIcon(":/Assets/img/shuffle_on.png");
+    shuffle_off_icon = load_icon(":/Assets/img/shuffle.png");
+    shuffle_on_icon = load_icon(":/Assets/img/shuffle_on.png");
     shuffle_button = new QPushButton(shuffle_off_icon, "", this);
     shuffle_button->setIconSize(icon_size);
     shuffle_button->setStyleSheet(transparent_button_style);
     shuffle_button->setCursor(Qt::PointingHandCursor);
 
     // Previous track sequence button
-    skip_back_icon = QIcon(":/Assets/img/skip_back.png");
+    skip_back_icon = load_icon(":/Assets/img/skip_back.png");
     skip_back_button = new QPushButton(skip_back_icon, "", this);
     skip_back_button->setIconSize(icon_size);
     skip_back_button->setStyleSheet(transparent_button_style);
     skip_back_button->setCursor(Qt::PointingHandCursor);
 
     // Play and pause button
-    play_icon = QIcon(":/Assets/img/play.png");
-    pause_icon = QIcon(":/Assets/img/pause.png");
+    play_icon = load_icon(":/Assets/img/play.png");
+    pause_icon = load_icon(":/Assets/img/pause.png");
     play_pause_button = new QPushButton(play_icon, "", this);
     play_pause_button->setIconSize(icon_size);
     play_pause_button->setStyleSheet(transparent_button_style);
     play_pause_button->setCursor(Qt::PointingHandCursor);
 
     // Next track sequence button
-    skip_fwd_icon = QIcon(":/Assets/img/skip_fwd.png");
+    skip_fwd_icon = load_icon(":/Assets/img/skip_fwd.png");
     skip_fwd_button = new QPushButton(skip_fwd_icon, "", this);
     skip_fwd_button->setIconSize(icon_size);
     skip_fwd_button->setStyleSheet(transparent_button_style);
@@ -238,6 +239,28 @@ void MainWindow::on_add_directory_button_clicked() {
 void MainWindow::on_add_file_button_clicked() {
     QString file_path = QFileDialog::getOpenFileName(this, "Select a File", QDir::homePath(), "MIDI Files (*.mid)");
     playback_controller->load_file(file_path.toStdString());
+}
+
+bool MainWindow::is_dark_theme() {
+    QPalette window_pallete = QGuiApplication::palette();
+    QColor background_color = window_pallete.color(QPalette::Window);
+
+    // Standard luminance formula
+    double luminance = (0.299 * background_color.red() + 0.587 * background_color.green() + 0.114 * background_color.blue()) / 255.0;
+    return luminance < 0.5;
+}
+
+QIcon MainWindow::load_icon(const QString& file_path) {
+    QImage icon_image = QImage(file_path);
+    if (icon_image.isNull()) {
+        return QIcon();
+    }
+
+    if (is_dark_theme()) {
+        icon_image.invertPixels(QImage::InvertRgb);
+    }
+
+    return QIcon(QPixmap::fromImage(icon_image));
 }
 
 MainWindow::MainWindow(PlaybackController* playback_controller, QWidget *parent)
