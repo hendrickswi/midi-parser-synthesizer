@@ -7,6 +7,7 @@
 #include "Sequencer/MidiSequencer.h"
 
 constexpr unsigned int BUFFER_SIZE = 1024;
+constexpr uint64_t LOOK_AHEAD_MICROS = 50000;
 
 class AudioEngine {
 private:
@@ -20,6 +21,7 @@ private:
     unsigned int num_channels;
     // bool platform_requires_profiling;
     std::atomic<uint64_t> global_sample_count;
+    std::atomic<bool> flush_command_queue_flag;
 
     std::vector<TrackSequence> loaded_track_sequences;
     std::vector<std::string> loaded_file_names;
@@ -138,6 +140,7 @@ private:
     static float resolve_hardware_sample_rate(float fallback_sample_rate);
     static unsigned int resolve_hardware_num_channels(unsigned int fallback_num_channels);
     static bool is_high_priority_command(SynthesizerCommandType type);
+    static inline uint64_t sample_count_to_microseconds(uint64_t sample_count, float sample_rate);
 
     // RtAudio mandated callback function
     static int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,

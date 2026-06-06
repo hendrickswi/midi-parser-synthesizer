@@ -1,7 +1,6 @@
 #ifndef MIDI_PARSERSYNTHESIZER_MIDISEQUENCER_H
 #define MIDI_PARSERSYNTHESIZER_MIDISEQUENCER_H
 #include <atomic>
-#include <chrono>
 #include <queue>
 
 #include "ActiveNote.h"
@@ -24,8 +23,8 @@ private:
     float sample_rate;
     uint32_t micros_per_tick;
     uint32_t current_tick;
-    std::chrono::high_resolution_clock::time_point prev_tick_time;
     uint64_t micros_since_last_tick;
+    uint64_t audio_anchor_micros;
     uint64_t total_elapsed_micros;
 
     // Helper variables for tracking.
@@ -47,11 +46,11 @@ public:
     explicit MidiSequencer(float sample_rate = 48000.0f);
     MidiSequencer(const MidiSequencer& other);
 
-    void start();
+    void start(uint64_t audio_current_micros);
     void stop();
     void skip_forward(float seconds);
     void skip_backward(float seconds);
-    void update();
+    void update(uint64_t audio_target_micros);
 
     /**
      * Completely resets @c this by invoking constructor logic. This includes synthesizer

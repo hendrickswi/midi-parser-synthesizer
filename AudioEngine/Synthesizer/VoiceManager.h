@@ -57,6 +57,7 @@ public:
     bool push_to_command_queue(const SynthesizerCommand& command);
     bool pop_from_command_queue(SynthesizerCommand& command);
     bool peek_from_command_queue(SynthesizerCommand& command);
+    void clear_command_queue();
 };
 
 

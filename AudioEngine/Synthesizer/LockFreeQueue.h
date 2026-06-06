@@ -18,7 +18,7 @@ public:
      */
     bool push(const T& item) {
         const auto current_write = write_idx.load(std::memory_order_relaxed);
-        const auto next_write = (current_write + 1 >= N) ? 0 : current_write + 1;
+        const size_t next_write = (current_write + 1 >= N) ? 0 : current_write + 1;
 
         if (next_write == read_idx.load(std::memory_order_acquire)) {
             return false;
@@ -39,13 +39,14 @@ public:
      */
     bool pop(T& item) {
         const auto current_read = read_idx.load(std::memory_order_relaxed);
+        const size_t next_read = (current_read + 1 >= N) ? 0 : (current_read + 1);
 
         if (current_read == write_idx.load(std::memory_order_acquire)) {
             return false;
         }
 
         item = buffer[current_read];
-        read_idx.store((current_read + 1 >= N) ? 0 : current_read + 1, std::memory_order_release);
+        read_idx.store(next_read, std::memory_order_release);
         return true;
     }
 
@@ -59,6 +60,16 @@ public:
         item = buffer[current_read];
         return true;
     }
+
+    bool is_empty() {
+        return read_idx.load(std::memory_order_relaxed) == write_idx.load(std::memory_order_relaxed);
+    }
+
+    bool is_full() {
+        const size_t next_write = (write_idx.load(std::memory_order_relaxed) + 1 >= N) ? 0 : write_idx.load(std::memory_order_relaxed) + 1;
+        return next_write == read_idx.load(std::memory_order_relaxed);
+    }
+
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_LOCKFREEQUEUE_H

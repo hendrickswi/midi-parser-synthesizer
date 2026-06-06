@@ -47,9 +47,19 @@ bool AudioEngine::is_high_priority_command(SynthesizerCommandType type) {
         type == SynthesizerCommandType::STOP_ALL_VOICES;
 }
 
+uint64_t AudioEngine::sample_count_to_microseconds(uint64_t sample_count, float sample_rate) {
+    return sample_count * 1000000 / sample_rate;
+}
+
 int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,
         RtAudioStreamStatus status, void *user_data) {
     auto engine = static_cast<AudioEngine*>(user_data);
+
+    // Do flush logic if told to do so
+    if (engine->flush_command_queue_flag.load(std::memory_order_relaxed)) {
+        engine->synth.clear_command_queue();
+        engine->flush_command_queue_flag.store(false, std::memory_order_relaxed);
+    }
 
     // Safety check for length
     if (num_frames > engine->mono_buffer.size()) {
@@ -124,9 +134,9 @@ void AudioEngine::interleave(const float* mono_buffer, unsigned int mono_num_fra
 
 void AudioEngine::sequencer_thread_loop() {
     while (sequencer.is_playing()) {
-        sequencer.update();
-
-        std::this_thread::sleep_for(std::chrono::microseconds(100));
+        uint64_t current_micros = sample_count_to_microseconds(global_sample_count.load(std::memory_order_relaxed), active_sample_rate);
+        sequencer.update(current_micros + LOOK_AHEAD_MICROS);
+        std::this_thread::sleep_for(std::chrono::microseconds(250));
     }
 }
 
@@ -175,6 +185,7 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     active_sample_rate = resolve_hardware_sample_rate(fallback_sample_rate);
     num_channels = resolve_hardware_num_channels(1);
     global_sample_count.store(0, std::memory_order_relaxed);
+    flush_command_queue_flag.store(false, std::memory_order_relaxed);
 
     loaded_track_sequences = std::vector<TrackSequence>();
     loaded_file_names = std::vector<std::string>();
@@ -203,6 +214,9 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
         //     platform_requires_profiling = false;
         // }
 
+        // Instantiate with the potentially modified buffer_size
+        mono_buffer = std::vector<float>(buffer_size);
+
         rt_audio.startStream();
         std::cout << "Audio engine now running at " << active_sample_rate << " Hz, "
             << num_channels << " channels, " << buffer_size << " frames, "
@@ -211,9 +225,6 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     catch (const std::exception& e) {
         throw std::runtime_error(std::string("AudioEngine::init() failed during RtAudio stream opening/starting. Error:") += e.what());
     }
-
-    // Instantiate with the potentially modified buffer_size
-    mono_buffer = std::vector<float>(buffer_size);
 }
 
 AudioEngine::~AudioEngine() {
@@ -316,7 +327,11 @@ void AudioEngine::play() {
     }
 
     // Start the playback
-    sequencer.start();
+    sequencer.start(sample_count_to_microseconds(
+        global_sample_count.load(std::memory_order_relaxed),
+        active_sample_rate
+        )
+    );
     sequencer_thread = std::thread(&AudioEngine::sequencer_thread_loop, this);
 }
 
@@ -325,7 +340,31 @@ void AudioEngine::stop() {
     if (sequencer_thread.joinable()) {
         sequencer_thread.join();
     }
+
+
+    if (rt_audio.isStreamRunning()) {
+        // Delegate command queue flush logic to the audio thread
+        flush_command_queue_flag.store(true, std::memory_order_release);
+
+        // Wait until flush is done
+        while (flush_command_queue_flag.load(std::memory_order_acquire)) {
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+        }
+    }
+    else {
+        // Audio thread is not active, so can just flush from this thread
+        synth.clear_command_queue();
+    }
+
     synth.stop();
+
+    uint64_t current_micros = sample_count_to_microseconds(global_sample_count.load(std::memory_order_relaxed), active_sample_rate);
+    uint64_t sequencer_current_micros = sequencer.get_total_elapsed_micros();
+
+    if (sequencer_current_micros > current_micros) {
+        float overshot_seconds = static_cast<float>(sequencer_current_micros - current_micros) / 1000000.0;
+        skip_seconds(-overshot_seconds);
+    }
 }
 
 void AudioEngine::skip_seconds(float seconds) {
@@ -333,6 +372,7 @@ void AudioEngine::skip_seconds(float seconds) {
     stop(); // Prevent thread collisions
 
     if (seconds < 0) {
+        synth.reset_state();
         sequencer.skip_backward(-seconds);
     }
     else {
@@ -340,7 +380,7 @@ void AudioEngine::skip_seconds(float seconds) {
     }
 
     uint64_t new_micros = sequencer.get_total_elapsed_micros();
-    this->global_sample_count = static_cast<uint64_t>(new_micros * active_sample_rate / 1000000.0);
+    this->global_sample_count = sample_count_to_microseconds(new_micros, active_sample_rate);
 
     if (was_playing) play();
 }
@@ -367,7 +407,6 @@ void AudioEngine::soft_reset() {
     if (current_track >= loaded_track_sequences.size()) {
         return;
     }
-
 
     // Soft reset sequencer
     sequencer.reset();

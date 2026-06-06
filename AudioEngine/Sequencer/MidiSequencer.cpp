@@ -40,7 +40,7 @@ MidiSequencer::MidiSequencer(const MidiSequencer& other) {
     this->sample_rate = other.sample_rate;
     micros_per_tick = other.micros_per_tick;
     current_tick = other.current_tick;
-    prev_tick_time = other.prev_tick_time;
+    audio_anchor_micros = other.audio_anchor_micros;
     micros_since_last_tick = other.micros_since_last_tick;
     track_indices = other.track_indices;
     active_notes = other.active_notes;
@@ -50,14 +50,14 @@ MidiSequencer::MidiSequencer(const MidiSequencer& other) {
 void MidiSequencer::init(float sample_rate) {
     track_sequence = nullptr;
     synthesizer = nullptr;
-    is_playing_flag.store(false);
+    is_playing_flag.store(false, std::memory_order_relaxed);
     is_skipping_flag = false;
     midi_file_ended_flag = false;
     this->sample_rate = sample_rate;
     micros_per_tick = 0;
     current_tick = 0;
-    prev_tick_time = std::chrono::high_resolution_clock::now();
     micros_since_last_tick = 0;
+    audio_anchor_micros = 0;
     total_elapsed_micros = 0;
     track_indices = std::vector<TrackIndices>();
     active_notes = std::priority_queue<ActiveNote, std::vector<ActiveNote>, std::greater<>>();
@@ -65,7 +65,7 @@ void MidiSequencer::init(float sample_rate) {
 }
 
 void MidiSequencer::setup_for_new_track_sequence() {
-    is_playing_flag.store(false);
+    is_playing_flag.store(false, std::memory_order_relaxed);
     is_skipping_flag = false;
     midi_file_ended_flag = false;
 
@@ -73,8 +73,8 @@ void MidiSequencer::setup_for_new_track_sequence() {
 
     micros_per_tick = calculate_mpt(calculate_mpqn(120), track_sequence->get_division());
     current_tick = 0;
-    prev_tick_time = std::chrono::high_resolution_clock::now();
     micros_since_last_tick = 0;
+    audio_anchor_micros = 0;
     total_elapsed_micros = 0;
 
     track_indices.clear();
@@ -129,53 +129,82 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         const auto& midi_event = midi_events[indices.midi_event_idx];
         indices.midi_event_idx++;
 
-        switch (midi_event.command) {
-            case PROGRAM_CHANGE: {
-                SynthesizerCommand command {
-                    SynthesizerCommandType::SET_CHANNEL_PATCH,
-                    midi_event.channel,
-                    midi_event.data1,
-                    midi_event.data2,
-                    current_absolute_sample
-                };
-                synthesizer->push_to_command_queue(command);
-                break;
+        if (is_skipping_flag) {
+            // Then the audio thread is paused, meaning any events pushed to the
+            // LockFreeQueue will not be processed before unpausing
+            // => Need to process these directly
+            switch (midi_event.command) {
+                case PROGRAM_CHANGE: {
+                    synthesizer->set_channel_patch(midi_event.channel, midi_event.data1);
+                    break;
+                }
+                case CONTROL_CHANGE : {
+                    synthesizer->set_channel_cc(midi_event.channel, midi_event.data1, midi_event.data2);
+                    break;
+                }
+                case PITCH_BEND : {
+                    synthesizer->set_channel_pitch_bend(midi_event.channel, (midi_event.data1 & 0x7F) | ((midi_event.data2 & 0x7F) << 7));
+                    break;
+                }
+                case CHANNEL_PRESSURE : {
+                    synthesizer->set_channel_pressure(midi_event.channel, midi_event.data1);
+                    break;
+                }
+                default : {
+                    break;
+                }
             }
-            case CONTROL_CHANGE : {
-                SynthesizerCommand command {
-                    SynthesizerCommandType::SET_CONTROL_CHANGE,
-                    midi_event.channel,
-                    midi_event.data1,
-                    midi_event.data2,
-                    current_absolute_sample
-                };
-                synthesizer->push_to_command_queue(command);
-                break;
-            }
-            case PITCH_BEND : {
-                SynthesizerCommand command {
-                    SynthesizerCommandType::SET_CHANNEL_PITCH_BEND,
-                    midi_event.channel,
-                    midi_event.data1,
-                    midi_event.data2,
-                    current_absolute_sample
-                };
-                synthesizer->push_to_command_queue(command);
-                break;
-            }
-            case CHANNEL_PRESSURE : {
-                SynthesizerCommand command {
-                    SynthesizerCommandType::SET_CHANNEL_PRESSURE,
-                    midi_event.channel,
-                    midi_event.data1,
-                    midi_event.data2,
-                    current_absolute_sample
-                };
-                synthesizer->push_to_command_queue(command);
-                break;
-            }
-            default : {
-                break;
+        }
+        else {
+            // Allow audio thread to process these events through the LockFreeQueue
+            switch (midi_event.command) {
+                case PROGRAM_CHANGE: {
+                    SynthesizerCommand command {
+                        SynthesizerCommandType::SET_CHANNEL_PATCH,
+                        midi_event.channel,
+                        midi_event.data1,
+                        midi_event.data2,
+                        current_absolute_sample
+                    };
+                    synthesizer->push_to_command_queue(command);
+                    break;
+                }
+                case CONTROL_CHANGE : {
+                    SynthesizerCommand command {
+                        SynthesizerCommandType::SET_CONTROL_CHANGE,
+                        midi_event.channel,
+                        midi_event.data1,
+                        midi_event.data2,
+                        current_absolute_sample
+                    };
+                    synthesizer->push_to_command_queue(command);
+                    break;
+                }
+                case PITCH_BEND : {
+                    SynthesizerCommand command {
+                        SynthesizerCommandType::SET_CHANNEL_PITCH_BEND,
+                        midi_event.channel,
+                        midi_event.data1,
+                        midi_event.data2,
+                        current_absolute_sample
+                    };
+                    synthesizer->push_to_command_queue(command);
+                    break;
+                }
+                case CHANNEL_PRESSURE : {
+                    SynthesizerCommand command {
+                        SynthesizerCommandType::SET_CHANNEL_PRESSURE,
+                        midi_event.channel,
+                        midi_event.data1,
+                        midi_event.data2,
+                        current_absolute_sample
+                    };
+                    synthesizer->push_to_command_queue(command);
+                    break;
+                }
+                default : {
+                    break;
+                }
             }
         }
     }
@@ -305,17 +334,17 @@ float MidiSequencer::calculate_current_track_sequence_gain() const {
     return gain_multiplier;
 }
 
-void MidiSequencer::start() {
+void MidiSequencer::start(uint64_t audio_current_micros) {
     if (!synthesizer || !track_sequence) return;
-    is_playing_flag = true;
+    is_playing_flag.store(true, std::memory_order_relaxed);
 
     // Reanchor
-    prev_tick_time = std::chrono::high_resolution_clock::now();
+    audio_anchor_micros = audio_current_micros - total_elapsed_micros;
 }
 
 void MidiSequencer::stop() {
     if (!synthesizer || !track_sequence) return;
-    is_playing_flag = false;
+    is_playing_flag.store(false, std::memory_order_relaxed);
 }
 
 void MidiSequencer::skip_forward(float seconds) {
@@ -326,11 +355,8 @@ void MidiSequencer::skip_forward(float seconds) {
     if (duration_remaining < seconds) seconds = duration_remaining;
 
     is_skipping_flag = true;
-
     skip_microseconds(static_cast<uint64_t>(seconds * seconds_to_micros));
-
     is_skipping_flag = false;
-    prev_tick_time = std::chrono::high_resolution_clock::now();
 }
 
 void MidiSequencer::skip_backward(float seconds) {
@@ -341,21 +367,24 @@ void MidiSequencer::skip_backward(float seconds) {
     if (duration_elapsed < seconds) seconds = duration_elapsed;
 
     uint64_t skip_amount = static_cast<uint64_t>(seconds * seconds_to_micros);
-    uint64_t target_micros = (total_elapsed_micros - skip_amount) ? (total_elapsed_micros - skip_amount) : 0;
+
+    uint64_t target_micros = 0;
+    if (total_elapsed_micros > skip_amount) {
+        target_micros = total_elapsed_micros - skip_amount;
+    }
 
     // Wipe everything and start from the beginning
     setup_for_new_track_sequence();
     is_skipping_flag = true;
     skip_microseconds(target_micros);
     is_skipping_flag = false;
-    prev_tick_time = std::chrono::high_resolution_clock::now();
 }
 
-void MidiSequencer::update() {
-    if (!is_playing_flag || !synthesizer || !track_sequence || midi_file_ended_flag) return;
+void MidiSequencer::update(uint64_t audio_target_micros) {
+    if (!is_playing_flag.load(std::memory_order_relaxed) || !synthesizer || !track_sequence || midi_file_ended_flag) return;
 
-    auto elapsed_micros = std::chrono::duration_cast<std::chrono::microseconds>(
-        std::chrono::high_resolution_clock::now() - prev_tick_time).count();
+    if (audio_target_micros < audio_anchor_micros) return;
+    uint64_t micros_to_advance = audio_target_micros - audio_anchor_micros;
 
     // Remove expired notes
     while (!active_notes.empty() && active_notes.top().end_time <= current_tick) {
@@ -372,25 +401,20 @@ void MidiSequencer::update() {
     }
 
     // Add new notes by triggering events registered to the current tick
-    while (elapsed_micros >= micros_per_tick) {
-        prev_tick_time += std::chrono::microseconds(micros_per_tick);
+    while (total_elapsed_micros + micros_per_tick <= micros_to_advance) {
         current_tick++;
-        elapsed_micros -= micros_per_tick;
         total_elapsed_micros += micros_per_tick;
 
         // Go through each "track" (each instrument/part)
         const auto& tracks = track_sequence->get_tracks();
         for (int i = 0; i < tracks.size(); i++) {
-            const auto& track = tracks[i];
-            auto& indices = track_indices[i];
-            process_events(track, indices);
+            process_events(tracks[i], track_indices[i]);
         }
     }
 
-    // Allow early return if the song is over
     if (!has_more_events() && active_notes.empty()) {
         midi_file_ended_flag = true;
-        is_playing_flag = false;
+        is_playing_flag.store(false, std::memory_order_relaxed);
     }
 }
 
@@ -416,7 +440,7 @@ void MidiSequencer::set_synthesizer(VoiceManager* synth) {
 }
 
 bool MidiSequencer::is_playing() const {
-    return is_playing_flag;
+    return is_playing_flag.load(std::memory_order_relaxed);
 }
 
 bool MidiSequencer::midi_file_ended() const {
