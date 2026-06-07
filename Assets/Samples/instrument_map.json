@@ -1,0 +1,800 @@
+{
+  "melodic_instruments": {
+    "0": {
+      "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 2.5, "sustain_level": 0.1, "release_time": 0.4, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.B0.wav", "base_frequency": 30.87, "min_pitch": 0, "max_pitch": 23, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.C1.wav", "base_frequency": 32.70, "min_pitch": 24, "max_pitch": 24, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Db1.wav", "base_frequency": 34.65, "min_pitch": 25, "max_pitch": 25, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.D1.wav", "base_frequency": 36.71, "min_pitch": 26, "max_pitch": 26, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Eb1.wav", "base_frequency": 38.89, "min_pitch": 27, "max_pitch": 27, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.E1.wav", "base_frequency": 41.20, "min_pitch": 28, "max_pitch": 28, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.F1.wav", "base_frequency": 43.65, "min_pitch": 29, "max_pitch": 29, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Gb1.wav", "base_frequency": 46.25, "min_pitch": 30, "max_pitch": 30, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.G1.wav", "base_frequency": 49.00, "min_pitch": 31, "max_pitch": 31, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Ab1.wav", "base_frequency": 51.91, "min_pitch": 32, "max_pitch": 32, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.A1.wav", "base_frequency": 55.00, "min_pitch": 33, "max_pitch": 33, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Bb1.wav", "base_frequency": 58.27, "min_pitch": 34, "max_pitch": 34, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.B1.wav", "base_frequency": 61.74, "min_pitch": 35, "max_pitch": 35, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.C2.wav", "base_frequency": 65.41, "min_pitch": 36, "max_pitch": 36, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Db2.wav", "base_frequency": 69.30, "min_pitch": 37, "max_pitch": 37, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.D2.wav", "base_frequency": 73.42, "min_pitch": 38, "max_pitch": 38, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Eb2.wav", "base_frequency": 77.78, "min_pitch": 39, "max_pitch": 39, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.E2.wav", "base_frequency": 82.41, "min_pitch": 40, "max_pitch": 40, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.F2.wav", "base_frequency": 87.31, "min_pitch": 41, "max_pitch": 41, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Gb2.wav", "base_frequency": 92.50, "min_pitch": 42, "max_pitch": 42, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.G2.wav", "base_frequency": 98.00, "min_pitch": 43, "max_pitch": 43, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Ab2.wav", "base_frequency": 103.83, "min_pitch": 44, "max_pitch": 44, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.A2.wav", "base_frequency": 110.00, "min_pitch": 45, "max_pitch": 45, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Bb2.wav", "base_frequency": 116.54, "min_pitch": 46, "max_pitch": 46, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.B2.wav", "base_frequency": 123.47, "min_pitch": 47, "max_pitch": 47, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.C3.wav", "base_frequency": 130.81, "min_pitch": 48, "max_pitch": 48, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Db3.wav", "base_frequency": 138.59, "min_pitch": 49, "max_pitch": 49, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.D3.wav", "base_frequency": 146.83, "min_pitch": 50, "max_pitch": 50, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Eb3.wav", "base_frequency": 155.56, "min_pitch": 51, "max_pitch": 51, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.E3.wav", "base_frequency": 164.81, "min_pitch": 52, "max_pitch": 52, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.F3.wav", "base_frequency": 174.61, "min_pitch": 53, "max_pitch": 53, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Gb3.wav", "base_frequency": 185.00, "min_pitch": 54, "max_pitch": 54, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.G3.wav", "base_frequency": 196.00, "min_pitch": 55, "max_pitch": 55, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Ab3.wav", "base_frequency": 207.65, "min_pitch": 56, "max_pitch": 56, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.A3.wav", "base_frequency": 220.00, "min_pitch": 57, "max_pitch": 57, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Bb3.wav", "base_frequency": 233.08, "min_pitch": 58, "max_pitch": 58, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.B3.wav", "base_frequency": 246.94, "min_pitch": 59, "max_pitch": 59, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.C4.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 60, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Db4.wav", "base_frequency": 277.18, "min_pitch": 61, "max_pitch": 61, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.D4.wav", "base_frequency": 293.66, "min_pitch": 62, "max_pitch": 62, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Eb4.wav", "base_frequency": 311.13, "min_pitch": 63, "max_pitch": 63, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.E4.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 64, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.F4.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 65, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Gb4.wav", "base_frequency": 369.99, "min_pitch": 66, "max_pitch": 66, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.G4.wav", "base_frequency": 392.00, "min_pitch": 67, "max_pitch": 67, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Ab4.wav", "base_frequency": 415.30, "min_pitch": 68, "max_pitch": 68, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.A4.wav", "base_frequency": 440.00, "min_pitch": 69, "max_pitch": 69, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Bb4.wav", "base_frequency": 466.16, "min_pitch": 70, "max_pitch": 70, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.B4.wav", "base_frequency": 493.88, "min_pitch": 71, "max_pitch": 71, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.C5.wav", "base_frequency": 523.25, "min_pitch": 72, "max_pitch": 72, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Db5.wav", "base_frequency": 554.37, "min_pitch": 73, "max_pitch": 73, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.D5.wav", "base_frequency": 587.33, "min_pitch": 74, "max_pitch": 74, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Eb5.wav", "base_frequency": 622.25, "min_pitch": 75, "max_pitch": 75, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.E5.wav", "base_frequency": 659.25, "min_pitch": 76, "max_pitch": 76, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.F5.wav", "base_frequency": 698.46, "min_pitch": 77, "max_pitch": 77, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Gb5.wav", "base_frequency": 739.99, "min_pitch": 78, "max_pitch": 78, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.G5.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 79, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Ab5.wav", "base_frequency": 830.61, "min_pitch": 80, "max_pitch": 80, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.A5.wav", "base_frequency": 880.00, "min_pitch": 81, "max_pitch": 81, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Bb5.wav", "base_frequency": 932.33, "min_pitch": 82, "max_pitch": 82, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.B5.wav", "base_frequency": 987.77, "min_pitch": 83, "max_pitch": 83, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.C6.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 84, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Db6.wav", "base_frequency": 1108.73, "min_pitch": 85, "max_pitch": 85, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.D6.wav", "base_frequency": 1174.66, "min_pitch": 86, "max_pitch": 86, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Eb6.wav", "base_frequency": 1244.51, "min_pitch": 87, "max_pitch": 87, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.E6.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 88, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.F6.wav", "base_frequency": 1396.91, "min_pitch": 89, "max_pitch": 89, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Gb6.wav", "base_frequency": 1479.98, "min_pitch": 90, "max_pitch": 90, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.G6.wav", "base_frequency": 1567.98, "min_pitch": 91, "max_pitch": 91, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.A6.wav", "base_frequency": 1760.00, "min_pitch": 92, "max_pitch": 92, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.B6.wav", "base_frequency": 1975.53, "min_pitch": 93, "max_pitch": 93, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.C7.wav", "base_frequency": 2093.00, "min_pitch": 94, "max_pitch": 94, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Db7.wav", "base_frequency": 2217.46, "min_pitch": 95, "max_pitch": 95, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.D7.wav", "base_frequency": 2349.32, "min_pitch": 96, "max_pitch": 96, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Eb7.wav", "base_frequency": 2489.02, "min_pitch": 97, "max_pitch": 97, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.E7.wav", "base_frequency": 2637.02, "min_pitch": 100, "max_pitch": 100, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.F7.wav", "base_frequency": 2793.83, "min_pitch": 101, "max_pitch": 101, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.G7.wav", "base_frequency": 3135.96, "min_pitch": 103, "max_pitch": 103, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Ab7.wav", "base_frequency": 3322.44, "min_pitch": 104, "max_pitch": 104, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.A7.wav", "base_frequency": 3520.00, "min_pitch": 105, "max_pitch": 105, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.Bb7.wav", "base_frequency": 3729.31, "min_pitch": 106, "max_pitch": 106, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.B7.wav", "base_frequency": 3951.07, "min_pitch": 107, "max_pitch": 107, "min_velocity": 0, "max_velocity": 64 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.mf.C8.wav", "base_frequency": 4186.01, "min_pitch": 108, "max_pitch": 127, "min_velocity": 0, "max_velocity": 64 },
+
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.A0.wav", "base_frequency": 27.50, "min_pitch": 0, "max_pitch": 21, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Bb0.wav", "base_frequency": 29.14, "min_pitch": 22, "max_pitch": 22, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.B0.wav", "base_frequency": 30.87, "min_pitch": 23, "max_pitch": 23, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.C1.wav", "base_frequency": 32.70, "min_pitch": 24, "max_pitch": 24, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Db1.wav", "base_frequency": 34.65, "min_pitch": 25, "max_pitch": 25, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.D1.wav", "base_frequency": 36.71, "min_pitch": 26, "max_pitch": 26, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Eb1.wav", "base_frequency": 38.89, "min_pitch": 27, "max_pitch": 27, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.E1.wav", "base_frequency": 41.20, "min_pitch": 28, "max_pitch": 28, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.F1.wav", "base_frequency": 43.65, "min_pitch": 29, "max_pitch": 29, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Gb1.wav", "base_frequency": 46.25, "min_pitch": 30, "max_pitch": 30, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.G1.wav", "base_frequency": 49.00, "min_pitch": 31, "max_pitch": 31, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Ab1.wav", "base_frequency": 51.91, "min_pitch": 32, "max_pitch": 32, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.A1.wav", "base_frequency": 55.00, "min_pitch": 33, "max_pitch": 33, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Bb1.wav", "base_frequency": 58.27, "min_pitch": 34, "max_pitch": 34, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.B1.wav", "base_frequency": 61.74, "min_pitch": 35, "max_pitch": 35, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.C2.wav", "base_frequency": 65.41, "min_pitch": 36, "max_pitch": 36, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Db2.wav", "base_frequency": 69.30, "min_pitch": 37, "max_pitch": 37, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.D2.wav", "base_frequency": 73.42, "min_pitch": 38, "max_pitch": 38, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Eb2.wav", "base_frequency": 77.78, "min_pitch": 39, "max_pitch": 39, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.E2.wav", "base_frequency": 82.41, "min_pitch": 40, "max_pitch": 40, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.F2.wav", "base_frequency": 87.31, "min_pitch": 41, "max_pitch": 41, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Gb2.wav", "base_frequency": 92.50, "min_pitch": 42, "max_pitch": 42, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.G2.wav", "base_frequency": 98.00, "min_pitch": 43, "max_pitch": 43, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Ab2.wav", "base_frequency": 103.83, "min_pitch": 44, "max_pitch": 44, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.A2.wav", "base_frequency": 110.00, "min_pitch": 45, "max_pitch": 45, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Bb2.wav", "base_frequency": 116.54, "min_pitch": 46, "max_pitch": 46, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.B2.wav", "base_frequency": 123.47, "min_pitch": 47, "max_pitch": 47, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.C3.wav", "base_frequency": 130.81, "min_pitch": 48, "max_pitch": 48, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Db3.wav", "base_frequency": 138.59, "min_pitch": 49, "max_pitch": 49, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.D3.wav", "base_frequency": 146.83, "min_pitch": 50, "max_pitch": 50, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Eb3.wav", "base_frequency": 155.56, "min_pitch": 51, "max_pitch": 51, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.E3.wav", "base_frequency": 164.81, "min_pitch": 52, "max_pitch": 52, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.F3.wav", "base_frequency": 174.61, "min_pitch": 53, "max_pitch": 53, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Gb3.wav", "base_frequency": 185.00, "min_pitch": 54, "max_pitch": 54, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.G3.wav", "base_frequency": 196.00, "min_pitch": 55, "max_pitch": 55, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Ab3.wav", "base_frequency": 207.65, "min_pitch": 56, "max_pitch": 56, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.A3.wav", "base_frequency": 220.00, "min_pitch": 57, "max_pitch": 57, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Bb3.wav", "base_frequency": 233.08, "min_pitch": 58, "max_pitch": 58, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.B3.wav", "base_frequency": 246.94, "min_pitch": 59, "max_pitch": 59, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.C4.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 60, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Db4.wav", "base_frequency": 277.18, "min_pitch": 61, "max_pitch": 61, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.D4.wav", "base_frequency": 293.66, "min_pitch": 62, "max_pitch": 62, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Eb4.wav", "base_frequency": 311.13, "min_pitch": 63, "max_pitch": 63, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.E4.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 64, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.F4.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 65, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Gb4.wav", "base_frequency": 369.99, "min_pitch": 66, "max_pitch": 66, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.G4.wav", "base_frequency": 392.00, "min_pitch": 67, "max_pitch": 67, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Ab4.wav", "base_frequency": 415.30, "min_pitch": 68, "max_pitch": 68, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.A4.wav", "base_frequency": 440.00, "min_pitch": 69, "max_pitch": 69, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Bb4.wav", "base_frequency": 466.16, "min_pitch": 70, "max_pitch": 70, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.B4.wav", "base_frequency": 493.88, "min_pitch": 71, "max_pitch": 71, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.C5.wav", "base_frequency": 523.25, "min_pitch": 72, "max_pitch": 72, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Db5.wav", "base_frequency": 554.37, "min_pitch": 73, "max_pitch": 73, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.D5.wav", "base_frequency": 587.33, "min_pitch": 74, "max_pitch": 74, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Eb5.wav", "base_frequency": 622.25, "min_pitch": 75, "max_pitch": 75, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.E5.wav", "base_frequency": 659.25, "min_pitch": 76, "max_pitch": 76, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.F5.wav", "base_frequency": 698.46, "min_pitch": 77, "max_pitch": 77, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Gb5.wav", "base_frequency": 739.99, "min_pitch": 78, "max_pitch": 78, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.G5.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 79, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Ab5.wav", "base_frequency": 830.61, "min_pitch": 80, "max_pitch": 80, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.A5.wav", "base_frequency": 880.00, "min_pitch": 81, "max_pitch": 81, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Bb5.wav", "base_frequency": 932.33, "min_pitch": 82, "max_pitch": 82, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.B5.wav", "base_frequency": 987.77, "min_pitch": 83, "max_pitch": 83, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.C6.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 84, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Db6.wav", "base_frequency": 1108.73, "min_pitch": 85, "max_pitch": 85, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.D6.wav", "base_frequency": 1174.66, "min_pitch": 86, "max_pitch": 86, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Eb6.wav", "base_frequency": 1244.51, "min_pitch": 87, "max_pitch": 87, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.E6.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 88, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.F6.wav", "base_frequency": 1396.91, "min_pitch": 89, "max_pitch": 89, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Gb6.wav", "base_frequency": 1479.98, "min_pitch": 90, "max_pitch": 90, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.G6.wav", "base_frequency": 1567.98, "min_pitch": 91, "max_pitch": 91, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.A6.wav", "base_frequency": 1760.00, "min_pitch": 92, "max_pitch": 92, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Bb6.wav", "base_frequency": 1864.66, "min_pitch": 93, "max_pitch": 93, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.B6.wav", "base_frequency": 1975.53, "min_pitch": 94, "max_pitch": 94, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.C7.wav", "base_frequency": 2093.00, "min_pitch": 95, "max_pitch": 95, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Db7.wav", "base_frequency": 2217.46, "min_pitch": 96, "max_pitch": 96, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.D7.wav", "base_frequency": 2349.32, "min_pitch": 97, "max_pitch": 97, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Eb7.wav", "base_frequency": 2489.02, "min_pitch": 100, "max_pitch": 100, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.E7.wav", "base_frequency": 2637.02, "min_pitch": 101, "max_pitch": 101, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.F7.wav", "base_frequency": 2793.83, "min_pitch": 102, "max_pitch": 102, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Gb7.wav", "base_frequency": 2959.96, "min_pitch": 103, "max_pitch": 103, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.G7.wav", "base_frequency": 3135.96, "min_pitch": 104, "max_pitch": 104, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Ab7.wav", "base_frequency": 3322.44, "min_pitch": 105, "max_pitch": 105, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.A7.wav", "base_frequency": 3520.00, "min_pitch": 106, "max_pitch": 106, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.Bb7.wav", "base_frequency": 3729.31, "min_pitch": 107, "max_pitch": 107, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.B7.wav", "base_frequency": 3951.07, "min_pitch": 108, "max_pitch": 108, "min_velocity": 65, "max_velocity": 127 },
+        { "file": "Assets/Samples/Extra/0-Piano/Piano.ff.C8.wav", "base_frequency": 4186.01, "min_pitch": 109, "max_pitch": 127, "min_velocity": 65, "max_velocity": 127 }
+      ]
+    },
+    "1": {
+      "copy_from": "0"
+    },
+    "2": {
+      "copy_from": "0"
+    },
+    "3": {
+      "copy_from": "0"
+    },
+    "4": {
+      "copy_from": "0"
+    },
+    "5": {
+      "copy_from": "0"
+    },
+    "6": {
+      "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 2.5, "sustain_level": 0.1, "release_time": 0.4, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/6-Harpsichord/harpsichord-a1.wav", "base_frequency": 55.0, "min_pitch": 0, "max_pitch": 44 },
+        { "file": "Assets/Samples/Extra/6-Harpsichord/harpsichord-a2.wav", "base_frequency": 110.0, "min_pitch": 45, "max_pitch": 56 },
+        { "file": "Assets/Samples/Extra/6-Harpsichord/harpsichord-a3.wav", "base_frequency": 220.0, "min_pitch": 57, "max_pitch": 68 },
+        { "file": "Assets/Samples/Extra/6-Harpsichord/harpsichord-a4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 80 },
+        { "file": "Assets/Samples/Extra/6-Harpsichord/harpsichord-a5.wav", "base_frequency": 880.0, "min_pitch": 81, "max_pitch": 127 }
+      ]
+    },
+    "8": {
+      "one_shot": true,
+      "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 1.0, "sustain_level": 0.0, "release_time": 0.3, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/e4-soft-PB.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 66, "min_velocity": 0, "max_velocity": 70 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/e4-hard-PB.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 66, "min_velocity": 71, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/e5-soft-PB.wav", "base_frequency": 659.25, "min_pitch": 67, "max_pitch": 79, "min_velocity": 0, "max_velocity": 70 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/e5-hard-PB.wav", "base_frequency": 659.25, "min_pitch": 67, "max_pitch": 79, "min_velocity": 71, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/c6-soft-PB.wav", "base_frequency": 1046.50, "min_pitch": 80, "max_pitch": 127, "min_velocity": 0, "max_velocity": 70 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/stamperadam/samples/celesta/c6-hard-PB.wav", "base_frequency": 1046.50, "min_pitch": 80, "max_pitch": 127, "min_velocity": 71, "max_velocity": 127 }
+      ]
+    },
+    "9": {
+      "one_shot": true,
+      "envelope": { "type": "ADR", "attack_time": 0.002, "attack_max": 1.0, "decay_time": 1.5, "release_time": 0.4, "release_max": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/Glock/glock_medium_C5-PB.wav", "base_frequency": 523.25, "min_pitch": 0, "max_pitch": 78 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/Glock/glock_medium_C6-PB.wav", "base_frequency": 1046.50, "min_pitch": 79, "max_pitch": 90 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Percussion/Glock/glock_medium_C7-PB.wav", "base_frequency": 2093.00, "min_pitch": 91, "max_pitch": 127 }
+      ]
+    },
+    "11": {
+      "envelope": { "type": "Tremolo", "speed_hz": 4.5, "depth": 0.4, "base_envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 1.0, "sustain_level": 0.6, "release_time": 1.0, "release_min": 0.0 }},
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C4.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 65 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C5.wav", "base_frequency": 523.25, "min_pitch": 66, "max_pitch": 77 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C6.wav", "base_frequency": 1046.50, "min_pitch": 78, "max_pitch": 127 }
+      ]
+    },
+    "13": {
+      "one_shot": true,
+      "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 0.3, "release_time": 0.1, "release_max": 0.1, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/5_C-PB.wav", "base_frequency": 523.25, "min_pitch": 0, "max_pitch": 83, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/5_C_2-PB.wav", "base_frequency": 523.25, "min_pitch": 0, "max_pitch": 83, "min_velocity": 64, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/6_C-PB.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 95, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/6_C_2-PB.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 95, "min_velocity": 64, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/7_C-PB.wav", "base_frequency": 2093.0, "min_pitch": 96, "max_pitch": 127, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/Xylophone/7_C_2-PB.wav", "base_frequency": 2093.0, "min_pitch": 96, "max_pitch": 127, "min_velocity": 64, "max_velocity": 127 }
+      ]
+    },
+    "14": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 2.0, "sustain_level": 0.2, "release_time": 1.5, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/3_C_p.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 59, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/3_C_f.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 59, "min_velocity": 64, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/4_C_f.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 64, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/4_F_p.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 127, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Percussion/TubularBells/4_F_f.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 127, "min_velocity": 64, "max_velocity": 127 }
+      ]
+    },
+    "21": {
+      "envelope": { "type": "ADSR", "attack_time": 0.02, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.95, "release_time": 0.08, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-A3.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 59 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-C4.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 60 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-Db4.wav", "base_frequency": 277.18, "min_pitch": 61, "max_pitch": 63 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-E4.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 65 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-F#4.wav", "base_frequency": 369.99, "min_pitch": 66, "max_pitch": 67 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-Ab4.wav", "base_frequency": 415.30, "min_pitch": 68, "max_pitch": 69 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-Bb4.wav", "base_frequency": 466.16, "min_pitch": 70, "max_pitch": 71 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-C5.wav", "base_frequency": 523.25, "min_pitch": 72, "max_pitch": 73 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-D5.wav", "base_frequency": 587.33, "min_pitch": 74, "max_pitch": 75 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-E5.wav", "base_frequency": 659.25, "min_pitch": 76, "max_pitch": 76 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-F5.wav", "base_frequency": 698.46, "min_pitch": 77, "max_pitch": 78 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-G5.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 80 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-A5.wav", "base_frequency": 880.00, "min_pitch": 81, "max_pitch": 83 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-C6.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 87 },
+        { "file": "Assets/Samples/Extra/21-accordion/accordion-E6.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 127 }
+      ]
+    },
+    "24": {
+      "one_shot": true,
+      "envelope": { "type": "ADR", "attack_time": 0.01, "attack_max": 0.8, "decay_time": 0.1, "release_time": 0.2, "release_max": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C3.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 59 },
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C4.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 68 },
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-A4.wav", "base_frequency": 440.0, "min_pitch": 69, "max_pitch": 71 },
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C5.wav", "base_frequency": 523.25, "min_pitch": 72, "max_pitch": 78 },
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-G5.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 83 },
+        { "file": "Assets/Samples/Extra/24-AcousticGuitarNylon/acoustic-guitar-nylon-C6.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 127 }
+      ]
+    },
+    "25": {
+      "one_shot": true,
+      "envelope": { "type": "ADR", "attack_time": 0.01, "attack_max": 0.7, "decay_time": 0.1, "release_time": 0.2, "release_max": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/25-AcousticGuitarSteel/acoustic-guitar-steel-C3.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 59 },
+        { "file": "Assets/Samples/Extra/25-AcousticGuitarSteel/acoustic-guitar-steel-C4.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 127 }
+      ]
+    },
+    "35": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/35-FretlessBass/fretless-bass-C3.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 127 }
+      ]
+    },
+    "36": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.1, "sustain_level": 0.2, "release_time": 0.25, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/36-SlapBass1/slap-bass-1-C2.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 127 }
+      ]
+    },
+    "38": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 2.0, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/38-SynthBass1/Casio-MT-45-Bass-I-C2.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 127 }
+      ]
+    },
+    "39": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 2.0, "sustain_level": 0.2, "release_time": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/39-SynthBass2/Casio-MT-45-Bass-II-C2.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 127 }
+      ]
+    },
+    "40": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.3, "sustain_level": 0.85, "release_time": 0.3, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/3_G-PB-loop.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 55 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/3_Ab-PB-loop.wav", "base_frequency": 207.65, "min_pitch": 56, "max_pitch": 56 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/3_A-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 57, "max_pitch": 58 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/3_B-PB-loop.wav", "base_frequency": 246.94, "min_pitch": 59, "max_pitch": 59 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_C-PB.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 60 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_Db-PB.wav", "base_frequency": 277.18, "min_pitch": 61, "max_pitch": 61 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_D-PB.wav", "base_frequency": 293.66, "min_pitch": 62, "max_pitch": 62 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_Eb-PB.wav", "base_frequency": 311.13, "min_pitch": 63, "max_pitch": 64 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_F-PB.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 65 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_Gb-PB.wav", "base_frequency": 369.99, "min_pitch": 66, "max_pitch": 66 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_G-PB.wav", "base_frequency": 392.00, "min_pitch": 67, "max_pitch": 67 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_Ab-PB.wav", "base_frequency": 415.30, "min_pitch": 68, "max_pitch": 68 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/4_A-PB.wav", "base_frequency": 440.00, "min_pitch": 69, "max_pitch": 71 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_Ab-PB.wav", "base_frequency": 830.61, "min_pitch": 72, "max_pitch": 73 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_Bb-PB.wav", "base_frequency": 932.33, "min_pitch": 74, "max_pitch": 74 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_B-PB.wav", "base_frequency": 987.77, "min_pitch": 75, "max_pitch": 75 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_C-PB.wav", "base_frequency": 1046.50, "min_pitch": 76, "max_pitch": 76 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_Db-PB.wav", "base_frequency": 1109.73, "min_pitch": 77, "max_pitch": 77 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_D-PB.wav", "base_frequency": 1174.66, "min_pitch": 78, "max_pitch": 78 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_Eb-PB.wav", "base_frequency": 1244.51, "min_pitch": 79, "max_pitch": 80 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_E-PB.wav", "base_frequency": 1318.51, "min_pitch": 81, "max_pitch": 82 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_F-PB.wav", "base_frequency": 1396.91, "min_pitch": 83, "max_pitch": 84 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_Gb-PB.wav", "base_frequency": 1479.98, "min_pitch": 85, "max_pitch": 86 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/5_G-PB.wav", "base_frequency": 1567.98, "min_pitch": 87, "max_pitch": 88 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/6_Ab-PB.wav", "base_frequency": 1661.22, "min_pitch": 89, "max_pitch": 93 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/6_Bb-PB-loop.wav", "base_frequency": 1864.66, "min_pitch": 94, "max_pitch": 95 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/6_C-PB.wav", "base_frequency": 2093.00, "min_pitch": 96, "max_pitch": 97 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/6_Db-PB.wav", "base_frequency": 2219.46, "min_pitch": 98, "max_pitch": 99 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/6_D-PB.wav", "base_frequency": 2349.32, "min_pitch": 100, "max_pitch": 101 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/Vibrato/6_Gb-PB.wav", "base_frequency": 2959.96, "min_pitch": 102, "max_pitch": 127 }
+      ]
+    },
+    "41": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.3, "sustain_level": 0.85, "release_time": 0.3, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_C_mf-PB.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 52, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_C_f-PB.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 52, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_Eb_mf-PB.wav", "base_frequency": 155.56, "min_pitch": 53, "max_pitch": 56, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_Eb_f-PB.wav", "base_frequency": 155.56, "min_pitch": 53, "max_pitch": 56, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_Gb_mf-PB.wav", "base_frequency": 185.00, "min_pitch": 57, "max_pitch": 58, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_Gb_f-PB.wav", "base_frequency": 185.00, "min_pitch": 57, "max_pitch": 58, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_A_mf-PB.wav", "base_frequency": 220.00, "min_pitch": 59, "max_pitch": 61, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/3_A_f-PB.wav", "base_frequency": 220.00, "min_pitch": 59, "max_pitch": 61, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_C_mf-PB.wav", "base_frequency": 261.63, "min_pitch": 62, "max_pitch": 64, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_C_f-PB.wav", "base_frequency": 261.63, "min_pitch": 62, "max_pitch": 64, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_Eb_mf-PB.wav", "base_frequency": 311.13, "min_pitch": 65, "max_pitch": 67, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_Eb_f-PB.wav", "base_frequency": 311.13, "min_pitch": 65, "max_pitch": 67, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_Gb_mf-PB.wav", "base_frequency": 369.99, "min_pitch": 68, "max_pitch": 70, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_Gb_f-PB.wav", "base_frequency": 369.99, "min_pitch": 68, "max_pitch": 70, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_A_mf-PB.wav", "base_frequency": 440.00, "min_pitch": 71, "max_pitch": 73, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/4_A_f-PB.wav", "base_frequency": 440.00, "min_pitch": 71, "max_pitch": 73, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/5_C_mf-PB.wav", "base_frequency": 523.25, "min_pitch": 74, "max_pitch": 76, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/5_C_f-PB.wav", "base_frequency": 523.25, "min_pitch": 74, "max_pitch": 76, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/5_Eb_mf-PB.wav", "base_frequency": 622.25, "min_pitch": 77, "max_pitch": 79, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/5_Eb_f-PB.wav", "base_frequency": 622.25, "min_pitch": 77, "max_pitch": 79, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/5_Gb_mf-PB.wav", "base_frequency": 739.99, "min_pitch": 80, "max_pitch": 82, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/5_Gb_f-PB.wav", "base_frequency": 739.99, "min_pitch": 80, "max_pitch": 82, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/5_A_mf-PB.wav", "base_frequency": 880.00, "min_pitch": 83, "max_pitch": 85, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/5_A_f-PB.wav", "base_frequency": 880.00, "min_pitch": 83, "max_pitch": 85, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/6_C_mf-PB.wav", "base_frequency": 1046.50, "min_pitch": 86, "max_pitch": 88, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/6_C_f-PB.wav", "base_frequency": 1046.50, "min_pitch": 86, "max_pitch": 88, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/6_Eb_mf-PB.wav", "base_frequency": 1244.51, "min_pitch": 89, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViola/Vibrato/6_Eb_f-PB.wav", "base_frequency": 1244.51, "min_pitch": 89, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+      ]
+    },
+    "42": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.3, "sustain_level": 0.9, "release_time": 0.3, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/2_D-PB.wav", "base_frequency": 73.42, "min_pitch": 0, "max_pitch": 41 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/2_Gb-PB-loop.wav", "base_frequency": 92.50, "min_pitch": 42, "max_pitch": 44 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/2_A-PB-loop.wav", "base_frequency": 110.00, "min_pitch": 45, "max_pitch": 48 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/3_Db-PB-loop.wav", "base_frequency": 138.59, "min_pitch": 49, "max_pitch": 52 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/3_F-PB-loop.wav", "base_frequency": 174.61, "min_pitch": 53, "max_pitch": 56 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/3_A-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 57, "max_pitch": 59 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/4_C-PB-loop.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 62 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/4_Eb-PB-loop.wav", "base_frequency": 311.13, "min_pitch": 63, "max_pitch": 66 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/4_G-PB.wav", "base_frequency": 392.00, "min_pitch": 67, "max_pitch": 69 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloCello/Vibrato/4_Bb-PB.wav", "base_frequency": 466.16, "min_pitch": 70, "max_pitch": 127 }
+      ]
+    },
+    "43": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.3, "sustain_level": 0.9, "release_time": 0.3, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_F#0_v3_rr1-PB-loop.wav", "base_frequency": 23.12, "min_pitch": 0, "max_pitch": 23 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_G0_v3_rr1-PB-loop.wav", "base_frequency": 24.50, "min_pitch": 24, "max_pitch": 28 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_C1_v3_rr1-PB-loop.wav", "base_frequency": 32.70, "min_pitch": 29, "max_pitch": 34 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_E1_v3_rr1-PB-loop.wav", "base_frequency": 41.20, "min_pitch": 35, "max_pitch": 42 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_F#1_v3_rr1-PB-loop.wav", "base_frequency": 46.25, "min_pitch": 43, "max_pitch": 44 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_G#1_v3_rr1-PB-loop.wav", "base_frequency": 51.91, "min_pitch": 45, "max_pitch": 46 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_A1_v3_rr1-PB-loop.wav", "base_frequency": 55.00, "min_pitch": 47, "max_pitch": 49 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_C#2_v3_rr1-PB-loop.wav", "base_frequency": 69.30, "min_pitch": 50, "max_pitch": 51 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_D1_v3_rr1-PB-loop.wav", "base_frequency": 73.42, "min_pitch": 52, "max_pitch": 53 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_E2_v3_rr1-PB-loop.wav", "base_frequency": 82.41, "min_pitch": 54, "max_pitch": 55 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_G#2_v3_rr1-PB-loop.wav", "base_frequency": 103.83, "min_pitch": 56, "max_pitch": 58 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Solo Contrabass/SusVib/BKCtbss_SusVib_B2_v3_rr1-PB-loop.wav", "base_frequency": 123.47, "min_pitch": 59, "max_pitch": 127 }
+      ]
+    },
+    "44": {
+      "envelope": { "type": "ADSR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 0.3, "sustain_level": 0.8, "release_time": 0.5, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/G3-tremolo-PB-loop.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 56 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/A3-tremolo-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 57, "max_pitch": 59 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/C4-tremolo-PB-loop.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 61 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/D4-tremolo-PB-loop.wav", "base_frequency": 293.66, "min_pitch": 62, "max_pitch": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/E4-tremolo-PB-loop.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 66 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/G4-tremolo-PB-loop.wav", "base_frequency": 392.00, "min_pitch": 67, "max_pitch": 68 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/A4-tremolo-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 69, "max_pitch": 71 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/C5-tremolo-PB-loop.wav", "base_frequency": 523.25, "min_pitch": 72, "max_pitch": 73 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/D5-tremolo-PB-loop.wav", "base_frequency": 587.33, "min_pitch": 74, "max_pitch": 75 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/E5-tremolo-PB-loop.wav", "base_frequency": 659.25, "min_pitch": 76, "max_pitch": 78 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/G5-tremolo-PB-loop.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 80 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/A5-tremolo-PB-loop.wav", "base_frequency": 880.00, "min_pitch": 81, "max_pitch": 83 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/C6-tremolo-PB-loop.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/D6-tremolo-PB-loop.wav", "base_frequency": 1174.66, "min_pitch": 86, "max_pitch": 87 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/E6-tremolo-PB-loop.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 90 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/G6-tremolo-PB-loop.wav", "base_frequency": 1567.98, "min_pitch": 91, "max_pitch": 92 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/A6-tremolo-PB-loop.wav", "base_frequency": 1760.00, "min_pitch": 93, "max_pitch": 95 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/C7-tremolo-PB-loop.wav", "base_frequency": 2093.00, "min_pitch": 96, "max_pitch": 97 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/D7-tremolo-PB-loop.wav", "base_frequency": 2349.32, "min_pitch": 98, "max_pitch": 99 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/E7-tremolo-PB-loop.wav", "base_frequency": 2637.02, "min_pitch": 100, "max_pitch": 102 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/G7-tremolo-PB-loop.wav", "base_frequency": 3135.96, "min_pitch": 103, "max_pitch": 104 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/2nd-Violin-Section/A7-tremolo-PB-loop.wav", "base_frequency": 3520.00, "min_pitch": 105, "max_pitch": 127 }
+      ]
+    },
+    "45": {
+      "one_shot": true,
+      "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 0.4, "release_time": 0.2, "release_max": 0.1, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/3_A-PB.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 57 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/3_Bb-PB.wav", "base_frequency": 233.08, "min_pitch": 58, "max_pitch": 58 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/3_B-PB.wav", "base_frequency": 246.94, "min_pitch": 59, "max_pitch": 59 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_C-PB.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 60 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_Db-PB.wav", "base_frequency": 277.18, "min_pitch": 61, "max_pitch": 61 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_D-PB.wav", "base_frequency": 293.66, "min_pitch": 62, "max_pitch": 62 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_Eb-PB.wav", "base_frequency": 311.13, "min_pitch": 63, "max_pitch": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_E-PB.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 64 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_F-PB.wav", "base_frequency": 349.23, "min_pitch": 65, "max_pitch": 65 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_Gb-PB.wav", "base_frequency": 369.99, "min_pitch": 66, "max_pitch": 66 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_G-PB.wav", "base_frequency": 392.00, "min_pitch": 67, "max_pitch": 67 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_Ab-PB.wav", "base_frequency": 415.30, "min_pitch": 68, "max_pitch": 68 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_Bb-PB.wav", "base_frequency": 466.16, "min_pitch": 69, "max_pitch": 70 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/4_B-PB.wav", "base_frequency": 493.88, "min_pitch": 71, "max_pitch": 71 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_Db-PB.wav", "base_frequency": 554.37, "min_pitch": 72, "max_pitch": 73 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_D-PB.wav", "base_frequency": 587.33, "min_pitch": 74, "max_pitch": 74 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_Eb-PB.wav", "base_frequency": 622.25, "min_pitch": 75, "max_pitch": 76 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_F-PB.wav", "base_frequency": 698.46, "min_pitch": 77, "max_pitch": 77 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_Gb-PB.wav", "base_frequency": 739.99, "min_pitch": 78, "max_pitch": 78 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_G-PB.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 79 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_Ab-PB.wav", "base_frequency": 830.61, "min_pitch": 80, "max_pitch": 80 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_A-PB.wav", "base_frequency": 880.00, "min_pitch": 81, "max_pitch": 81 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_Bb-PB.wav", "base_frequency": 932.33, "min_pitch": 82, "max_pitch": 82 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/5_B-PB.wav", "base_frequency": 987.77, "min_pitch": 83, "max_pitch": 84 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_C-PB.wav", "base_frequency": 1046.50, "min_pitch": 85, "max_pitch": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_Db-PB.wav", "base_frequency": 1109.73, "min_pitch": 86, "max_pitch": 87 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_D-PB.wav", "base_frequency": 1174.66, "min_pitch": 88, "max_pitch": 88 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_Eb-PB.wav", "base_frequency": 1244.51, "min_pitch": 89, "max_pitch": 89 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_E-PB.wav", "base_frequency": 1318.51, "min_pitch": 90, "max_pitch": 91 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_F-PB.wav", "base_frequency": 1396.91, "min_pitch": 92, "max_pitch": 92 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_Gb-PB.wav", "base_frequency": 1479.98, "min_pitch": 93, "max_pitch": 94 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_G-PB.wav", "base_frequency": 1567.98, "min_pitch": 95, "max_pitch": 95 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_Ab-PB.wav", "base_frequency": 1661.22, "min_pitch": 96, "max_pitch": 96 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_A-PB.wav", "base_frequency": 1760.00, "min_pitch": 97, "max_pitch": 98 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_Bb-PB.wav", "base_frequency": 1864.66, "min_pitch": 99, "max_pitch": 101 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloViolin/PizzicatoVib/6_B-PB.wav", "base_frequency": 1975.53, "min_pitch": 102, "max_pitch": 127 }
+      ]
+    },
+    "46": {
+      "envelope": { "type": "ADSR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 2.5, "sustain_level": 0.1, "release_time": 0.3, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_D2_mf.wav", "base_frequency": 73.42, "min_pitch": 0, "max_pitch": 40, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_F2_mf.wav", "base_frequency": 87.31, "min_pitch": 41, "max_pitch": 45, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_B3_mf.wav", "base_frequency": 123.47, "min_pitch": 46, "max_pitch": 49, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_C3_mf.wav", "base_frequency": 130.81, "min_pitch": 50, "max_pitch": 51, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_E3_mf.wav", "base_frequency": 164.81, "min_pitch": 52, "max_pitch": 54, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_G3_mf.wav", "base_frequency": 196.00, "min_pitch": 55, "max_pitch": 58, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_D4_mf.wav", "base_frequency": 293.66, "min_pitch": 59, "max_pitch": 62, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_F4_mf.wav", "base_frequency": 349.23, "min_pitch": 63, "max_pitch": 66, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_A4_mf.wav", "base_frequency": 440.00, "min_pitch": 67, "max_pitch": 70, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_C5_mf.wav", "base_frequency": 523.25, "min_pitch": 71, "max_pitch": 74, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_E5_mf.wav", "base_frequency": 659.25, "min_pitch": 75, "max_pitch": 77, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_G5_mf.wav", "base_frequency": 783.99, "min_pitch": 78, "max_pitch": 81, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_B5_mf.wav", "base_frequency": 987.77, "min_pitch": 82, "max_pitch": 85, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_D6_mf.wav", "base_frequency": 1174.66, "min_pitch": 86, "max_pitch": 88, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_F6_mf.wav", "base_frequency": 1396.91, "min_pitch": 89, "max_pitch": 91, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_A6_mf.wav", "base_frequency": 1760.00, "min_pitch": 92, "max_pitch": 97, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_A6_mf.wav", "base_frequency": 1760.00, "min_pitch": 98, "max_pitch": 100, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_D7_f.wav",  "base_frequency": 2349.32, "min_pitch": 98, "max_pitch": 100, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_D7_f.wav",  "base_frequency": 2349.32, "min_pitch": 101, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Strings/Harp/KSHarp_F7_f.wav",  "base_frequency": 2793.83, "min_pitch": 101, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+      ]
+    },
+    "47": {
+      "one_shot": true,
+      "envelope": { "type": "ADR", "attack_time": 0.01, "attack_max": 1.0, "decay_time": 1.2, "release_time": 0.4, "release_max": 0.1, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/C2-PB.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 37 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/D2-PB.wav", "base_frequency": 73.42, "min_pitch": 38, "max_pitch": 39 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/E2-PB.wav", "base_frequency": 82.41, "min_pitch": 40, "max_pitch": 40 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/F2-PB.wav", "base_frequency": 87.31, "min_pitch": 41, "max_pitch": 42 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/Ab2-PB.wav", "base_frequency": 103.83, "min_pitch": 43, "max_pitch": 44 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/A2-PB.wav", "base_frequency": 110.00, "min_pitch": 45, "max_pitch": 45 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/Bb2-PB.wav", "base_frequency": 116.54, "min_pitch": 46, "max_pitch": 47 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/C3-PB.wav", "base_frequency": 130.81, "min_pitch": 48, "max_pitch": 49 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/D3-PB.wav", "base_frequency": 146.83, "min_pitch": 50, "max_pitch": 51 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/Gb3-PB.wav", "base_frequency": 185.00, "min_pitch": 52, "max_pitch": 55 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/G3-PB.wav", "base_frequency": 196.00, "min_pitch": 56, "max_pitch": 56 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/Ab3-PB.wav", "base_frequency": 207.65, "min_pitch": 57, "max_pitch": 58 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/A3-PB.wav", "base_frequency": 220.00, "min_pitch": 59, "max_pitch": 69 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/Timpani/Bb3-PB.wav", "base_frequency": 233.08, "min_pitch": 70, "max_pitch": 127 }
+      ]
+    },
+    "48": {
+      "envelope": { "type": "ADSR", "attack_time": 0.1, "attack_max": 0.9, "decay_time": 0.4, "sustain_level": 0.82, "release_time": 0.1, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g3.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 57 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#3.wav", "base_frequency": 233.08, "min_pitch": 58, "max_pitch": 60 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#4.wav", "base_frequency": 277.18, "min_pitch": 61, "max_pitch": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e4.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 66 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g4.wav", "base_frequency": 392.00, "min_pitch": 67, "max_pitch": 69 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#4.wav", "base_frequency": 466.16, "min_pitch": 70, "max_pitch": 72 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#5.wav", "base_frequency": 554.37, "min_pitch": 73, "max_pitch": 75 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e5.wav", "base_frequency": 659.25, "min_pitch": 76, "max_pitch": 78 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g5.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 81 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#5.wav", "base_frequency": 932.33, "min_pitch": 82, "max_pitch": 84 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#6.wav", "base_frequency": 1109.73, "min_pitch": 85, "max_pitch": 87 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e6.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 90 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g6.wav", "base_frequency": 1567.98, "min_pitch": 91, "max_pitch": 93 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#6.wav", "base_frequency": 1864.66, "min_pitch": 94, "max_pitch": 127 }
+      ]
+    },
+    "49": {
+      "envelope": { "type": "ADSR", "attack_time": 0.3, "attack_max": 0.9, "decay_time": 0.4, "sustain_level": 0.82, "release_time": 0.3, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g3.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 57 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#3.wav", "base_frequency": 233.08, "min_pitch": 58, "max_pitch": 60 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#4.wav", "base_frequency": 277.18, "min_pitch": 61, "max_pitch": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e4.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 66 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g4.wav", "base_frequency": 392.00, "min_pitch": 67, "max_pitch": 69 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#4.wav", "base_frequency": 466.16, "min_pitch": 70, "max_pitch": 72 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#5.wav", "base_frequency": 554.37, "min_pitch": 73, "max_pitch": 75 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e5.wav", "base_frequency": 659.25, "min_pitch": 76, "max_pitch": 78 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g5.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 81 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#5.wav", "base_frequency": 932.33, "min_pitch": 82, "max_pitch": 84 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#6.wav", "base_frequency": 1109.73, "min_pitch": 85, "max_pitch": 87 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e6.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 90 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g6.wav", "base_frequency": 1567.98, "min_pitch": 91, "max_pitch": 93 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#6.wav", "base_frequency": 1864.66, "min_pitch": 94, "max_pitch": 127 }
+      ]
+    },
+    "52": {
+      "envelope": { "type": "ADSR", "attack_time": 0.2, "attack_max": 1.0, "decay_time": 0.5, "sustain_level": 0.9, "release_time": 0.4, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Chorus/chorus-female-a4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 0, "max_pitch": 72 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Chorus/chorus-female-e5-PB-loop.wav", "base_frequency": 659.25, "min_pitch": 73, "max_pitch": 127 }
+      ]
+    },
+    "53": {
+      "envelope": { "type": "ADSR", "attack_time": 0.2, "attack_max": 1.0, "decay_time": 0.5, "sustain_level": 0.9, "release_time": 0.6, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Chorus/chorus-male-a2-PB-loop.wav", "base_frequency": 110.00, "min_pitch": 0, "max_pitch": 51 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Chorus/chorus-male-e3-PB-loop.wav", "base_frequency": 164.81, "min_pitch": 52, "max_pitch": 127 }
+      ]
+    },
+    "56": {
+      "envelope": { "type": "ADSR", "attack_time": 0.02, "attack_max": 1.0, "decay_time": 0.2, "sustain_level": 0.85, "release_time": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.mf.A3-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 63, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.ff.A3-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 0, "max_pitch": 63, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.mf.A4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 64, "max_pitch": 75, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.ff.A4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 64, "max_pitch": 75, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.mf.A5-PB-loop.wav", "base_frequency": 880.00, "min_pitch": 76, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trumpet-solo/Trumpet.novib.ff.A5-PB-loop.wav", "base_frequency": 880.00, "min_pitch": 76, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+      ]
+    },
+    "57": {
+      "envelope": { "type": "ADSR", "attack_time": 0.05, "attack_max": 1.0, "decay_time": 0.3, "sustain_level": 0.9, "release_time": 0.25, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trombone-solo/Trombone-sus.mf.C#3-PB-loop.wav", "base_frequency": 138.59, "min_pitch": 0, "max_pitch": 56, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trombone-solo/Trombone-sus.ff.C#3-PB-loop.wav", "base_frequency": 138.59, "min_pitch": 0, "max_pitch": 56, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trombone-solo/Trombone-sus.mf.E4-PB-loop.wav", "base_frequency": 329.63, "min_pitch": 57, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Trombone-solo/Trombone-sus.ff.E4-PB-loop.wav", "base_frequency": 329.63, "min_pitch": 57, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+      ]
+    },
+    "58": {
+      "envelope": { "type": "ADSR", "attack_time": 0.08, "attack_max": 1.0, "decay_time": 0.4, "sustain_level": 0.9, "release_time": 0.3, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Tuba/tuba-sus-e1-PB-loop.wav", "base_frequency": 41.20, "min_pitch": 0, "max_pitch": 34 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Tuba/tuba-sus-e2-PB-loop.wav", "base_frequency": 82.41, "min_pitch": 35, "max_pitch": 41 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Tuba/tuba-sus-g2-PB-loop.wav", "base_frequency": 98.00, "min_pitch": 42, "max_pitch": 127 }
+      ]
+    },
+    "60": {
+      "envelope": { "type": "ADSR", "attack_time": 0.06, "attack_max": 1.0, "decay_time": 0.3, "sustain_level": 0.85, "release_time": 0.25, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Horn-solo/Horn.mf.A2-PB-loop.wav", "base_frequency": 110.00, "min_pitch": 0, "max_pitch": 57, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Horn-solo/Horn.ff.A2-PB-loop.wav", "base_frequency": 110.00, "min_pitch": 0, "max_pitch": 57, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Horn-solo/Horn.mf.A4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 58, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Horn-solo/Horn.ff.A4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 58, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+      ]
+    },
+    "68": {
+      "envelope": { "type": "ADSR", "attack_time": 0.04, "attack_max": 1.0, "decay_time": 0.2, "sustain_level": 0.9, "release_time": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Oboe/oboe-a#3-PB-loop.wav", "base_frequency": 233.08, "min_pitch": 0, "max_pitch": 65 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Oboe/oboe-c#5-PB-loop.wav", "base_frequency": 554.37, "min_pitch": 66, "max_pitch": 127 }
+      ]
+    },
+    "69": {
+      "envelope": { "type": "ADSR", "attack_time": 0.04, "attack_max": 1.0, "decay_time": 0.2, "sustain_level": 0.9, "release_time": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Cor Anglais/cor_anglais-f3-PB-loop.wav", "base_frequency": 174.61, "min_pitch": 0, "max_pitch": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Cor Anglais/cor_anglais-d5-PB-loop.wav", "base_frequency": 587.33, "min_pitch": 64, "max_pitch": 127 }
+      ]
+    },
+    "70": {
+      "envelope": { "type": "ADSR", "attack_time": 0.04, "attack_max": 1.0, "decay_time": 0.2, "sustain_level": 0.85, "release_time": 0.25, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Bassoon-solo/Bassoon.mf.C2-PB.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 48, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Bassoon-solo/Bassoon.ff.C2-PB.wav", "base_frequency": 65.41, "min_pitch": 0, "max_pitch": 48, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Bassoon-solo/Bassoon.mf.C4-PB.wav", "base_frequency": 261.63, "min_pitch": 49, "max_pitch": 127, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Bassoon-solo/Bassoon.ff.C4-PB.wav", "base_frequency": 261.63, "min_pitch": 49, "max_pitch": 127, "min_velocity": 86, "max_velocity": 127 }
+      ]
+    },
+    "71": {
+      "envelope": { "type": "ADSR", "attack_time": 0.04, "attack_max": 1.0, "decay_time": 0.2, "sustain_level": 0.85, "release_time": 0.25, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/3_F_mf-PB.wav", "base_frequency": 174.61, "min_pitch": 0, "max_pitch": 54, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/3_F_f-PB.wav", "base_frequency": 174.61, "min_pitch": 0, "max_pitch": 54, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/3_G_mf-PB.wav", "base_frequency": 196.00, "min_pitch": 55, "max_pitch": 56, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/3_G_f-PB.wav", "base_frequency": 196.00, "min_pitch": 55, "max_pitch": 56, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/3_A_mf-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 57, "max_pitch": 58, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/3_A_f-PB.wav", "base_frequency": 220.00, "min_pitch": 57, "max_pitch": 58, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/3_B_mf-PB-loop.wav", "base_frequency": 246.94, "min_pitch": 59, "max_pitch": 64, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/3_B_f-PB.wav", "base_frequency": 246.94, "min_pitch": 59, "max_pitch": 64, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/4_Eb_mf-PB.wav", "base_frequency": 311.13, "min_pitch": 65, "max_pitch": 66, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/4_F_mf-PB.wav", "base_frequency": 349.23, "min_pitch": 67, "max_pitch": 68, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/4_F_f-PB.wav", "base_frequency": 349.23, "min_pitch": 67, "max_pitch": 68, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/4_G_mf-PB.wav", "base_frequency": 392.00, "min_pitch": 69, "max_pitch": 70, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/4_A_mf-PB.wav", "base_frequency": 440.00, "min_pitch": 71, "max_pitch": 71, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/4_A_f-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 71, "max_pitch": 71, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/4_B_mf-PB.wav", "base_frequency": 493.88, "min_pitch": 72, "max_pitch": 73, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/4_Db_f-PB.wav", "base_frequency": 554.37, "min_pitch": 74, "max_pitch": 76, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/5_Db_mf-PB.wav", "base_frequency": 554.37, "min_pitch": 77, "max_pitch": 79, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/5_F_mf-PB.wav", "base_frequency": 698.46, "min_pitch": 80, "max_pitch": 82, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/5_F_f-PB.wav", "base_frequency": 698.46, "min_pitch": 80, "max_pitch": 82, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/5_G_f-PB.wav", "base_frequency": 783.99, "min_pitch": 83, "max_pitch": 84, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/5_B_mf-PB.wav", "base_frequency": 987.77, "min_pitch": 85, "max_pitch": 86, "min_velocity": 0, "max_velocity": 85 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/5_B_f-PB.wav", "base_frequency": 987.77, "min_pitch": 85, "max_pitch": 86, "min_velocity": 86, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/6_Db_mf-PB.wav", "base_frequency": 1109.73, "min_pitch": 87, "max_pitch": 88, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/6_Eb_f-PB.wav", "base_frequency": 1244.51, "min_pitch": 89, "max_pitch": 90, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/6_F_mf-PB.wav", "base_frequency": 1396.91, "min_pitch": 91, "max_pitch": 93, "min_velocity": 0, "max_velocity": 127 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/NoBudgetOrch/SoloClarinet/Sustain/6_G_mf-PB.wav", "base_frequency": 1567.98, "min_pitch": 94, "max_pitch": 127, "min_velocity": 0, "max_velocity": 127 }
+      ]
+    },
+    "72": {
+      "envelope": { "type": "ADSR", "attack_time": 0.04, "attack_max": 1.0, "decay_time": 0.2, "sustain_level": 0.85, "release_time": 0.25, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-c4-PB-loop.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 64 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-f#4-PB-loop.wav", "base_frequency": 369.99, "min_pitch": 65, "max_pitch": 68 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-a4-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 69, "max_pitch": 71 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-c5-PB-loop.wav", "base_frequency": 523.25, "min_pitch": 72, "max_pitch": 74 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-d#5-PB-loop.wav", "base_frequency": 622.25, "min_pitch": 75, "max_pitch": 77 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-f#5-PB-loop.wav", "base_frequency": 739.99, "min_pitch": 78, "max_pitch": 80 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-a5-PB-loop.wav", "base_frequency": 880.00, "min_pitch": 81, "max_pitch": 83 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-c6-PB-loop.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 86 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-d#6-PB-loop.wav", "base_frequency": 1244.51, "min_pitch": 87, "max_pitch": 89 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/Piccolo/piccolo-f#6-PB-loop.wav", "base_frequency": 1479.98, "min_pitch": 90, "max_pitch": 127 }
+      ]
+    },
+    "73": {
+      "envelope": { "type": "ADSR", "attack_time": 0.04, "attack_max": 1.0, "decay_time": 0.2, "sustain_level": 0.85, "release_time": 0.25, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_C3-PB-loop.wav", "base_frequency": 130.81, "min_pitch": 0, "max_pitch": 51 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_E3-PB-loop.wav", "base_frequency": 164.81, "min_pitch": 52, "max_pitch": 56 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_A3_v1_1-PB-loop.wav", "base_frequency": 220.00, "min_pitch": 57, "max_pitch": 59 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_C4_v1_2-PB-loop.wav", "base_frequency": 261.63, "min_pitch": 60, "max_pitch": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_E4_v1_2-PB-loop.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 68 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_A4_v1_1-PB-loop.wav", "base_frequency": 440.00, "min_pitch": 69, "max_pitch": 71 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_C5_v1_1-PB-loop.wav", "base_frequency": 523.25, "min_pitch": 72, "max_pitch": 75 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_E5_v1_2-PB-loop.wav", "base_frequency": 659.25, "min_pitch": 76, "max_pitch": 80 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_A5_v1_1-PB-loop.wav", "base_frequency": 880.00, "min_pitch": 81, "max_pitch": 83 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/VSCO2-CE/Woodwinds/Flute/susvib-PB/LDFlute_susvib_C6_v1_1-PB-loop.wav", "base_frequency": 1046.50, "min_pitch": 84, "max_pitch": 127 }
+      ]
+    }
+  },
+  "drum_instruments": {
+    "35": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.2, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/bass_drum-p-PB.wav", "base_frequency": 55.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/bass_drum-f-PB.wav", "base_frequency": 55.0, "min_velocity": 64, "max_velocity" : 127 }
+      ]
+    },
+    "36": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.2, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/bass_drum-p-PB.wav", "base_frequency": 55.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/bass_drum-f-PB.wav", "base_frequency": 55.0, "min_velocity": 64, "max_velocity" : 127 }
+      ]
+    },
+    "38": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-mf-PB.wav", "base_frequency": 220.0, "min_velocity": 0, "max_velocity" : 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/snare-lh-ff-PB.wav", "base_frequency": 220.0, "min_velocity": 64, "max_velocity" : 127 }
+      ]
+    },
+    "39": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/39drum-hand-clap/Clap-3.wav", "base_frequency": 220.0 }
+      ]
+    },
+    "40": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/40drum-snare-2/Ensoniq-ESQ-1-Snare.wav", "base_frequency": 220.0 }
+      ]
+    },
+    "42": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/42drum-closed-hi-hat/closed-hi-hat.wav", "base_frequency": 220.0 }
+      ]
+    },
+    "44": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/44drum-pedal-hi-hat/pedal-hi-hat.wav", "base_frequency": 220.0 }
+      ]
+    },
+    "46": {
+      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Extra/46drum-open-hi-hat/open-hi-hat.wav", "base_frequency": 220.0 }
+      ]
+    },
+    "49": {
+      "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 1.5, "release_time": 0.5, "release_max": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_mf_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_ff_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 64, "max_velocity": 127 }
+      ]
+    },
+    "52": {
+      "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 1.5, "release_time": 0.5, "release_max": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/gongHit_f-PB.wav", "base_frequency": 440.0, "min_velocity": 0, "max_velocity": 91 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/gongHit_fff-PB.wav", "base_frequency": 440.0, "min_velocity": 92, "max_velocity": 127 }
+      ]
+    },
+    "56": {
+      "envelope": { "type": "ADR", "attack_time": 0.002, "attack_max": 1.0, "decay_time": 0.3, "release_time": 0.1, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/Cowbell1_Hit_v2_rr1_Sum-PB.wav", "base_frequency": 440.0, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/Cowbell1_Hit_v4_rr1_Sum-PB.wav", "base_frequency": 440.0, "min_velocity": 64, "max_velocity": 127 }
+      ]
+    },
+    "57": {
+      "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 1.5, "release_time": 0.5, "release_max": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_mf_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 0, "max_velocity": 63 },
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_ff_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 64, "max_velocity": 127 }
+      ]
+    },
+    "58": {
+      "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 0.5, "release_time": 0.1, "release_max": 0.05, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/vibraslap-PB.wav", "base_frequency": 440.0 }
+      ]
+    },
+    "81": {
+      "envelope": { "type": "ADR", "attack_time": 0.005, "attack_max": 1.0, "decay_time": 1.0, "release_time": 0.4, "release_max": 0.2, "release_min": 0.0 },
+      "zones": [
+        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/NBO/triangle_m-PB.wav", "base_frequency": 1760.0 }
+      ]
+    }
+  }
+}

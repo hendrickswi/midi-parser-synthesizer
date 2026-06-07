@@ -11,12 +11,16 @@ class InstrumentRegistry {
 private:
     float sample_rate;
     std::array<PatchDefinition, 128> melodic_patches;
+    std::array<uint8_t, 128> melodic_patch_aliases;
     std::array<PatchDefinition, 128> drum_patches;
+    std::array<uint8_t, 128> drum_patch_aliases;
 
     void init_samples();
+    void init_envelopes();
     void init_leads();
     void init_pads();
     void set_fallbacks();
+
 
 public:
     explicit InstrumentRegistry(float sample_rate = 48000.0f);

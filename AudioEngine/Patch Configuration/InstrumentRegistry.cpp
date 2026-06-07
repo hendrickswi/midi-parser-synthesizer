@@ -75,7 +75,7 @@ void parse_envelope_config(const json& config, PatchDefinition* patch_config) {
 
 void InstrumentRegistry::init_samples() {
     SampleLoader loader;
-    std::ifstream file = std::ifstream(get_sanitized_file_path("Assets/instrument_map.json"));
+    std::ifstream file = std::ifstream(get_sanitized_file_path("Assets/Samples/instrument_map.json"));
     if (!file.is_open()) {
         std::cerr << "Failed to open instrument map file. Samples loading will be skipped." << std::endl;
         return;
@@ -86,6 +86,14 @@ void InstrumentRegistry::init_samples() {
     // Loading melodic samples
     for (const auto& [patch_id_str, melodic_patch_data] : config["melodic_instruments"].items()) {
         int patch_id = std::stoi(patch_id_str);
+
+        // Prevent loading the same samples and wasting memory
+        if (melodic_patch_data.contains("copy_from")) {
+            uint8_t source_id = melodic_patch_data["copy_from"];
+            melodic_patch_aliases[patch_id] = source_id;
+            continue;
+        }
+
         PatchDefinition* patch = &melodic_patches[patch_id];
 
         patch->oscillator_type = OscillatorType::SAMPLE;
@@ -119,6 +127,14 @@ void InstrumentRegistry::init_samples() {
     // Loading drum samples
     for (const auto& [drum_key_str, drum_patch_data] : config["drum_instruments"].items()) {
         int drum_key = std::stoi(drum_key_str);
+
+        // Prevent loading the same samples and wasting memory
+        if (drum_patch_data.contains("copy_from")) {
+            uint8_t source_id = drum_patch_data["copy_from"];
+            drum_patch_aliases[drum_key] = source_id;
+            continue;
+        }
+
         PatchDefinition* patch = &drum_patches[drum_key];
 
         patch->oscillator_type = OscillatorType::SAMPLE;
@@ -146,6 +162,10 @@ void InstrumentRegistry::init_samples() {
 
         patch->is_initialized = true;
     }
+}
+
+void InstrumentRegistry::init_envelopes() {
+
 }
 
 void InstrumentRegistry::init_leads() {
@@ -468,6 +488,12 @@ void InstrumentRegistry::set_fallbacks() {
 
 InstrumentRegistry::InstrumentRegistry(float sample_rate) { // NOLINT
     this->sample_rate = sample_rate;
+
+    for (uint8_t i = 0; i < 128; ++i) {
+        melodic_patches_aliases[i] = i;
+        drum_patch_aliases[i] = i;
+    }
+
     init_samples();
     init_leads();
     init_pads();
@@ -475,9 +501,9 @@ InstrumentRegistry::InstrumentRegistry(float sample_rate) { // NOLINT
 }
 
 const PatchDefinition* InstrumentRegistry::get_melodic_patch_config(uint8_t patch_id) const {
-    return &melodic_patches[patch_id];
+    return &melodic_patches[melodic_patches_aliases[patch_id]];
 }
 
 const PatchDefinition* InstrumentRegistry::get_drum_patch_config(uint8_t pitch_key) const {
-    return &drum_patches[pitch_key];
+    return &drum_patches[drum_patch_aliases[pitch_key]];
 }
