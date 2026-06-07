@@ -569,42 +569,10 @@
       ]
     },
     "50" : {
-      "envelope": { "type": "ADSR", "attack_time": 0.1, "attack_max": 0.9, "decay_time": 0.4, "sustain_level": 0.82, "release_time": 0.1, "release_min": 0.0 },
-      "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g3.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 57 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#3.wav", "base_frequency": 233.08, "min_pitch": 58, "max_pitch": 60 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#4.wav", "base_frequency": 277.18, "min_pitch": 61, "max_pitch": 63 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e4.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 66 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g4.wav", "base_frequency": 392.00, "min_pitch": 67, "max_pitch": 69 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#4.wav", "base_frequency": 466.16, "min_pitch": 70, "max_pitch": 72 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#5.wav", "base_frequency": 554.37, "min_pitch": 73, "max_pitch": 75 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e5.wav", "base_frequency": 659.25, "min_pitch": 76, "max_pitch": 78 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g5.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 81 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#5.wav", "base_frequency": 932.33, "min_pitch": 82, "max_pitch": 84 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#6.wav", "base_frequency": 1109.73, "min_pitch": 85, "max_pitch": 87 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e6.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 90 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g6.wav", "base_frequency": 1567.98, "min_pitch": 91, "max_pitch": 93 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#6.wav", "base_frequency": 1864.66, "min_pitch": 94, "max_pitch": 127 }
-      ]
+      "copy_from": "48"
     },
     "51": {
-      "envelope": { "type": "ADSR", "attack_time": 0.3, "attack_max": 0.9, "decay_time": 0.4, "sustain_level": 0.82, "release_time": 0.3, "release_min": 0.0 },
-      "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g3.wav", "base_frequency": 196.00, "min_pitch": 0, "max_pitch": 57 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#3.wav", "base_frequency": 233.08, "min_pitch": 58, "max_pitch": 60 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#4.wav", "base_frequency": 277.18, "min_pitch": 61, "max_pitch": 63 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e4.wav", "base_frequency": 329.63, "min_pitch": 64, "max_pitch": 66 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g4.wav", "base_frequency": 392.00, "min_pitch": 67, "max_pitch": 69 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#4.wav", "base_frequency": 466.16, "min_pitch": 70, "max_pitch": 72 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#5.wav", "base_frequency": 554.37, "min_pitch": 73, "max_pitch": 75 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e5.wav", "base_frequency": 659.25, "min_pitch": 76, "max_pitch": 78 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g5.wav", "base_frequency": 783.99, "min_pitch": 79, "max_pitch": 81 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#5.wav", "base_frequency": 932.33, "min_pitch": 82, "max_pitch": 84 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-c#6.wav", "base_frequency": 1109.73, "min_pitch": 85, "max_pitch": 87 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-e6.wav", "base_frequency": 1318.51, "min_pitch": 88, "max_pitch": 90 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-g6.wav", "base_frequency": 1567.98, "min_pitch": 91, "max_pitch": 93 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/SSO/Samples/1st Violins/1st-violins-sus-a#6.wav", "base_frequency": 1864.66, "min_pitch": 94, "max_pitch": 127 }
-      ]
+      "copy_from": "49"
     },
     "52": {
       "envelope": { "type": "ADSR", "attack_time": 0.2, "attack_max": 1.0, "decay_time": 0.5, "sustain_level": 0.9, "release_time": 0.4, "release_min": 0.0 },
@@ -751,11 +719,7 @@
       ]
     },
     "36": {
-      "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.2, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
-      "zones": [
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/bass_drum-p-PB.wav", "base_frequency": 55.0, "min_velocity": 0, "max_velocity" : 63 },
-        { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/bass_drum-f-PB.wav", "base_frequency": 55.0, "min_velocity": 64, "max_velocity" : 127 }
-      ]
+      "copy_from": "35"
     },
     "38": {
       "envelope": { "type": "ADR", "attack_time": 0.001, "attack_max": 1.0, "decay_time": 0.15, "release_time": 0.05, "release_max": 0.05, "release_min": 0.0 },
