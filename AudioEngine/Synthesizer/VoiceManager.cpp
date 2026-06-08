@@ -17,7 +17,7 @@ VoiceManager::VoiceManager(float sample_rate, float global_volume)
     channel_patches = std::array<uint8_t, NUM_CHANNELS>();
     channel_patches.fill(0);
 
-    registry = InstrumentRegistry(sample_rate);
+    registry = new InstrumentRegistry(sample_rate);
 
     channel_pitch_bends = std::array<uint16_t, NUM_CHANNELS>();
     channel_pitch_bends.fill(8192);
@@ -51,6 +51,8 @@ VoiceManager::~VoiceManager() {
     for (auto& voice : voices) {
         delete voice;
     }
+
+    delete registry;
 }
 
 bool VoiceManager::get_peak_amplitude_normalization() const {
@@ -112,10 +114,10 @@ void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {
     uint8_t patch_id = channel_patches[channel];
     const PatchDefinition* patch_config = nullptr;
     if (channel == 9) {
-        patch_config = registry.get_drum_patch_config(pitch);
+        patch_config = registry->get_drum_patch_config(pitch);
     }
     else {
-        patch_config = registry.get_melodic_patch_config(patch_id);
+        patch_config = registry->get_melodic_patch_config(patch_id);
     }
 
     // Look for a free voice, but also track the oldest voices in case none are free

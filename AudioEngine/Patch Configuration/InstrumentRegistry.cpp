@@ -5,60 +5,285 @@
 #include <memory>
 #include <nlohmann/json.hpp>
 
-#include "../Synthesizer/Envelopes/EnvelopeParsingType.h"
+#include "EnvelopeParsingType.h"
+#include "OscillatorParsingType.h"
 #include "../Synthesizer/Sample Loading/Sample.h"
 #include "../Synthesizer/Sample Loading/SampleLoader.h"
 #include "../Synthesizer/Voices/Voice.h"
 #include "../../DirectoryManipulator.h"
 
-using json = nlohmann::json;
+void InstrumentRegistry::parse_oscillator_map_json(const json& json_data, std::array<PatchDefinition, 128>& patches, std::array<uint8_t, 128>& aliases) {
+    SampleLoader loader = SampleLoader();
 
-void parse_envelope_config(const json& config, PatchDefinition* patch_config) {
-    if (config.is_null() || !config.contains("type")) {
-        std::cerr << "WARNING: Invalid envelope config in parse_envelope_config(...): " << config.dump() << std::endl;
+    for (const auto& [patch_id_str, patch_data] : json_data.items()) {
+        int patch_id = 0;
+        try {
+            patch_id = std::stoi(patch_id_str);
+        }
+        catch (const std::invalid_argument& e) {
+            std::cerr << "WARNING: Expected an integer patch key string, but found: \""
+                      << patch_id_str << "\". Skipping entry..." << std::endl;
+            continue;
+        }
+        catch (const std::out_of_range& e) {
+            std::cerr << "WARNING: Patch key \"" << patch_id_str << "\" is out of integer bounds. Skipping..." << std::endl;
+            continue;
+        }
+
+        if (patch_id < 0 || patch_id >= 128) {
+            std::cerr << "WARNING: Patch index " << patch_id << " out of bounds. Skipping..." << std::endl;
+            continue;
+        }
+
+        // Prevent loading the same samples and wasting memory
+        if (patch_data.contains("copy_from")) {
+            const auto& raw_data = patch_data["copy_from"];
+            uint8_t source_id = raw_data.is_string() ?
+                std::stoi(raw_data.get<std::string>()) :
+                raw_data.get<uint8_t>();
+            aliases[patch_id] = source_id;
+            continue;
+        }
+
+        parse_oscillator_config(patch_data, &patches[patch_id], &loader);
+    }
+}
+
+void InstrumentRegistry::parse_oscillator_config(const json& config, PatchDefinition* patch, SampleLoader* loader) {
+    OscillatorParsingType type = config.value("oscillator_type", OscillatorParsingType::UNKNOWN);
+
+    switch (type) {
+        case OscillatorParsingType::SAMPLE : {
+            patch->oscillator_type = OscillatorType::SAMPLE;
+            for (const auto& zone : config.value("zones", json::array())) {
+                parse_sample_zone_config(zone, patch, loader);
+            }
+            patch->oscillator_initialized = true;
+            break;
+        }
+        case OscillatorParsingType::SQUARE: {
+            patch->oscillator_type = OscillatorType::SQUARE;
+            patch->square_oscillator_params = SquareOscillatorParams(440.0f, sample_rate);
+            patch->oscillator_initialized = true;
+            break;
+        }
+        case OscillatorParsingType::SAWTOOTH: {
+            patch->oscillator_type = OscillatorType::SAWTOOTH;
+            patch->sawtooth_oscillator_params = SawtoothOscillatorParams(440.0f, sample_rate);
+            patch->oscillator_initialized = true;
+            break;
+        }
+        case OscillatorParsingType::TRIANGLE: {
+            patch->oscillator_type = OscillatorType::TRIANGLE;
+            patch->triangle_oscillator_params = TriangleOscillatorParams(440.0f, sample_rate);
+            patch->oscillator_initialized = true;
+            break;
+        }
+        case OscillatorParsingType::SINE: {
+            patch->oscillator_type = OscillatorType::SINE;
+            patch->sine_oscillator_params = SineOscillatorParams(440.0f, sample_rate);
+            patch->oscillator_initialized = true;
+            break;
+        }
+        case OscillatorParsingType::NOISE: {
+            patch->oscillator_type = OscillatorType::NOISE;
+            patch->noise_oscillator_params = NoiseOscillatorParams();
+            patch->oscillator_initialized = true;
+            break;
+        }
+        case OscillatorParsingType::COMPOSITE: {
+            patch->oscillator_type = OscillatorType::COMPOSITE;
+            if (config.contains("composite_params")) {
+                const auto& composite_params = config["composite_params"];
+
+                int num_children = composite_params.value("num_children", 0);
+                if (num_children > 0 && num_children <= MAX_CHILDREN_IN_COMPOSITE) {
+                    std::vector<OscillatorType> child_types = std::vector<OscillatorType>();
+                    for (const auto& raw_string_type : composite_params.value("child_types", json::array())) {
+                        // Translate from raw string to parsing enum
+                        OscillatorParsingType parsing_type = raw_string_type.get<OscillatorParsingType>();
+
+                        // Then translate from parsing enum to real OscillatorType
+                        switch (parsing_type) {
+                            // Only possible types are the ones available in CompositeOscillatorNode.h
+                            case OscillatorParsingType::SQUARE : {
+                                child_types.push_back(OscillatorType::SQUARE);
+                                break;
+                            }
+                            case OscillatorParsingType::SAWTOOTH : {
+                                child_types.push_back(OscillatorType::SAWTOOTH);
+                                break;
+                            }
+                            case OscillatorParsingType::TRIANGLE : {
+                                child_types.push_back(OscillatorType::TRIANGLE);
+                                break;
+                            }
+                            case OscillatorParsingType::SINE : {
+                                child_types.push_back(OscillatorType::SINE);
+                                break;
+                            }
+                            case OscillatorParsingType::NOISE : {
+                                child_types.push_back(OscillatorType::NOISE);
+                                break;
+                            }
+                            default : {
+                                std::cerr << "WARNING: Invalid child oscillator type for composite oscillator found in json data. "
+                                    "Defaulting to sine oscillator fallback." << std::endl;
+                                break;
+                            }
+                        }
+                    }
+
+                    std::vector<float> mix_volumes = std::vector<float>(config.value("num_children", 0));
+                    if (mix_volumes.max_size() > 0) {
+                        for (const auto& raw_float_volume : composite_params.value("mix_volumes", json::array())) {
+                            mix_volumes.push_back(raw_float_volume.get<float>());
+                        }
+                    }
+
+                    std::vector<float> child_frequency_ratios = std::vector<float>(config.value("num_children", 0));
+                    if (child_frequency_ratios.max_size() > 0) {
+                        for (const auto& raw_float_ratio : composite_params.value("child_frequency_ratios", json::array())) {
+                            child_frequency_ratios.push_back(raw_float_ratio.get<float>());
+                        }
+                    }
+
+                    patch->composite_oscillator_params = CompositeOscillatorParams(
+                        440.0f,
+                        sample_rate,
+                        child_types,
+                        mix_volumes,
+                        child_frequency_ratios,
+                        num_children
+                    );
+                    patch->oscillator_initialized = true;
+                }
+                else {
+                    std::cerr << "WARNING: Improperly formatted composite oscillator definition found! Falling back to sine oscillator" << std::endl;
+                }
+            }
+            else {
+                std::cerr << "WARNING: Improperly formatted composite oscillator definition found! Falling back to sine oscillator" << std::endl;
+            }
+            break;
+        }
+        case OscillatorParsingType::UNKNOWN :
+        default : {
+            std::cerr << "WARNING: Unknown oscillator type in JSON. Defaulting to SINE fallback." << std::endl;
+            // Allow set_fallbacks() to dictate the default initialization
+            break;
+        }
+    }
+}
+
+void InstrumentRegistry::parse_sample_zone_config(const json& config, PatchDefinition* patch, SampleLoader* loader) {
+    if (config.is_null() || !config.contains("file") || !config.contains("base_frequency")) {
+        std::cerr << "WARNING: Invalid parameter 'config' in parse_envelope_config(const json& config, PatchDefinition* patch_config): "
+            << config.dump() << std::endl;
+        return;
     }
 
-    if (patch_config == nullptr) {
-        std::cerr << "WARNING: null pointer for parameter patch_config passed into parse_envelope_config(...). " << std::endl;
+    if (patch == nullptr) {
+        std::cerr << "WARNING: nullptr for parameter 'patch_config' passed into parse_envelope_config(const json& config, PatchDefinition* patch_config). " << std::endl;
+        return;
+    }
+
+    std::string file_path = config["file"];
+    float base_freq = config["base_frequency"];
+    uint8_t min_pitch = config.value("min_pitch", 0);
+    uint8_t max_pitch = config.value("max_pitch", 127);
+    uint8_t min_velocity = config.value("min_velocity", 0);
+    uint8_t max_velocity = config.value("max_velocity", 127);
+
+    auto raw_sample = loader->load_wav_mono(file_path);
+    if (raw_sample.audio_buffer.empty()) {
+        std::cerr << "WARNING: Audio buffer is completely empty for file: " << file_path << std::endl;
+    }
+
+    patch->sample_oscillator_params.samples.push_back(Sample(
+        raw_sample.audio_buffer, raw_sample.sample_rate, base_freq, min_pitch, max_pitch, min_velocity, max_velocity)
+    );
+}
+
+void InstrumentRegistry::parse_envelope_map_json(const json& json_data, std::array<PatchDefinition, 128>& patches, std::array<uint8_t, 128>& aliases) {
+    for (const auto& [patch_id_str, patch_data] : json_data.items()) {
+        int patch_id = 0;
+        try {
+            patch_id = std::stoi(patch_id_str);
+        }
+        catch (const std::invalid_argument& e) {
+            std::cerr << "WARNING: Expected an integer patch key string, but found: \""
+                      << patch_id_str << "\". Skipping entry..." << std::endl;
+            continue;
+        }
+        catch (const std::out_of_range& e) {
+            std::cerr << "WARNING: Patch key \"" << patch_id_str << "\" is out of integer bounds. Skipping..." << std::endl;
+            continue;
+        }
+
+        if (patch_id < 0 || patch_id >= 128) {
+            std::cerr << "WARNING: Patch index " << patch_id << " out of bounds. Skipping..." << std::endl;
+            continue;
+        }
+
+        PatchDefinition* patch = &patches[patch_id];
+
+        patch->is_one_shot = patch_data.value("one_shot", false);
+        if (patch_data.contains("envelope")) {
+            parse_envelope_config(patch_data["envelope"], patch);
+            patch->envelope_initialized = true;
+        }
+    }
+}
+
+void InstrumentRegistry::parse_envelope_config(const json& config, PatchDefinition* patch) {
+    if (config.is_null() || !config.contains("type")) {
+        std::cerr << "WARNING: Invalid parameter 'config' in parse_envelope_config(const json& config, PatchDefinition* patch_config): "
+            << config.dump() << std::endl;
+        return;
+    }
+
+    if (patch == nullptr) {
+        std::cerr << "WARNING: nullptr for parameter 'patch_config' passed into parse_envelope_config(const json& config, PatchDefinition* patch_config). " << std::endl;
         return;
     }
 
     ParsingEnvelopeType type = config["type"];
     switch (type) {
         case ParsingEnvelopeType::ADSR : {
-            patch_config->envelope_type = EnvelopeType::ADSR;
-            patch_config->adsr_envelope_params.attack_time = config.value("attack_time", 0.005f);
-            patch_config->adsr_envelope_params.attack_max = config.value("attack_max", 1.0f);
-            patch_config->adsr_envelope_params.decay_time = config.value("decay_time", 1.0f);
-            patch_config->adsr_envelope_params.sustain_level = config.value("sustain_level", 0.025f);
-            patch_config->adsr_envelope_params.release_time = config.value("release_time", 0.2f);
-            patch_config->adsr_envelope_params.release_min = config.value("release_min", 0.0f);
+            patch->envelope_type = EnvelopeType::ADSR;
+            patch->adsr_envelope_params.attack_time = config.value("attack_time", 0.005f);
+            patch->adsr_envelope_params.attack_max = config.value("attack_max", 1.0f);
+            patch->adsr_envelope_params.decay_time = config.value("decay_time", 1.0f);
+            patch->adsr_envelope_params.sustain_level = config.value("sustain_level", 0.025f);
+            patch->adsr_envelope_params.release_time = config.value("release_time", 0.2f);
+            patch->adsr_envelope_params.release_min = config.value("release_min", 0.0f);
             break;
         }
         case ParsingEnvelopeType::ADR : {
-            patch_config->envelope_type = EnvelopeType::ADR;
-            patch_config->adr_envelope_params.attack_time = config.value("attack_time", 0.005f);
-            patch_config->adr_envelope_params.attack_max = config.value("attack_max", 1.0f);
-            patch_config->adr_envelope_params.decay_time = config.value("decay_time", 0.1f);
-            patch_config->adr_envelope_params.release_time = config.value("release_time", 0.1f);
-            patch_config->adr_envelope_params.release_max = config.value("release_time", 0.1f);
-            patch_config->adr_envelope_params.release_min = config.value("release_min", 0.0f);
+            patch->envelope_type = EnvelopeType::ADR;
+            patch->adr_envelope_params.attack_time = config.value("attack_time", 0.005f);
+            patch->adr_envelope_params.attack_max = config.value("attack_max", 1.0f);
+            patch->adr_envelope_params.decay_time = config.value("decay_time", 0.1f);
+            patch->adr_envelope_params.release_time = config.value("release_time", 0.1f);
+            patch->adr_envelope_params.release_max = config.value("release_time", 0.1f);
+            patch->adr_envelope_params.release_min = config.value("release_min", 0.0f);
             break;
         }
         case ParsingEnvelopeType::TREMOLO : {
-            patch_config->envelope_decorator_type = EnvelopeDecoratorType::TREMOLO;
-            patch_config->tremolo_decorator_params.speed_hz = config.value("speed_hz", 5.0f);
-            patch_config->tremolo_decorator_params.depth = config.value("depth", 0.5f);
+            patch->envelope_decorator_type = EnvelopeDecoratorType::TREMOLO;
+            patch->tremolo_decorator_params.speed_hz = config.value("speed_hz", 5.0f);
+            patch->tremolo_decorator_params.depth = config.value("depth", 0.5f);
 
             if (config.contains("base_envelope")) {
-                parse_envelope_config(config["base_envelope"], patch_config);
+                parse_envelope_config(config["base_envelope"], patch);
             }
             else {
                 // Continue with a fallback ADSR base envelope
                 std::cerr << "WARNING: No base envelope specified for tremolo decorator. "
                              "ADSR envelope fallback will be used." << std::endl;
-                patch_config->envelope_type = EnvelopeType::ADSR;
-                patch_config->adsr_envelope_params = ADSREnvelopeParams(0.005f, 1.0f, 1.0f, 0.025f, 0.2f, 0.0f);
+                patch->envelope_type = EnvelopeType::ADSR;
+                patch->adsr_envelope_params = ADSREnvelopeParams(0.005f, 1.0f, 1.0f, 0.025f, 0.2f, 0.0f);
             }
             break;
         }
@@ -66,395 +291,89 @@ void parse_envelope_config(const json& config, PatchDefinition* patch_config) {
         default: {
             std::cerr << "WARNING: Unknown ParsingEnvelopeType enum in selected json. "
                          "ADSR envelope fallback will be used." << std::endl;
-            patch_config->envelope_type = EnvelopeType::ADSR;
-            patch_config->adsr_envelope_params = ADSREnvelopeParams(0.005f, 1.0f, 1.0f, 0.025f, 0.2f, 0.0f);
+            patch->envelope_type = EnvelopeType::ADSR;
+            patch->adsr_envelope_params = ADSREnvelopeParams(0.005f, 1.0f, 1.0f, 0.025f, 0.2f, 0.0f);
             break;
         }
     }
 }
 
-void InstrumentRegistry::init_samples() {
-    SampleLoader loader;
-    std::ifstream file = std::ifstream(get_sanitized_file_path("Assets/Samples/instrument_map.json"));
-    if (!file.is_open()) {
-        std::cerr << "Failed to open instrument map file. Samples loading will be skipped." << std::endl;
-        return;
+void InstrumentRegistry::init_sample_instruments() {
+    std::ifstream samples_file = std::ifstream(get_sanitized_file_path(std::string(SAMPLE_MAP_FILE_PATH)));
+    json samples_config;
+    if (samples_file.is_open()) {
+        samples_config = json::parse(samples_file);
+    }
+    else {
+        std::cerr << "Failed to open instrument sample map file." << std::endl;
     }
 
-    json config = json::parse(file);
-
-    // Loading melodic samples
-    for (const auto& [patch_id_str, melodic_patch_data] : config["melodic_instruments"].items()) {
-        int patch_id = std::stoi(patch_id_str);
-
-        // Prevent loading the same samples and wasting memory
-        if (melodic_patch_data.contains("copy_from")) {
-            uint8_t source_id = melodic_patch_data["copy_from"];
-            melodic_patch_aliases[patch_id] = source_id;
-            continue;
-        }
-
-        PatchDefinition* patch = &melodic_patches[patch_id];
-
-        patch->oscillator_type = OscillatorType::SAMPLE;
-        patch->is_one_shot = melodic_patch_data.value("one_shot", false);
-
-        if (melodic_patch_data.contains("envelope")) {
-            parse_envelope_config(melodic_patch_data["envelope"], patch);
-        }
-
-        for (const auto& zone : melodic_patch_data.value("zones", json::array())) {
-            std::string file_path = zone["file"];
-            float base_freq = zone["base_frequency"];
-            uint8_t min_pitch = zone["min_pitch"];
-            uint8_t max_pitch = zone["max_pitch"];
-            uint8_t min_velocity = zone.value("min_velocity", 0);
-            uint8_t max_velocity = zone.value("max_velocity", 127);
-
-            auto raw_sample = loader.load_wav_mono(file_path);
-            if (raw_sample.audio_buffer.empty()) {
-                std::cerr << "WARNING: Audio buffer is completely empty for file: " << file_path << std::endl;
-            }
-
-            patch->sample_oscillator_params.samples.push_back(Sample(
-                raw_sample.audio_buffer, raw_sample.sample_rate, base_freq, min_pitch, max_pitch, min_velocity, max_velocity)
-            );
-        }
-
-        patch->is_initialized = true;
+    std::ifstream envelopes_file = std::ifstream(get_sanitized_file_path(std::string(ENVELOPE_MAP_FILE_PATH)));
+    json envelopes_config;
+    if (envelopes_file.is_open()) {
+        envelopes_config = json::parse(envelopes_file);
+    }
+    else {
+        std::cerr << "Failed to open instrument envelope map file." << std::endl;
     }
 
-    // Loading drum samples
-    for (const auto& [drum_key_str, drum_patch_data] : config["drum_instruments"].items()) {
-        int drum_key = std::stoi(drum_key_str);
-
-        // Prevent loading the same samples and wasting memory
-        if (drum_patch_data.contains("copy_from")) {
-            uint8_t source_id = drum_patch_data["copy_from"];
-            drum_patch_aliases[drum_key] = source_id;
-            continue;
+    // Load the sample data into memory
+    if (!samples_config.is_null()) {
+        if (samples_config.contains("melodic_instruments")) {
+            parse_oscillator_map_json(samples_config["melodic_instruments"], melodic_patches, melodic_patch_aliases);
+            std::cout << "INFO: Melodic instrument samples successfully loaded" << std::endl;
+        }
+        else {
+            std::cerr << "WARNING: No melodic instrument samples found in instrument sample map file." << std::endl;
         }
 
-        PatchDefinition* patch = &drum_patches[drum_key];
-
-        patch->oscillator_type = OscillatorType::SAMPLE;
-        patch->is_one_shot = drum_patch_data.value("one_shot", true);
-
-        if (drum_patch_data.contains("envelope")) {
-            parse_envelope_config(drum_patch_data["envelope"], patch);
+        if (samples_config.contains("drum_instruments")) {
+            parse_oscillator_map_json(samples_config["drum_instruments"], drum_patches, drum_patch_aliases);
+            std::cout << "INFO: Drum instrument samples successfully loaded" << std::endl;
         }
-
-        for (const auto& zone : drum_patch_data.value("zones", json::array())) {
-            std::string file_path = zone["file"];
-            float base_freq = zone["base_frequency"];
-            uint8_t min_velocity = zone.value("min_velocity", 0);
-            uint8_t max_velocity = zone.value("max_velocity", 127);
-
-            auto raw_sample = loader.load_wav_mono(file_path);
-            if (raw_sample.audio_buffer.empty()) {
-                std::cerr << "Audio buffer is completely empty for file: " << file_path << std::endl;
-            }
-
-            patch->sample_oscillator_params.samples.push_back(Sample(
-                raw_sample.audio_buffer, raw_sample.sample_rate, base_freq, 0, 127, min_velocity, max_velocity)
-            );
+        else {
+            std::cerr << "WARNING: No drum instrument samples found in instrument sample map file." << std::endl;
         }
-
-        patch->is_initialized = true;
     }
-}
+    else {
+        std::cerr << "WARNING: Parsed json samples config is null. "
+            "Instruments will use the fallback sine oscillator." << std::endl;
+    }
 
-void InstrumentRegistry::init_envelopes() {
 
-}
+    // Load the envelope data into memory
+    if (!envelopes_config.is_null()) {
+        if (envelopes_config.contains("melodic_instruments")) {
+            parse_envelope_map_json(envelopes_config["melodic_instruments"], melodic_patches, melodic_patch_aliases);
+            std::cout << "INFO: Melodic instrument envelopes successfully loaded" << std::endl;
+        }
+        else {
+            std::cerr << "WARNING: No melodic instrument envelope configs found in instrument envelope map file." << std::endl;
+        }
 
-void InstrumentRegistry::init_leads() {
-    // Square lead
-    auto& square_lead = melodic_patches[80];
-    square_lead.oscillator_type = OscillatorType::SQUARE;
-    square_lead.square_oscillator_params = SquareOscillatorParams(440.0f, sample_rate);
-    square_lead.envelope_type = EnvelopeType::ADSR;
-    square_lead.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.005f, 0.6f, 0.2f, 0.25f, 0.1f, 0.0f
-    );
-    square_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    square_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    square_lead.is_one_shot = false;
-    square_lead.is_initialized = true;
-
-    // Sawtooth lead
-    auto& sawtooth_lead = melodic_patches[81];
-    sawtooth_lead.oscillator_type = OscillatorType::SAWTOOTH;
-    sawtooth_lead.sawtooth_oscillator_params = SawtoothOscillatorParams(440.0f, sample_rate);
-    sawtooth_lead.envelope_type = EnvelopeType::ADSR;
-    sawtooth_lead.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.005, 0.6f, 0.2f, 0.25f, 0.1f, 0.0f
-    );
-    sawtooth_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    sawtooth_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    sawtooth_lead.is_one_shot = false;
-    sawtooth_lead.is_initialized = true;
-
-    // Calliope lead
-    auto& calliope_lead = melodic_patches[82];
-    calliope_lead.oscillator_type = OscillatorType::TRIANGLE;
-    calliope_lead.triangle_oscillator_params = TriangleOscillatorParams(440.0f, sample_rate);
-    calliope_lead.envelope_type = EnvelopeType::ADSR;
-    calliope_lead.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.02f, 0.6f, 0.1f, 0.7f, 0.2f, 0.0f
-    );
-    calliope_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    calliope_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    calliope_lead.is_one_shot = false;
-    calliope_lead.is_initialized = true;
-
-    // Chiff lead
-    auto& chiff_lead = melodic_patches[83];
-    chiff_lead.oscillator_type = OscillatorType::SINE;
-    chiff_lead.sine_oscillator_params = SineOscillatorParams(440.0f, sample_rate);
-    chiff_lead.envelope_type = EnvelopeType::ADSR;
-    chiff_lead.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f
-    );
-    chiff_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    chiff_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    chiff_lead.is_one_shot = false;
-    chiff_lead.is_initialized = true;
-
-    // Charang lead
-    auto& charang_lead = melodic_patches[84];
-    charang_lead.oscillator_type = OscillatorType::SQUARE;
-    charang_lead.square_oscillator_params = SquareOscillatorParams(440.0f, sample_rate);
-    charang_lead.envelope_type = EnvelopeType::ADSR;
-    charang_lead.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.005f, 0.6f, 0.3f, 0.2f, 0.15f, 0.0f
-    );
-    charang_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    charang_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    charang_lead.is_one_shot = false;
-    charang_lead.is_initialized = true;
-
-    // Voice lead
-    auto& voice_lead = melodic_patches[85];
-    voice_lead.oscillator_type = OscillatorType::TRIANGLE;
-    voice_lead.triangle_oscillator_params = TriangleOscillatorParams(440.0f, sample_rate);
-    voice_lead.envelope_type = EnvelopeType::ADSR;
-    voice_lead.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.06f, 0.6f, 0.1f, 0.7f, 0.25f, 0.0f
-    );
-    voice_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    voice_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    voice_lead.is_one_shot = false;
-    voice_lead.is_initialized = true;
-
-    // Fifths lead
-    auto& fifths_lead = melodic_patches[86];
-    fifths_lead.oscillator_type = OscillatorType::COMPOSITE;
-    fifths_lead.composite_oscillator_params = CompositeOscillatorParams(
-        440.0f,
-        sample_rate,
-        { OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH },
-        { 0.6f, 0.4f },
-        { 1.0f, std::pow(2.0f, 7.0f / 12.0f) },
-        2
-    );
-    fifths_lead.envelope_type = EnvelopeType::ADSR;
-    fifths_lead.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.005f, 0.6f, 0.15f, 0.4f, 0.15f, 0.0f
-    );
-    fifths_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    fifths_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    fifths_lead.is_one_shot = false;
-    fifths_lead.is_initialized = true;
-
-    // Bass + lead
-    auto& bass_lead = melodic_patches[87];
-    bass_lead.oscillator_type = OscillatorType::COMPOSITE;
-    bass_lead.composite_oscillator_params = CompositeOscillatorParams(
-        440.0f,
-        sample_rate,
-        { OscillatorType::SAWTOOTH, OscillatorType::SQUARE },
-        { 0.45f, 0.55f },
-        { 1.0f, 0.5f },
-        2
-    );
-    bass_lead.envelope_type = EnvelopeType::ADSR;
-    bass_lead.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.005f, 0.8f, 0.2f, 0.5f, 0.1f, 0.0f
-    );
-    bass_lead.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    bass_lead.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    bass_lead.is_one_shot = false;
-    bass_lead.is_initialized = true;
-}
-
-void InstrumentRegistry::init_pads() {
-    // Pad 1 (New age)
-    auto& new_age_pad = melodic_patches[88];
-    new_age_pad.oscillator_type = OscillatorType::COMPOSITE;
-    new_age_pad.composite_oscillator_params = CompositeOscillatorParams(
-        440.0f,
-        sample_rate,
-        { OscillatorType::TRIANGLE, OscillatorType::SINE, OscillatorType::SAWTOOTH },
-        { 0.5f, 0.2f, 0.2f },
-        { 1.0f, 2.0f, 1.003f },
-        3
-    );
-    new_age_pad.envelope_type = EnvelopeType::ADSR;
-    new_age_pad.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.2f, 1.0f, 0.001f, 1.0f, 0.2f, 0.0f
-    );
-    new_age_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    new_age_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    new_age_pad.is_one_shot = false;
-    new_age_pad.is_initialized = true;
-
-    // Pad 2 (Warm)
-    auto& warm_pad = melodic_patches[89];
-    warm_pad.oscillator_type = OscillatorType::COMPOSITE;
-    warm_pad.composite_oscillator_params = CompositeOscillatorParams(
-        440.0f,
-        sample_rate,
-        { OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH },
-        { 0.34f, 0.33f, 0.33f },
-        { 1.0f, 0.996f, 1.004f },
-        3
-    );
-    warm_pad.envelope_type = EnvelopeType::ADSR;
-    warm_pad.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.4f, 0.6f, 0.001f, 0.6f, 0.4f, 0.0f
-    );
-    warm_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    warm_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    warm_pad.is_one_shot = false;
-    warm_pad.is_initialized = true;
-
-    // Pad 3 (Polysynth)
-    auto& polysynth_pad = melodic_patches[90];
-    polysynth_pad.oscillator_type = OscillatorType::COMPOSITE;
-    polysynth_pad.composite_oscillator_params = CompositeOscillatorParams(
-        440.0f,
-        sample_rate,
-        { OscillatorType::SQUARE, OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH },
-        { 0.4f, 0.3f, 0.3f },
-        { 1.0f, 1.0f, 1.003f },
-        3
-    );
-    polysynth_pad.envelope_type = EnvelopeType::ADSR;
-    polysynth_pad.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.05f, 0.6f, 0.3f, 0.6f, 0.3f, 0.0f
-    );
-    polysynth_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    polysynth_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    polysynth_pad.is_one_shot = false;
-    polysynth_pad.is_initialized = true;
-
-    // Pad 4 (Choir)
-    auto& choir_pad = melodic_patches[91];
-    choir_pad.oscillator_type = OscillatorType::COMPOSITE;
-    choir_pad.composite_oscillator_params = CompositeOscillatorParams(
-        440.0f,
-        sample_rate,
-        { OscillatorType::TRIANGLE, OscillatorType::SAWTOOTH },
-        { 0.4f, 0.3f },
-        { 1.0f, 1.002f },
-        2
-    );
-    choir_pad.envelope_type = EnvelopeType::ADSR;
-    choir_pad.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.6f, 0.6f, 0.001f, 0.6f, 0.6f, 0.0f
-    );
-    choir_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    choir_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    choir_pad.is_one_shot = false;
-    choir_pad.is_initialized = true;
-
-    // Pad 5 (Bowed)
-    auto& bowed_pad = melodic_patches[92];
-    bowed_pad.oscillator_type = OscillatorType::COMPOSITE;
-    bowed_pad.composite_oscillator_params = CompositeOscillatorParams(
-        440.0f,
-        sample_rate,
-        { OscillatorType::TRIANGLE, OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH },
-        { 0.4f, 0.3f, 0.3f },
-        { 1.0f, 1.0f, 1.005f },
-        3
-    );
-    bowed_pad.envelope_type = EnvelopeType::ADSR;
-    bowed_pad.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.5f, 0.6f, 0.1f, 0.4f, 0.5f, 0.0f
-    );
-    bowed_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    bowed_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    bowed_pad.is_one_shot = false;
-    bowed_pad.is_initialized = true;
-
-    // Pad 6 (Metallic)
-    auto& metallic_pad = melodic_patches[93];
-    metallic_pad.oscillator_type = OscillatorType::COMPOSITE;
-    metallic_pad.composite_oscillator_params = CompositeOscillatorParams(
-        440.0f,
-        sample_rate,
-        { OscillatorType::SQUARE, OscillatorType::SQUARE, OscillatorType::SAWTOOTH },
-        { 0.4f, 0.4f, 0.2f },
-        { 1.0f, 2.0f, 4.0f },
-        3
-    );
-    metallic_pad.envelope_type = EnvelopeType::ADSR;
-    metallic_pad.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.1f, 0.6f, 0.5f, 0.3f, 0.5f, 0.0f
-    );
-    metallic_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    metallic_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    metallic_pad.is_one_shot = false;
-    metallic_pad.is_initialized = true;
-
-    // Pad 7 (Halo)
-    auto& halo_pad = melodic_patches[94];
-    halo_pad.oscillator_type = OscillatorType::COMPOSITE;
-    halo_pad.composite_oscillator_params = CompositeOscillatorParams(
-        440.0f,
-        sample_rate,
-        { OscillatorType::SINE, OscillatorType::SINE, OscillatorType::SAWTOOTH },
-        { 0.5f, 0.3f, 0.2f },
-        { 1.0f, 2.0f, 1.0f },
-        3
-    );
-    halo_pad.envelope_type = EnvelopeType::ADSR;
-    halo_pad.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 0.5f, 0.0f
-    );
-    halo_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    halo_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    halo_pad.is_one_shot = false;
-    halo_pad.is_initialized = true;
-
-    // Pad 8 (Sweep)
-    auto& sweep_pad = melodic_patches[95];
-    sweep_pad.oscillator_type = OscillatorType::COMPOSITE;
-    sweep_pad.composite_oscillator_params = CompositeOscillatorParams(
-        440.0f,
-        sample_rate,
-        { OscillatorType::SAWTOOTH, OscillatorType::SAWTOOTH },
-        { 0.5f, 0.5f },
-        { 0.992f, 1.008f },
-        2
-    );
-    sweep_pad.envelope_type = EnvelopeType::ADSR;
-    sweep_pad.adsr_envelope_params = ADSREnvelopeParams(
-        sample_rate, 0.5f, 0.6f, 0.001f, 0.6f, 1.0f, 0.0f
-    );
-    sweep_pad.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-    sweep_pad.envelope_decorator_type = EnvelopeDecoratorType::NONE;
-    sweep_pad.is_one_shot = false;
-    sweep_pad.is_initialized = true;
+        if (envelopes_config.contains("drum_instruments")) {
+            parse_envelope_map_json(envelopes_config["drum_instruments"], drum_patches, drum_patch_aliases);
+            std::cout << "INFO: Drum instrument envelopes successfully loaded" << std::endl;
+        }
+        else {
+            std::cerr << "WARNING: No drum instrument envelope configs found in instrument envelope map file." << std::endl;
+        }
+    }
+    else {
+        std::cerr << "WARNING: Parsed json envelopes config is null. "
+            "Instruments will use the fallback ADSR envelope." << std::endl;
+    }
 }
 
 void InstrumentRegistry::set_fallbacks() {
     for (auto& patch : melodic_patches) {
-        if (!patch.is_initialized) {
+        if (!patch.oscillator_initialized) {
             patch.oscillator_type = OscillatorType::SINE;
             patch.sine_oscillator_params = SineOscillatorParams(440.0f, sample_rate);
+            patch.oscillator_initialized = true;
+        }
+
+        if (!patch.envelope_initialized) {
             patch.envelope_type = EnvelopeType::ADSR;
             patch.adsr_envelope_params = ADSREnvelopeParams(
                 sample_rate, 0.005f, 0.6f, 0.2f, 0.25f, 0.1f, 0.0f
@@ -464,14 +383,18 @@ void InstrumentRegistry::set_fallbacks() {
             patch.envelope_decorator_type = EnvelopeDecoratorType::NONE;
 
             patch.is_one_shot = false;
-            patch.is_initialized = true;
+            patch.envelope_initialized = true;
         }
     }
 
     for (auto& patch : drum_patches) {
-        if (!patch.is_initialized) {
+        if (!patch.oscillator_initialized) {
             patch.oscillator_type = OscillatorType::NOISE;
             patch.noise_oscillator_params = NoiseOscillatorParams();
+            patch.oscillator_initialized = true;
+        }
+
+        if (!patch.envelope_initialized) {
             patch.envelope_type = EnvelopeType::ADR;
             patch.adr_envelope_params = ADREnvelopeParams(
                 sample_rate, 0.001f, 0.6f, 0.05f, 0.05f, 0.1f, 0.0f
@@ -481,7 +404,7 @@ void InstrumentRegistry::set_fallbacks() {
             patch.envelope_decorator_type = EnvelopeDecoratorType::NONE;
 
             patch.is_one_shot = true;
-            patch.is_initialized = true;
+            patch.envelope_initialized = true;
         }
     }
 }
@@ -490,18 +413,16 @@ InstrumentRegistry::InstrumentRegistry(float sample_rate) { // NOLINT
     this->sample_rate = sample_rate;
 
     for (uint8_t i = 0; i < 128; ++i) {
-        melodic_patches_aliases[i] = i;
+        melodic_patch_aliases[i] = i;
         drum_patch_aliases[i] = i;
     }
 
-    init_samples();
-    init_leads();
-    init_pads();
+    init_sample_instruments();
     set_fallbacks();
 }
 
 const PatchDefinition* InstrumentRegistry::get_melodic_patch_config(uint8_t patch_id) const {
-    return &melodic_patches[melodic_patches_aliases[patch_id]];
+    return &melodic_patches[melodic_patch_aliases[patch_id]];
 }
 
 const PatchDefinition* InstrumentRegistry::get_drum_patch_config(uint8_t pitch_key) const {

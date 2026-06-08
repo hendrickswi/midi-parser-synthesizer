@@ -1,7 +1,6 @@
 #ifndef MIDI_PARSERSYNTHESIZER_SAMPLELOADER_H
 #define MIDI_PARSERSYNTHESIZER_SAMPLELOADER_H
 #include <string>
-#include <vector>
 
 #include "RawAudioData.h"
 

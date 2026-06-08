@@ -100,7 +100,7 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Synthesizer/Sample Loading/SampleLoader.cpp"
         "AudioEngine/Synthesizer/Sample Loading/SampleLoader.h"
         "AudioEngine/Synthesizer/Sample Loading/Sample.h"
-        AudioEngine/Synthesizer/Envelopes/EnvelopeParsingType.h
+        "AudioEngine/Patch Configuration/EnvelopeParsingType.h"
         resources.qrc
         Qt/PlaybackController.cpp
         Qt/PlaybackController.h
@@ -113,6 +113,7 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine/Synthesizer/SynthesizerCommand.h
         "AudioEngine/Patch Configuration/PatchDefinition.h"
         "AudioEngine/Synthesizer/Lookup Tables/SineLookupTable.h"
+        "AudioEngine/Patch Configuration/OscillatorParsingType.h"
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE

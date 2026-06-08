@@ -15,7 +15,7 @@ class VoiceManager {
 private:
     std::array<Voice*, NUM_VOICES> voices;
     std::array<uint8_t, NUM_CHANNELS> channel_patches;
-    InstrumentRegistry registry;
+    InstrumentRegistry* registry;
     LockFreeQueue<SynthesizerCommand, 1024> command_queue;
 
     // Midi-event specific data
