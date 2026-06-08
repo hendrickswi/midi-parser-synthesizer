@@ -397,7 +397,7 @@ void InstrumentRegistry::set_fallbacks() {
         if (!patch.envelope_initialized) {
             patch.envelope_type = EnvelopeType::ADR;
             patch.adr_envelope_params = ADREnvelopeParams(
-                sample_rate, 0.001f, 0.6f, 0.05f, 0.05f, 0.1f, 0.0f
+                sample_rate, 0.001f, 0.4f, 0.05f, 0.05f, 0.1f, 0.0f
             );
 
             patch.oscillator_decorator_type = OscillatorDecoratorType::NONE;

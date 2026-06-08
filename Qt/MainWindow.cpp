@@ -305,6 +305,7 @@ void MainWindow::on_repeat_changed(bool repeat_flag) {
     } else {
         repeat_button->setIcon(repeat_off_icon);
     }
+    toggle_repeat_action->setChecked(repeat_flag);
 }
 
 void MainWindow::on_shuffle_changed(bool shuffle_flag) {
@@ -313,6 +314,7 @@ void MainWindow::on_shuffle_changed(bool shuffle_flag) {
     } else {
         shuffle_button->setIcon(shuffle_off_icon);
     }
+    toggle_shuffle_action->setChecked(shuffle_flag);
 }
 
 void MainWindow::on_autoplay_changed(bool autoplay_flag) {

@@ -2,14 +2,14 @@
 
 # Ensure dependencies
 if ! command -v aubiopitch &> /dev/null; then
-    echo "Error: Dependency 'aubiopitch' could not be found. Please install it using:"
-    echo " sudo pacman -S aubio"
+    echo "Error: Dependency 'aubiopitch' could not be found. Please install it using: "
+    echo "sudo pacman -S aubio"
     echo "or with the equivalent package manager for the environment."
     exit 1
 fi
 if ! command -v sox &> /dev/null; then
-    echo "Error: Dependency 'sox' could not be found. Please install it using:"
-    echo " sudo pacman -S sox"
+    echo "Error: Dependency 'sox' could not be found. Please install it using: "
+    echo "sudo pacman -S sox"
     echo "or with the equivalent package manager for the environment."
     exit 1
 fi
@@ -56,7 +56,7 @@ if [ "$IN_PLACE" = "false" ]; then
     fi
 fi
 
-echo "Starting advanced multi-stage noise scrubbing and normalization..."
+echo "Starting sample processing..."
 INPUT_DIR="${INPUT_DIR%/}"
 OUTPUT_DIR="${OUTPUT_DIR%/}"
 
@@ -66,11 +66,16 @@ find "$INPUT_DIR" -type f -iname "*.wav" -print0 | while IFS= read -r -d '' file
     output_file="$OUTPUT_DIR/$relative_path"
 
     # Determine the pitch using aubiopitch so can do dynamic trimming of wav files
-    RAW_HZ=$(aubiopitch "$file" -p yinfft -u Hz 2>/dev/null | awk '
+    RAW_HZ=$(aubiopitch "$file" -p yinfft -B 2048 -s -120 -u Hz 2>/dev/null | awk '
         $2 > 0 {
             # Round the frequency to the nearest 5 Hz bin
             bin = int(($2 + 2.5) / 5) * 5;
             counts[bin]++;
+            frames++;
+
+            if (frames >= 30) {
+                exit;
+            }
         }
         END {
             max_count = 0;

@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Ensure dependencies
+if ! command -v sox &> /dev/null; then
+    echo "Error: Dependency 'sox' could not be found. Please install it using: "
+    echo "sudo pacman -S sox"
+    echo "or with the equivalent package manager for the environment."
+    exit 1
+fi
+
 read -p "Enter the SOURCE directory containing raw .aiff files: " INPUT_DIR
 read -p "Enter the TARGET directory for converted files: " OUTPUT_DIR
 
