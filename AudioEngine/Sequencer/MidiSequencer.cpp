@@ -95,10 +95,6 @@ void MidiSequencer::setup_for_new_track_sequence() {
     std::sort(tempo_events.begin(), tempo_events.end(), [](const MetaEvent& a, const MetaEvent& b) {
         return a.absolute_time < b.absolute_time;
     });
-
-    if (synthesizer) {
-        synthesizer->set_static_gain(calculate_current_track_sequence_gain());
-    }
 }
 
 void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
@@ -130,9 +126,10 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         indices.midi_event_idx++;
 
         if (is_skipping_flag) {
-            // Then the audio thread is paused, meaning any events pushed to the
-            // LockFreeQueue will not be processed before unpausing
-            // => Need to process these directly
+            // Case: Audio thread is paused, meaning any events pushed to the
+            // LockFreeQueue will not be processed before unpausing.
+            // => Need to process these directly, but only need the *last* state
+
             switch (midi_event.command) {
                 case PROGRAM_CHANGE: {
                     synthesizer->set_channel_patch(midi_event.channel, midi_event.data1);
@@ -247,6 +244,43 @@ void MidiSequencer::skip_microseconds(uint64_t micros_to_skip) {
             process_events(tracks[i], track_indices[i]);
         }
     }
+
+    // uint64_t target_micros = total_elapsed_micros + micros_to_skip;
+    // uint64_t simulated_micros = 0;
+    // uint32_t simulated_ticks = 0;
+    // uint32_t current_mpt = calculate_mpt(calculate_mpqn(120), track_sequence->get_division());
+    //
+    // for (const auto& tempo_event : tempo_events) {
+    //     if (tempo_event.absolute_time > simulated_ticks) {
+    //         uint32_t ticks_to_event = tempo_event.absolute_time - simulated_ticks;
+    //         uint64_t micros_to_event = static_cast<uint64_t>(ticks_to_event) * current_mpt;
+    //
+    //         if (simulated_micros + micros_to_event >= target_micros) {
+    //             break;
+    //         }
+    //
+    //         simulated_micros += micros_to_event;
+    //         simulated_ticks += ticks_to_event;
+    //     }
+    // }
+    //
+    // if (current_mpt > 0) {
+    //     simulated_ticks += (target_micros - simulated_micros) / current_mpt;
+    // }
+    //
+    // current_tick = simulated_ticks;
+    // total_elapsed_micros = simulated_micros;
+    // micros_per_tick = current_mpt;
+    //
+    // const auto& tracks = track_sequence->get_tracks();
+    // for (int i = 0; i < tracks.size(); i++) {
+    //     process_events(tracks[i], track_indices[i]);
+    // }
+    //
+    // // Cull notes that finish playing during skipping
+    // while (!active_notes.empty() && active_notes.top().end_time <= current_tick) {
+    //     active_notes.pop();
+    // }
 }
 
 [[nodiscard]] bool MidiSequencer::has_more_events() const {
@@ -429,6 +463,9 @@ const TrackSequence* const MidiSequencer::get_track_sequence() const {
 void MidiSequencer::set_track_sequence(TrackSequence* sequence) {
     track_sequence = sequence;
     setup_for_new_track_sequence();
+    if (synthesizer) {
+        synthesizer->set_static_gain(calculate_current_track_sequence_gain());
+    }
 }
 
 const VoiceManager* const MidiSequencer::get_synthesizer() const {

@@ -178,11 +178,12 @@ void MainWindow::init_connections() {
     connect(playback_controller, &PlaybackController::first_loaded, this, &MainWindow::on_current_track_changed);
 
     // Volume slider
-    connect(volume_slider, &QAbstractSlider::valueChanged, playback_controller, &PlaybackController::set_volume);
+    connect(volume_slider, &QAbstractSlider::sliderMoved, this, &MainWindow::on_volume_changed);
     connect(playback_controller, &PlaybackController::volume_changed, this, &MainWindow::on_volume_changed);
 
     // Seek slider
-    connect(seek_slider, &QAbstractSlider::sliderMoved, playback_controller, &PlaybackController::seek_to);
+    connect(seek_slider, &QAbstractSlider::sliderMoved, this, &MainWindow::cache_new_position);
+    connect(seek_slider, &QAbstractSlider::sliderReleased, this, &MainWindow::on_seek_slider_released);
     connect(playback_controller, &PlaybackController::time_updated, this, &MainWindow::on_time_updated);
 
     // Repeat button
@@ -372,4 +373,12 @@ void MainWindow::on_underrun_detected(bool status) {
 
 void MainWindow::on_peak_amplitude_normalization_changed(bool status) {
     toggle_peak_amplitude_action->setChecked(status);
+}
+
+void MainWindow::cache_new_position(int pos) {
+    cached_seek_position = pos;
+}
+
+void MainWindow::on_seek_slider_released() {
+    playback_controller->seek_to(cached_seek_position);
 }

@@ -73,6 +73,7 @@ private:
 
     // UI element: playback (seek) slider
     QSlider* seek_slider;
+    int cached_seek_position;
 
     void init_top_bar();
     void init_top_ui(QHBoxLayout* layout);
@@ -101,6 +102,10 @@ private slots:
     void on_time_updated(float current_seconds, float total_seconds);
     void on_underrun_detected(bool status);
     void on_peak_amplitude_normalization_changed(bool enabled);
+
+    // Skipping helpers
+    void cache_new_position(int pos);
+    void on_seek_slider_released();
 
 public:
     explicit MainWindow(PlaybackController* controller, QWidget* parent = nullptr);
