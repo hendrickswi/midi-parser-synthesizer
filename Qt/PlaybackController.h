@@ -2,6 +2,13 @@
 #define MIDI_PARSERSYNTHESIZER_PLAYBACKCONTROLLER_H
 #include <QString>
 #include <QTimer>
+#include "../AudioEngine/PlaylistNavigator.h"
+
+enum class PlaybackState {
+    STOPPED,
+    PAUSED,
+    PLAYING
+};
 
 class AudioEngine;
 
@@ -15,18 +22,17 @@ private:
     uint64_t prev_underrun_count;
     unsigned int underrun_warning_ticks;
 
-    // State logic
-    bool repeat_flag;
-    bool shuffle_flag;
-    bool autoplay_flag;
-    std::vector<std::size_t> play_history;
+    // State machine
+    PlaybackState current_state;
+
+    // Next/prev song logic
+    PlaylistNavigator navigator;
+    bool autoplay_enabled;
+    bool first_time;
 
     // Internal delegates
-    void on_song_end();
-    void on_song_pause();
-    void on_song_start();
-    void on_song_unique_start();
-    void on_track_sequence_change(std::size_t index);
+    void on_track_sequence_change(std::size_t idx, bool start_automatically, bool update_navigator);
+    void set_state(PlaybackState new_state);
 
 public:
     explicit PlaybackController(AudioEngine* engine, QObject* parent = nullptr);

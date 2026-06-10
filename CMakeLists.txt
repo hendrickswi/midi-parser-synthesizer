@@ -114,6 +114,8 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Patch Configuration/PatchDefinition.h"
         "AudioEngine/Synthesizer/Lookup Tables/SineLookupTable.h"
         "AudioEngine/Patch Configuration/OscillatorParsingType.h"
+        AudioEngine/PlaylistNavigator.cpp
+        AudioEngine/PlaylistNavigator.h
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE

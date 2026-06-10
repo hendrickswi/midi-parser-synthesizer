@@ -2,71 +2,22 @@
 #include "../DirectoryManipulator.h"
 #include "../AudioEngine/AudioEngine.h"
 
-void PlaybackController::on_song_end() {
-    playback_timer->stop();
-    underrun_timer->stop();
-    engine->stop();
+void PlaybackController::on_track_sequence_change(std::size_t idx, bool start_automatically, bool update_navigator) {
+    if (idx >= engine->get_loaded_file_names().size() && idx == engine->get_current_track_sequence_index()) return;
 
-    if (autoplay_flag) {
-        if (repeat_flag) {
-            on_song_start();
-        }
-        else if (shuffle_flag) {
-            std::size_t random_idx = std::rand() % engine->get_loaded_file_names().size();
-            while (!play_history.empty() && random_idx == play_history.back()) {
-                random_idx = std::rand() % engine->get_loaded_file_names().size();
-            }
-            on_track_sequence_change(random_idx);
-        }
-        else {
-            std::size_t next_idx = 0;
-            if (!play_history.empty()) {
-                next_idx = (play_history.back() + 1) % engine->get_loaded_file_names().size();
-            }
-            on_track_sequence_change(next_idx);
-        }
-    }
-    else {
-        playback_state_changed(false);
-    }
-}
-
-void PlaybackController::on_song_pause() {
-    engine->stop();
-    playback_timer->stop();
-    underrun_timer->stop();
-    playback_state_changed(false);
-}
-
-void PlaybackController::on_song_start() {
-    engine->play();
-    playback_timer->start(33);
-    underrun_timer->start(500);
-    playback_state_changed(true);
-}
-
-void PlaybackController::on_song_unique_start() {
-    on_song_start();
-    play_history.push_back(engine->get_current_track_sequence_index());
-}
-
-void PlaybackController::on_track_sequence_change(std::size_t index) {
-    if (index >= engine->get_loaded_file_names().size() && index == engine->get_current_track_sequence_index()) return;
-    playback_timer->stop();
-    underrun_timer->stop();
-    engine->stop();
-    engine->soft_reset();
-    engine->set_track_sequence(index);
-    current_track_changed(index);
+    set_state(PlaybackState::STOPPED);
+    engine->set_track_sequence(idx);
+    current_track_changed(idx);
     time_updated(engine->get_track_sequence_current_time_seconds(), engine->get_track_sequence_length_seconds());
 
-    if (autoplay_flag) {
-        on_song_unique_start();
-    }
-    else {
-        playback_state_changed(false);
+    if (start_automatically) {
+        set_state(PlaybackState::PLAYING);
+        if (update_navigator) {
+            navigator.commit_to_history(idx);
+        }
     }
 
+    // Info printout
     auto instrument_names = engine->get_instrument_names_of_current_track_sequence();
     std::cout << "INFO: Selected track contains instruments:" << std::endl;
     for (const auto& name : instrument_names) {
@@ -75,70 +26,106 @@ void PlaybackController::on_track_sequence_change(std::size_t index) {
     std::cout << std::endl;
 }
 
+void PlaybackController::set_state(PlaybackState new_state) {
+    if (new_state == current_state) return;
+
+    // Remove old state
+    switch (current_state) {
+        case PlaybackState::PLAYING : {
+            playback_timer->stop();
+            underrun_timer->stop();
+            engine->stop();
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+
+    // Set up new state
+    current_state = new_state;
+    switch (current_state) {
+        case PlaybackState::PLAYING : {
+            engine->play();
+            playback_timer->start(33);
+            underrun_timer->start(500);
+            playback_state_changed(true);
+            break;
+        }
+        case PlaybackState::PAUSED : {
+            engine->stop();
+            playback_timer->stop();
+            underrun_timer->stop();
+            playback_state_changed(false);
+            break;
+        }
+        case PlaybackState::STOPPED : {
+            engine->stop();
+            playback_timer->stop();
+            underrun_timer->stop();
+            playback_state_changed(false);
+            engine->soft_reset();
+            break;
+        }
+    }
+
+}
+
 PlaybackController::PlaybackController(AudioEngine* engine, QObject* parent)
     : QObject(parent), engine(engine) {
     playback_timer = new QTimer(this);
     underrun_timer = new QTimer(this);
     prev_underrun_count = 0;
     underrun_warning_ticks = 0;
+    current_state = PlaybackState::PLAYING; // Ensure initialization logic
+    set_state(PlaybackState::STOPPED);
+    navigator = PlaylistNavigator();
+    autoplay_enabled = true;
+    first_time = true;
+
     connect(playback_timer, &QTimer::timeout, this, &PlaybackController::on_playback_timer_tick);
     connect(underrun_timer, &QTimer::timeout, this, &PlaybackController::on_underrun_timer_tick);
 
-    repeat_flag = false;
-    shuffle_flag = false;
-    autoplay_flag = true;
-    play_history = std::vector<std::size_t>();
+    // Initialize first track sequence
+
 }
 
 void PlaybackController::toggle_play_pause() {
     if (engine->is_playing()) {
         // User pressed the pause button
-        on_song_pause();
+        set_state(PlaybackState::PAUSED);
     }
     else {
-        if (!play_history.empty() && play_history.back() == engine->get_current_track_sequence_index()) {
-            on_song_start();
-        }
-        else {
-            on_song_unique_start();
+        if (first_time) {
+            on_track_sequence_change(0, autoplay_enabled, true);
+            first_time = false;
+        } else {
+            set_state(PlaybackState::PLAYING);
         }
     }
 }
 
 void PlaybackController::skip_forward() {
-    std::size_t next_idx;
-    if (shuffle_flag) {
-        next_idx = std::rand() % engine->get_loaded_file_names().size();
-    }
-    else {
-        std::size_t idx = play_history.empty() ? 0 : play_history.back();
-        next_idx = (idx + 1) % engine->get_loaded_file_names().size();
-    }
-    on_track_sequence_change(next_idx);
+    on_track_sequence_change(navigator.get_next_idx(true), autoplay_enabled, true);
 }
 
 void PlaybackController::skip_backward() {
-    std::size_t prev_idx = 0;
-    if (!play_history.empty()) {
-        prev_idx = play_history.back();
-        play_history.pop_back();
-    }
-    on_track_sequence_change(prev_idx);
+    on_track_sequence_change(navigator.get_previous_idx(), autoplay_enabled, false);
 }
 
 void PlaybackController::toggle_repeat() {
-    repeat_flag = !repeat_flag;
-    repeat_changed(repeat_flag);
+    navigator.set_repeat(!navigator.get_repeat());
+    repeat_changed(navigator.get_repeat());
 }
 
 void PlaybackController::toggle_shuffle() {
-    shuffle_flag = !shuffle_flag;
-    shuffle_changed(shuffle_flag);
+    navigator.set_shuffle(!navigator.get_shuffle());
+    shuffle_changed(navigator.get_shuffle());
 }
 
 void PlaybackController::toggle_autoplay() {
-    autoplay_flag = !autoplay_flag;
-    autoplay_changed(autoplay_flag);
+    autoplay_enabled = !autoplay_enabled;
+    autoplay_changed(autoplay_enabled);
 }
 
 void PlaybackController::toggle_peak_amplitude_normalization() {
@@ -164,6 +151,7 @@ void PlaybackController::load_directory(const std::string& directory_path) {
     for (const auto& file : midi_files) {
         std::string file_path = file.get_file_path();
         if (engine->load_midi_file(file_path)) {
+            navigator.add_to_loaded_files(file_path);
             updated_files.push_back(file_path);
             added_new_files = true;
         }
@@ -191,6 +179,7 @@ void PlaybackController::load_file(const std::string& file_path) {
     bool added_new_files = false;
 
     if (engine->load_midi_file(file_path)) {
+        navigator.add_to_loaded_files(file_path);
         updated_files.push_back(file_path);
         added_new_files = true;
     }
@@ -204,9 +193,9 @@ void PlaybackController::load_file(const std::string& file_path) {
     }
 }
 
-void PlaybackController::select_track(std::size_t index) {
-    if (index >= engine->get_loaded_file_names().size()) return;
-    on_track_sequence_change(index);
+void PlaybackController::select_track(std::size_t idx) {
+    if (idx >= engine->get_loaded_file_names().size()) return;
+    on_track_sequence_change(idx, autoplay_enabled, true);
 }
 
 void PlaybackController::set_volume(int volume) {
@@ -224,7 +213,11 @@ void PlaybackController::seek_to(int pos) {
 void PlaybackController::on_playback_timer_tick() {
     time_updated(engine->get_track_sequence_current_time_seconds(), engine->get_track_sequence_length_seconds());
     if (!engine->is_playing()) {
-        on_song_end();
+        if (autoplay_enabled && !engine->get_loaded_file_names().empty()) {
+            on_track_sequence_change(navigator.get_next_idx(), true, true);
+        } else {
+            set_state(PlaybackState::STOPPED);
+        }
     }
 }
 
@@ -238,8 +231,7 @@ void PlaybackController::on_underrun_timer_tick() {
     else {
         if (underrun_warning_ticks > 0) {
             underrun_warning_ticks--;
-        }
-        else {
+        } else {
             underrun_detected(false);
         }
     }
