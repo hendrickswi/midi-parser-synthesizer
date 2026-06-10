@@ -178,7 +178,7 @@ void MainWindow::init_connections() {
     connect(playback_controller, &PlaybackController::first_loaded, this, &MainWindow::on_current_track_changed);
 
     // Volume slider
-    connect(volume_slider, &QAbstractSlider::sliderMoved, this, &MainWindow::on_volume_changed);
+    connect(volume_slider, &QAbstractSlider::sliderMoved, playback_controller, &PlaybackController::set_volume);
     connect(playback_controller, &PlaybackController::volume_changed, this, &MainWindow::on_volume_changed);
 
     // Seek slider
