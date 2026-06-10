@@ -23,7 +23,8 @@ enum class EnvelopeType {
 
 enum class OscillatorDecoratorType {
     NONE,
-    VIBRATO
+    VIBRATO,
+    LOWPASS
 };
 
 enum class EnvelopeDecoratorType {
@@ -119,6 +120,12 @@ struct VibratoDecoratorParams {
     float depth;
 };
 
+struct LowPassFilterParams {
+    float sample_rate;
+    float cutoff_hz;
+    float resonance;
+};
+
 struct TremoloDecoratorParams {
     float sample_rate;
     float speed_hz;
@@ -144,6 +151,7 @@ struct PatchDefinition {
     // Oscillator decorator params
     OscillatorDecoratorType oscillator_decorator_type = OscillatorDecoratorType::NONE;
     VibratoDecoratorParams vibrato_decorator_params;
+    LowPassFilterParams low_pass_filter_params;
 
     // Envelope decorator params
     EnvelopeDecoratorType envelope_decorator_type = EnvelopeDecoratorType::NONE;

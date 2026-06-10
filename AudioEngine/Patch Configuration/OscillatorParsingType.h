@@ -9,7 +9,9 @@ enum OscillatorParsingType {
     TRIANGLE,
     SINE,
     NOISE,
-    COMPOSITE
+    COMPOSITE,
+    VIBRATO,
+    LOWPASS
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OscillatorParsingType, {
@@ -20,7 +22,9 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OscillatorParsingType, {
     { OscillatorParsingType::TRIANGLE, "TRIANGLE" },
     { OscillatorParsingType::SINE, "SINE" },
     { OscillatorParsingType::NOISE, "NOISE" },
-    { OscillatorParsingType::COMPOSITE, "COMPOSITE" }
+    { OscillatorParsingType::COMPOSITE, "COMPOSITE" },
+    { OscillatorParsingType::VIBRATO, "VIBRATO" },
+    { OscillatorParsingType::LOWPASS, "LOWPASS" }
 });
 
 #endif //MIDI_PARSERSYNTHESIZER_OSCILLATORPARSINGTYPE_H

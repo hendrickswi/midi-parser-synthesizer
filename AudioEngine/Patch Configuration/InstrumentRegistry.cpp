@@ -134,14 +134,16 @@ void InstrumentRegistry::parse_oscillator_config(const json& config, PatchDefini
                         }
                     }
 
-                    std::vector<float> mix_volumes = std::vector<float>(config.value("num_children", 0));
+                    std::vector<float> mix_volumes;
+                    mix_volumes.reserve(num_children);
                     if (mix_volumes.max_size() > 0) {
                         for (const auto& raw_float_volume : composite_params.value("mix_volumes", json::array())) {
                             mix_volumes.push_back(raw_float_volume.get<float>());
                         }
                     }
 
-                    std::vector<float> child_frequency_ratios = std::vector<float>(config.value("num_children", 0));
+                    std::vector<float> child_frequency_ratios;
+                    child_frequency_ratios.reserve(num_children);
                     if (child_frequency_ratios.max_size() > 0) {
                         for (const auto& raw_float_ratio : composite_params.value("child_frequency_ratios", json::array())) {
                             child_frequency_ratios.push_back(raw_float_ratio.get<float>());
@@ -164,6 +166,45 @@ void InstrumentRegistry::parse_oscillator_config(const json& config, PatchDefini
             }
             else {
                 std::cerr << "WARNING: Improperly formatted composite oscillator definition found! Falling back to sine oscillator" << std::endl;
+            }
+            break;
+        }
+        case OscillatorParsingType::VIBRATO : {
+            patch->oscillator_decorator_type = OscillatorDecoratorType::VIBRATO;
+            patch->vibrato_decorator_params.sample_rate = config.value("sample_rate", 48000.0f);
+            patch->vibrato_decorator_params.base_hz = config.value("base_hz", 440.0f);
+            patch->vibrato_decorator_params.speed_hz = config.value("speed_hz", 5.0f);
+            patch->vibrato_decorator_params.depth = config.value("depth", 0.5f);
+
+            if (config.contains("base_oscillator")) {
+                parse_oscillator_config(config["base_oscillator"], patch, loader);
+            }
+            else {
+                // Continue with a fallback sine oscillator
+                std::cerr << "WARNING: No base oscillator specified for vibrato decorator. "
+                             "Sine oscillator fallback will be used." << std::endl;
+                patch->oscillator_type = OscillatorType::SINE;
+                patch->sine_oscillator_params = SineOscillatorParams(440.0f, sample_rate);
+                patch->oscillator_initialized = true;
+            }
+            break;
+        }
+        case OscillatorParsingType::LOWPASS : {
+            patch->oscillator_decorator_type = OscillatorDecoratorType::LOWPASS;
+            patch->low_pass_filter_params.sample_rate = config.value("sample_rate", 48000.0f);
+            patch->low_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
+            patch->low_pass_filter_params.resonance = config.value("resonance", 0.5f);
+
+            if (config.contains("base_oscillator")) {
+                parse_oscillator_config(config["base_oscillator"], patch, loader);
+            }
+            else {
+                // Continue with a fallback sine oscillator
+                std::cerr << "WARNING: No base oscillator specified for lowpass decorator. "
+                             "Sine oscillator fallback will be used." << std::endl;
+                patch->oscillator_type = OscillatorType::SINE;
+                patch->sine_oscillator_params = SineOscillatorParams(440.0f, sample_rate);
+                patch->oscillator_initialized = true;
             }
             break;
         }
@@ -272,6 +313,7 @@ void InstrumentRegistry::parse_envelope_config(const json& config, PatchDefiniti
         }
         case ParsingEnvelopeType::TREMOLO : {
             patch->envelope_decorator_type = EnvelopeDecoratorType::TREMOLO;
+            patch->tremolo_decorator_params.sample_rate = config.value("sample_rate", 48000.0f);
             patch->tremolo_decorator_params.speed_hz = config.value("speed_hz", 5.0f);
             patch->tremolo_decorator_params.depth = config.value("depth", 0.5f);
 

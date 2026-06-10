@@ -14,7 +14,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(ParsingEnvelopeType, {
     {ParsingEnvelopeType::UNKNOWN, nullptr},
     {ParsingEnvelopeType::ADSR, "ADSR"},
     {ParsingEnvelopeType::ADR, "ADR"},
-    {ParsingEnvelopeType::TREMOLO, "Tremolo"}
+    {ParsingEnvelopeType::TREMOLO, "TREMOLO"}
 })
 
 

@@ -210,12 +210,15 @@
             ]
         },
         "11": {
-            "oscillator_type": "SAMPLE",
-            "zones": [
-                { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C4.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 65 },
-                { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C5.wav", "base_frequency": 523.25, "min_pitch": 66, "max_pitch": 77 },
-                { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C6.wav", "base_frequency": 1046.50, "min_pitch": 78, "max_pitch": 127 }
-            ]
+            "oscillator_type": "VIBRATO",
+            "base_oscillator": {
+                "oscillator_type": "SAMPLE",
+                "zones": [
+                    { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C4.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 65 },
+                    { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C5.wav", "base_frequency": 523.25, "min_pitch": 66, "max_pitch": 77 },
+                    { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C6.wav", "base_frequency": 1046.50, "min_pitch": 78, "max_pitch": 127 }
+                ]
+            }
         },
         "13": {
             "oscillator_type": "SAMPLE",
@@ -688,7 +691,12 @@
             ]
         },
         "80": {
-            "oscillator_type": "SQUARE"
+            "oscillator_type": "LOWPASS",
+            "cutoff_hz": 1000.0,
+            "resonance": 0.5,
+            "base_oscillator": {
+                "oscillator_type": "SQUARE"
+            }
         },
         "81": {
             "oscillator_type": "SAWTOOTH"

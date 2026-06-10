@@ -116,6 +116,10 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         "AudioEngine/Patch Configuration/OscillatorParsingType.h"
         AudioEngine/PlaylistNavigator.cpp
         AudioEngine/PlaylistNavigator.h
+        AudioEngine/Synthesizer/Oscillators/Filters/ChamberlinSVF.cpp
+        AudioEngine/Synthesizer/Oscillators/Filters/ChamberlinSVF.h
+        AudioEngine/Synthesizer/Oscillators/Decorators/LowPassFilterOscillator.cpp
+        AudioEngine/Synthesizer/Oscillators/Decorators/LowPassFilterOscillator.h
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE

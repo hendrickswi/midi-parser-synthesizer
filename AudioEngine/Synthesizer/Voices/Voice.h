@@ -9,6 +9,7 @@
 #include "../Oscillators/Base Implementations/Noise/NoiseOscillator.h"
 #include "../Oscillators/Base Implementations/Sample/SampleOscillator.h"
 #include "../Oscillators/Decorators/VibratoOscillator.h"
+#include "../Oscillators/Decorators/LowPassFilterOscillator.h"
 #include "../Envelopes/Base Implementations/ADR/ADREnvelope.h"
 #include "../Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
 #include "../Envelopes/Decorators/TremoloEnvelope.h"
@@ -31,6 +32,7 @@ private:
 
     // All of the possible oscillator decorators
     VibratoOscillator vibrato_oscillator_decorator;
+    LowPassFilterOscillator low_pass_filter_oscillator_decorator;
 
     // All of the possible envelope decorators
     TremoloEnvelope tremolo_envelope_decorator;

@@ -103,7 +103,7 @@
         },
         "11": {
             "envelope": {
-                "type": "Tremolo",
+                "type": "TREMOLO",
                 "speed_hz": 4.5,
                 "depth": 0.4,
                 "base_envelope": {
