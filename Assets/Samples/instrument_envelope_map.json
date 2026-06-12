@@ -509,6 +509,17 @@
                 "release_min": 0.0
             }
         },
+        "37": {
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.001,
+                "attack_max": 1.0,
+                "decay_time": 0.2,
+                "release_time": 0.05,
+                "release_max": 0.05,
+                "release_min": 0.0
+            }
+        },
         "38": {
             "envelope": {
                 "type": "ADR",
@@ -542,12 +553,34 @@
                 "release_min": 0.0
             }
         },
+        "41": {
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.001,
+                "attack_max": 1.0,
+                "decay_time": 0.2,
+                "release_time": 0.05,
+                "release_max": 0.05,
+                "release_min": 0.0
+            }
+        },
         "42": {
             "envelope": {
                 "type": "ADR",
                 "attack_time": 0.001,
                 "attack_max": 1.0,
                 "decay_time": 0.15,
+                "release_time": 0.05,
+                "release_max": 0.05,
+                "release_min": 0.0
+            }
+        },
+        "43": {
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.001,
+                "attack_max": 1.0,
+                "decay_time": 0.2,
                 "release_time": 0.05,
                 "release_max": 0.05,
                 "release_min": 0.0
@@ -564,12 +597,45 @@
                 "release_min": 0.0
             }
         },
+        "45": {
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.001,
+                "attack_max": 1.0,
+                "decay_time": 0.2,
+                "release_time": 0.05,
+                "release_max": 0.05,
+                "release_min": 0.0
+            }
+        },
         "46": {
             "envelope": {
                 "type": "ADR",
                 "attack_time": 0.001,
                 "attack_max": 1.0,
                 "decay_time": 0.15,
+                "release_time": 0.05,
+                "release_max": 0.05,
+                "release_min": 0.0
+            }
+        },
+        "47": {
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.001,
+                "attack_max": 1.0,
+                "decay_time": 0.2,
+                "release_time": 0.05,
+                "release_max": 0.05,
+                "release_min": 0.0
+            }
+        },
+        "48" : {
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.001,
+                "attack_max": 1.0,
+                "decay_time": 0.2,
                 "release_time": 0.05,
                 "release_max": 0.05,
                 "release_min": 0.0
@@ -582,7 +648,18 @@
                 "attack_max": 1.0,
                 "decay_time": 1.5,
                 "release_time": 0.5,
-                "release_max": 0.2,
+                "release_max": 0.3,
+                "release_min": 0.0
+            }
+        },
+        "51": {
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.005,
+                "attack_max": 1.0,
+                "decay_time": 1.5,
+                "release_time": 0.5,
+                "release_max": 0.3,
                 "release_min": 0.0
             }
         },
@@ -627,6 +704,17 @@
                 "decay_time": 0.5,
                 "release_time": 0.1,
                 "release_max": 0.05,
+                "release_min": 0.0
+            }
+        },
+        "59": {
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.005,
+                "attack_max": 1.0,
+                "decay_time": 1.5,
+                "release_time": 0.5,
+                "release_max": 0.3,
                 "release_min": 0.0
             }
         },

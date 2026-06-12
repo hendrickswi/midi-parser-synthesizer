@@ -1,4 +1,7 @@
 #include "CompositeOscillator.h"
+
+#include <iostream>
+
 #include "CompositeOscillatorNode.h"
 
 CompositeOscillator::CompositeOscillator() {
@@ -43,6 +46,10 @@ void CompositeOscillator::configure(const CompositeOscillatorParams& params, flo
             case OscillatorType::NOISE : {
                 child.oscillator = NoiseOscillator();
                 std::get<NoiseOscillator>(child.oscillator).set_frequency(base_hz * child.frequency_ratio, sample_rate);
+                break;
+            }
+            default : {
+                std::cerr << "WARNING: Invalid child oscillator type found in json data." << std::endl;
                 break;
             }
         }

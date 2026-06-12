@@ -210,15 +210,12 @@
             ]
         },
         "11": {
-            "oscillator_type": "VIBRATO",
-            "base_oscillator": {
-                "oscillator_type": "SAMPLE",
-                "zones": [
-                    { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C4.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 65 },
-                    { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C5.wav", "base_frequency": 523.25, "min_pitch": 66, "max_pitch": 77 },
-                    { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C6.wav", "base_frequency": 1046.50, "min_pitch": 78, "max_pitch": 127 }
-                ]
-            }
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C4.wav", "base_frequency": 261.63, "min_pitch": 0, "max_pitch": 65 },
+                { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C5.wav", "base_frequency": 523.25, "min_pitch": 66, "max_pitch": 77 },
+                { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Iowa/samples/Vibraphone/Vibraphone.sustain.ff.C6.wav", "base_frequency": 1046.50, "min_pitch": 78, "max_pitch": 127 }
+            ]
         },
         "13": {
             "oscillator_type": "SAMPLE",
@@ -818,6 +815,12 @@
             ]
         },
         "36": { "copy_from": 35 },
+        "37": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/37drum-side-stick/Ensoniq-SQ-1-Side-Stick.wav", "base_frequency": 110.0 }
+            ]
+        },
         "38": {
             "oscillator_type": "SAMPLE",
             "zones": [
@@ -837,10 +840,22 @@
                 { "file": "Assets/Samples/Extra/40drum-snare-2/Ensoniq-ESQ-1-Snare.wav", "base_frequency": 220.0 }
             ]
         },
+        "41": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/41drum-low-floor-tom/Korg-N1R-Low-Tom.wav", "base_frequency": 220.0 }
+            ]
+        },
         "42": {
             "oscillator_type": "SAMPLE",
             "zones": [
                 { "file": "Assets/Samples/Extra/42drum-closed-hi-hat/closed-hi-hat.wav", "base_frequency": 220.0 }
+            ]
+        },
+        "43": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/43drum-high-floor-tom/Korg-N1R-High-Tom.wav", "base_frequency": 220.0 }
             ]
         },
         "44": {
@@ -849,10 +864,28 @@
                 { "file": "Assets/Samples/Extra/44drum-pedal-hi-hat/pedal-hi-hat.wav", "base_frequency": 220.0 }
             ]
         },
+        "45": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/45-low-tom/Korg-N1R-Low-Tom-2.wav", "base_frequency": 220.0 }
+            ]
+        },
         "46": {
             "oscillator_type": "SAMPLE",
             "zones": [
                 { "file": "Assets/Samples/Extra/46drum-open-hi-hat/open-hi-hat.wav", "base_frequency": 220.0 }
+            ]
+        },
+        "47": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/47drum-low-mid-tom/Korg-N1R-Mid-Tom.wav", "base_frequency": 220.0 }
+            ]
+        },
+        "48": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/48drum-hi-mid-tom/Korg-N1R-High-Tom-2.wav", "base_frequency": 220.0 }
             ]
         },
         "49": {
@@ -860,6 +893,15 @@
             "zones": [
                 { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_mf_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 0, "max_velocity": 63 },
                 { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_ff_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 64, "max_velocity": 127 }
+            ]
+        },
+        "50": {
+            "copy_from": 43
+        },
+        "51": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/51drum-ride-cymbal-1/Korg-N1R-Ride-Cymbal.wav", "base_frequency": 220.0 }
             ]
         },
         "52": {
@@ -887,6 +929,12 @@
             "oscillator_type": "SAMPLE",
             "zones": [
                 { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/SSO-normalized/vibraslap-PB.wav", "base_frequency": 440.0 }
+            ]
+        },
+        "59": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/59drum-ride-cymbal-2/Korg-N1R-Ride-Cymbal-2.wav", "base_frequency": 220.0 }
             ]
         },
         "81": {
