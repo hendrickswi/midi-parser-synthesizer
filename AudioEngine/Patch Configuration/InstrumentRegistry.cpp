@@ -193,7 +193,7 @@ void InstrumentRegistry::parse_oscillator_config(const json& config, PatchDefini
             patch->oscillator_decorator_type = OscillatorDecoratorType::LOWPASS;
             patch->low_pass_filter_params.sample_rate = config.value("sample_rate", 48000.0f);
             patch->low_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
-            patch->low_pass_filter_params.resonance = config.value("resonance", 0.5f);
+            patch->low_pass_filter_params.resonance = config.value("resonance", 0.707f);
 
             if (config.contains("base_oscillator")) {
                 parse_oscillator_config(config["base_oscillator"], patch, loader);
@@ -207,6 +207,43 @@ void InstrumentRegistry::parse_oscillator_config(const json& config, PatchDefini
                 patch->oscillator_initialized = true;
             }
             break;
+        }
+        case OscillatorParsingType::BANDPASS : {
+            patch->oscillator_decorator_type = OscillatorDecoratorType::BANDPASS;
+            patch->band_pass_filter_params.sample_rate = config.value("sample_rate", 48000.0f);
+            patch->band_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
+            patch->band_pass_filter_params.resonance = config.value("resonance", 0.707f);
+
+            if (config.contains("base_oscillator")) {
+                parse_oscillator_config(config["base_oscillator"], patch, loader);
+            }
+            else {
+                // Continue with a fallback sine oscillator
+                std::cerr << "WARNING: No base oscillator specified for lowpass decorator. "
+                             "Sine oscillator fallback will be used." << std::endl;
+                patch->oscillator_type = OscillatorType::SINE;
+                patch->sine_oscillator_params = SineOscillatorParams(440.0f, sample_rate);
+                patch->oscillator_initialized = true;
+            }
+            break;
+        }
+        case OscillatorParsingType::HIGHPASS : {
+            patch->oscillator_decorator_type = OscillatorDecoratorType::HIGHPASS;
+            patch->high_pass_filter_params.sample_rate = config.value("sample_rate", 48000.0f);
+            patch->high_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
+            patch->high_pass_filter_params.resonance = config.value("resonance", 0.707f);
+
+            if (config.contains("base_oscillator")) {
+                parse_oscillator_config(config["base_oscillator"], patch, loader);
+            }
+            else {
+                // Continue with a fallback sine oscillator
+                std::cerr << "WARNING: No base oscillator specified for lowpass decorator. "
+                             "Sine oscillator fallback will be used." << std::endl;
+                patch->oscillator_type = OscillatorType::SINE;
+                patch->sine_oscillator_params = SineOscillatorParams(440.0f, sample_rate);
+                patch->oscillator_initialized = true;
+            }
         }
         case OscillatorParsingType::UNKNOWN :
         default : {

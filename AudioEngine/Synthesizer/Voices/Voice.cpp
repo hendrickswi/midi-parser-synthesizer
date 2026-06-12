@@ -59,7 +59,7 @@ Voice::Voice() { // NOLINT
     adr_envelope = ADREnvelope();
     adsr_envelope = ADSREnvelope();
     vibrato_oscillator_decorator = VibratoOscillator();
-    low_pass_filter_oscillator_decorator = LowPassFilterOscillator();
+    low_pass_filter_oscillator_decorator = LowpassFilterOscillator();
     tremolo_envelope_decorator = TremoloEnvelope();
 
     active_oscillator = nullptr;
@@ -215,6 +215,26 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
             );
             low_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &low_pass_filter_oscillator_decorator;
+            break;
+        }
+        case OscillatorDecoratorType::BANDPASS : {
+            band_pass_filter_oscillator_decorator.set_params(
+                sample_rate,
+                config->band_pass_filter_params.cutoff_hz,
+                config->band_pass_filter_params.resonance
+            );
+            band_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
+            active_oscillator = &band_pass_filter_oscillator_decorator;
+            break;
+        }
+        case OscillatorDecoratorType::HIGHPASS : {
+            high_pass_filter_oscillator_decorator.set_params(
+                sample_rate,
+                config->high_pass_filter_params.cutoff_hz,
+                config->high_pass_filter_params.resonance
+            );
+            high_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
+            active_oscillator = &high_pass_filter_oscillator_decorator;
             break;
         }
         default : {

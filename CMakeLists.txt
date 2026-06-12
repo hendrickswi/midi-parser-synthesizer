@@ -118,8 +118,12 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine/PlaylistNavigator.h
         AudioEngine/Synthesizer/Oscillators/Filters/ChamberlinSVF.cpp
         AudioEngine/Synthesizer/Oscillators/Filters/ChamberlinSVF.h
-        AudioEngine/Synthesizer/Oscillators/Decorators/LowPassFilterOscillator.cpp
-        AudioEngine/Synthesizer/Oscillators/Decorators/LowPassFilterOscillator.h
+        AudioEngine/Synthesizer/Oscillators/Decorators/LowpassFilterOscillator.cpp
+        AudioEngine/Synthesizer/Oscillators/Decorators/LowpassFilterOscillator.h
+        AudioEngine/Synthesizer/Oscillators/Decorators/BandpassFilterOscillator.cpp
+        AudioEngine/Synthesizer/Oscillators/Decorators/BandpassFilterOscillator.h
+        AudioEngine/Synthesizer/Oscillators/Decorators/HighpassFilterOscillator.cpp
+        AudioEngine/Synthesizer/Oscillators/Decorators/HighpassFilterOscillator.h
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE
