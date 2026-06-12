@@ -413,6 +413,7 @@ void InstrumentRegistry::set_fallbacks() {
             patch.oscillator_type = OscillatorType::SINE;
             patch.sine_oscillator_params = SineOscillatorParams(440.0f, sample_rate);
             patch.oscillator_initialized = true;
+            patch.oscillator_decorator_type = OscillatorDecoratorType::NONE;
         }
 
         if (!patch.envelope_initialized) {
@@ -420,8 +421,6 @@ void InstrumentRegistry::set_fallbacks() {
             patch.adsr_envelope_params = ADSREnvelopeParams(
                 sample_rate, 0.005f, 0.6f, 0.2f, 0.25f, 0.1f, 0.0f
             );
-
-            patch.oscillator_decorator_type = OscillatorDecoratorType::NONE;
             patch.envelope_decorator_type = EnvelopeDecoratorType::NONE;
 
             patch.is_one_shot = false;
@@ -441,9 +440,6 @@ void InstrumentRegistry::set_fallbacks() {
             patch.adr_envelope_params = ADREnvelopeParams(
                 sample_rate, 0.001f, 0.4f, 0.05f, 0.05f, 0.1f, 0.0f
             );
-
-            patch.oscillator_decorator_type = OscillatorDecoratorType::NONE;
-            patch.envelope_decorator_type = EnvelopeDecoratorType::NONE;
 
             patch.is_one_shot = true;
             patch.envelope_initialized = true;

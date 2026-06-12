@@ -693,7 +693,7 @@
         "80": {
             "oscillator_type": "LOWPASS",
             "cutoff_hz": 1000.0,
-            "resonance": 0.5,
+            "resonance": 0.7,
             "base_oscillator": {
                 "oscillator_type": "SQUARE"
             }
