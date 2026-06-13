@@ -911,6 +911,24 @@
                 { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/gongHit_fff-PB.wav", "base_frequency": 440.0, "min_velocity": 92, "max_velocity": 127 }
             ]
         },
+        "53": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/53drum-ride-bell/Korg-N1R-Ride-Bell.wav", "base_frequency": 220.0 }
+            ]
+        },
+        "54": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/54drum-tambourine/Korg-N1R-Tambourine.wav", "base_frequency": 220.0 }
+            ]
+        },
+        "55": {
+            "oscillator_type": "SAMPLE",
+            "zones": [
+                { "file": "Assets/Samples/Extra/55drum-splash-cymbal/Korg-N1R-Splash-Cymbal.wav", "base_frequency": 220.0 }
+            ]
+        },
         "56": {
             "oscillator_type": "SAMPLE",
             "zones": [
@@ -921,8 +939,7 @@
         "57": {
             "oscillator_type": "SAMPLE",
             "zones": [
-                { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_mf_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 0, "max_velocity": 63 },
-                { "file": "Assets/Samples/Virtual-Playing-Orchestra3/libs/Other/Samples/Percussion/VSCO2-CE/cymbal-crash1_ff_rr1-PB.wav", "base_frequency": 440.0, "min_velocity": 64, "max_velocity": 127 }
+                { "file": "Assets/Samples/Extra/57drum-crash-cymbal-2/Crash-Cymbal-2.wav", "base_frequency": 220.0 }
             ]
         },
         "58": {
