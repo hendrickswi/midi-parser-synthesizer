@@ -737,7 +737,7 @@
             "oscillator_type": "COMPOSITE",
             "composite_params": {
                 "child_types": ["TRIANGLE", "SINE", "SAWTOOTH"],
-                "mix_volumes": [0.5, 0.2, 0.2],
+                "mix_volumes": [0.6, 0.35, 0.35],
                 "child_frequency_ratios": [1.0, 2.0, 1.003],
                 "num_children": 3
             }

@@ -70,7 +70,7 @@ struct CompositeOscillatorParams {
 
     CompositeOscillatorParams(float hz, float sample_rate, std::vector<OscillatorType> child_types, std::vector<float> mix_volumes, std::vector<float> child_frequency_ratios, int num_children)
     : hz(hz), sample_rate(sample_rate) {
-        num_children = std::clamp(num_children, 0, static_cast<int>(MAX_CHILDREN_IN_COMPOSITE));
+        this->num_children = std::clamp(num_children, 0, static_cast<int>(MAX_CHILDREN_IN_COMPOSITE));
         for (unsigned int i = 0; i < num_children; i++) {
             if (i < child_types.size()) {
                 this->child_types[i] = child_types[i];
