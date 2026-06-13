@@ -1,16 +1,16 @@
 #ifndef MIDI_PARSERSYNTHESIZER_COMPOSITEOSCILLATOR_H
 #define MIDI_PARSERSYNTHESIZER_COMPOSITEOSCILLATOR_H
 #include <array>
+#include <vector>
 #include "../Base Oscillator/Oscillator.h"
 #include "CompositeOscillatorNode.h"
 #include "../../../../Patch Configuration/PatchDefinition.h"
-
 
 class CompositeOscillator : public Oscillator {
 private:
     std::array<CompositeOscillatorNode, MAX_CHILDREN_IN_COMPOSITE> children;
     int num_children;
-    std::array<float, 4096> child_buffer; // Safe estimate
+    std::vector<float> child_buffer;
 
 public:
     CompositeOscillator();

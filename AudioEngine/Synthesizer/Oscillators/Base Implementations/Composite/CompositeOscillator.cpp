@@ -7,17 +7,24 @@
 CompositeOscillator::CompositeOscillator() {
     children = std::array<CompositeOscillatorNode, MAX_CHILDREN_IN_COMPOSITE>();
     num_children = 0;
-    child_buffer = std::array<float, 4096>();
+    child_buffer = std::vector<float>();
+    child_buffer.reserve(4096);
 }
 
 CompositeOscillator::CompositeOscillator(float hz, float sample_rate) {
     children = std::array<CompositeOscillatorNode, MAX_CHILDREN_IN_COMPOSITE>();
     num_children = 0;
-    child_buffer = std::array<float, 4096>();
+    child_buffer = std::vector<float>();
+    child_buffer.reserve(4096);
 }
 
 void CompositeOscillator::configure(const CompositeOscillatorParams& params, float base_hz, float sample_rate) {
-    for (int i = 0; i < params.num_children; i++) {
+    unsigned int safe_num_children = params.num_children;
+    safe_num_children = std::min(safe_num_children, static_cast<unsigned int>(std::size(params.mix_volumes)));
+    safe_num_children = std::min(safe_num_children, static_cast<unsigned int>(std::size(params.child_frequency_ratios)));
+    safe_num_children = std::min(safe_num_children, static_cast<unsigned int>(std::size(params.child_types)));
+
+    for (int i = 0; i < safe_num_children; i++) {
         auto& child = children[i];
         child.mix_volume = params.mix_volumes[i];
         child.frequency_ratio = params.child_frequency_ratios[i];
@@ -54,11 +61,16 @@ void CompositeOscillator::configure(const CompositeOscillatorParams& params, flo
             }
         }
     }
-    num_children = params.num_children;
+    num_children = safe_num_children;
     set_frequency(base_hz, sample_rate);
 }
 
 void CompositeOscillator::process_sample_block(float* buffer, unsigned int num_frames, const float* fm_buffer) {
+    // Prevent buffer overflow if OS requests more frames than expected
+    if (child_buffer.size() < num_frames) {
+        child_buffer.resize(num_frames);
+    }
+
     std::fill(buffer, buffer + num_frames, 0.0f);
 
     for (int i = 0; i < num_children; i++) {
