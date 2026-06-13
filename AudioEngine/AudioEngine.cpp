@@ -179,7 +179,10 @@ void AudioEngine::execute_command(const SynthesizerCommand& command) {
 }
 
 AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
-: parser(), sequencer(), synth(resolve_hardware_sample_rate(fallback_sample_rate), global_volume) {
+    : parser(),
+    sequencer(resolve_hardware_sample_rate(fallback_sample_rate)),
+    synth(resolve_hardware_sample_rate(fallback_sample_rate), global_volume) {
+
     sequencer.set_synthesizer(&synth);
     underrun_count.store(0, std::memory_order_relaxed);
     active_sample_rate = resolve_hardware_sample_rate(fallback_sample_rate);
