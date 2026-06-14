@@ -8,8 +8,8 @@
 #include "../Patch Configuration/InstrumentRegistry.h"
 #include "../Synthesizer/Voices/Voice.h"
 
-static constexpr int NUM_VOICES = 128;
-static constexpr int NUM_CHANNELS = 16;
+static constexpr unsigned int NUM_VOICES = 256;
+static constexpr unsigned int NUM_CHANNELS = 16;
 
 class VoiceManager {
 private:
