@@ -35,13 +35,15 @@ MidiSequencer::MidiSequencer(float sample_rate) { // NOLINT
 MidiSequencer::MidiSequencer(const MidiSequencer& other) {
     track_sequence = other.track_sequence;
     synthesizer = other.synthesizer;
-    is_playing_flag = other.is_playing_flag.load();
+    is_playing_flag.store(other.is_playing_flag.load(std::memory_order_relaxed), std::memory_order_relaxed);
+    is_skipping_flag = other.is_skipping_flag;
     midi_file_ended_flag = other.midi_file_ended_flag;
     this->sample_rate = other.sample_rate;
     micros_per_tick = other.micros_per_tick;
     current_tick = other.current_tick;
-    audio_anchor_micros = other.audio_anchor_micros;
     micros_since_last_tick = other.micros_since_last_tick;
+    audio_anchor_micros = other.audio_anchor_micros;
+    total_elapsed_micros = other.total_elapsed_micros;
     track_indices = other.track_indices;
     active_notes = other.active_notes;
     tempo_events = other.tempo_events;
@@ -350,10 +352,9 @@ float MidiSequencer::calculate_current_track_sequence_gain() const {
     }
 
     // Calculate gain multiplier
-    float safe_headroom = 4.0f;
     float gain_multiplier = 1.0f;
     if (max_intensity > 0.0f) {
-        gain_multiplier = safe_headroom / (static_cast<float>(max_intensity) / 127.0f);
+        gain_multiplier = 4.0f / (static_cast<float>(max_intensity) / 127.0f);
     }
     else {
         gain_multiplier = 1.0f;

@@ -6,7 +6,9 @@ enum ContinuousController {
     MODULATION_WHEEL = 1,
     CHANNEL_VOLUME = 7,
     EXPRESSION = 11,
-    // Can add more here as the synthesizer implementation supports more
+    ALL_SOUND_OFF = 120,
+    RESET_ALL_CONTROLLERS = 121,
+    ALL_NOTES_OFF = 123
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_CONTINUOUSCONTROLLERS_H

@@ -688,20 +688,10 @@
             ]
         },
         "80": {
-            "oscillator_type": "BANDPASS",
-            "cutoff_hz": 1500.0,
-            "resonance": 0.8,
-            "base_oscillator": {
-                "oscillator_type": "SQUARE"
-            }
+            "oscillator_type": "SQUARE"
         },
         "81": {
-            "oscillator_type": "BANDPASS",
-            "cutoff_hz": 1200.0,
-            "resonance": 0.8,
-            "base_oscillator": {
-                "oscillator_type": "SAWTOOTH"
-            }
+            "oscillator_type": "SAWTOOTH"
         },
         "82": {
             "oscillator_type": "TRIANGLE"

@@ -181,10 +181,7 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
 
     if (status & RTAUDIO_OUTPUT_UNDERFLOW) {
         engine->underrun_count.fetch_add(1, std::memory_order_relaxed);
-        std::cerr << "Warning: Audio underflow detected. " << engine->underrun_count << " underruns since last reset." << std::endl;
     }
-
-    // TODO: Add back profiling (on a different thread?)
 
     return 0;
 }
@@ -260,10 +257,7 @@ void AudioEngine::open_audio_stream() {
             nullptr
         );
 
-        // Reserve memory with potentially modified buffer_size
-        mono_buffer = std::vector<float>();
         mono_buffer.resize(buffer_size);
-
         rt_audio.startStream();
         auto current_api = rt_audio.getCurrentApi();
         std::cout << "Audio engine now running at " << active_sample_rate << " Hz, "
@@ -318,39 +312,14 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     current_track = -1;
     file_has_switched = false;
 
-    // RtAudio setup
-    if (rt_audio.getDeviceCount() < 1) {
-        std::cerr << "Warning: No audio devices found" << std::endl;
-    }
-
-    RtAudio::StreamParameters parameters;
-    parameters.deviceId = rt_audio.getDefaultOutputDevice();
-    parameters.nChannels = num_channels;
-    parameters.firstChannel = 0;
-    unsigned int buffer_size = BUFFER_SIZE;
-    try {
-        rt_audio.openStream(&parameters, nullptr, RTAUDIO_FLOAT32,
-            static_cast<unsigned int>(active_sample_rate), &buffer_size, &audio_callback, this);
-        mono_buffer.resize(buffer_size);
-        rt_audio.startStream();
-        auto current_api = rt_audio.getCurrentApi();
-        std::cout << "Audio engine now running at " << active_sample_rate << " Hz, "
-            << num_channels << " channels, " << buffer_size << " frames, "
-            "using " << RtAudio::getApiDisplayName(current_api) << std::endl << std::endl;
-    }
-    catch (const std::exception& e) {
-        throw std::runtime_error(std::string("AudioEngine::init() failed during RtAudio stream opening/starting. Error:") += e.what());
-    }
+    open_audio_stream();
 
     watchdog_thread = std::thread(&AudioEngine::watchdog_thread_loop, this);
     watchdog_thread_active.store(true, std::memory_order_relaxed);
 }
 
 AudioEngine::~AudioEngine() {
-    stop();
-    if (!rt_audio.isStreamOpen()) return;
-    if (rt_audio.isStreamRunning()) rt_audio.stopStream();
-    rt_audio.closeStream();
+    close_audio_stream();
 
     if (watchdog_thread.joinable()) {
         watchdog_thread.join();

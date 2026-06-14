@@ -7,6 +7,7 @@
 #include "../../Containers/File.h"
 #include "../../Containers/TrackSequence.h"
 #include "../../EventTypeEnums/MidiEventType.h"
+#include "../../EventTypeEnums/ContinuousControllers.h"
 
 void MidiParser::init() {
     cursor = 0;
@@ -113,6 +114,17 @@ bool MidiParser::parse_midi_event(Track& track, const uint32_t& current_time, co
             uint32_t duration = current_time - note_data.start_time;
             track.add_note(Note(note_data.start_time, duration, data1, note_data.velocity, channel));
         }
+    }
+    else if (command == CONTROL_CHANGE && (data1 == ALL_SOUND_OFF || data1 == ALL_NOTES_OFF)) {
+        for (uint8_t pitch = 0; pitch < 128; pitch++) {
+            while (!pending_notes[channel][pitch].empty()) {
+                auto note_data = pending_notes[channel][pitch].front();
+                pending_notes[channel][pitch].pop();
+                uint32_t duration = current_time - note_data.start_time;
+                track.add_note(Note(note_data.start_time, duration, pitch, note_data.velocity, channel));
+            }
+        }
+        track.add_midi_event(MidiEvent(current_time, command, data1, data2, channel));
     }
     else {
         // Then this is some kind of miscellaneous event like a pitch bend
@@ -232,7 +244,7 @@ bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
     // Note cleanup (to not drop unfinished notes in poorly formatted files)
     for (uint8_t channel = 0; channel < 16; channel++) {
         for (uint8_t pitch = 0; pitch < 128; pitch++) {
-            if (!pending_notes[channel][pitch].empty()) {
+            while (!pending_notes[channel][pitch].empty()) {
                 auto note_data = pending_notes[channel][pitch].front();
                 pending_notes[channel][pitch].pop();
                 uint32_t duration = current_time - note_data.start_time;
@@ -324,6 +336,9 @@ bool MidiParser::parse(TrackSequence& sequence) {
             std::cerr << "Warning: Not reading additional track chunks after track number " << num_tracks << std::endl;
         }
     }
+
+    // Debug
+    std::cout << "INFO: Sucessfully parsed " << file.get_file_path() << " as type " << format << std::endl;
 
     return true;
 }
