@@ -44,7 +44,9 @@ private:
 
 public:
     explicit MidiSequencer(float sample_rate = 48000.0f);
-    MidiSequencer(const MidiSequencer& other);
+    MidiSequencer(const MidiSequencer& other) = delete;
+
+    MidiSequencer& operator=(const MidiSequencer& other) = delete;
 
     void start(uint64_t audio_current_micros);
     void stop();

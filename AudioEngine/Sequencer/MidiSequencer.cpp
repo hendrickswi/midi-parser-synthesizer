@@ -32,22 +32,6 @@ MidiSequencer::MidiSequencer(float sample_rate) { // NOLINT
     init(sample_rate);
 }
 
-MidiSequencer::MidiSequencer(const MidiSequencer& other) {
-    track_sequence = other.track_sequence;
-    synthesizer = other.synthesizer;
-    is_playing_flag.store(other.is_playing_flag.load(std::memory_order_relaxed), std::memory_order_relaxed);
-    is_skipping_flag = other.is_skipping_flag;
-    midi_file_ended_flag = other.midi_file_ended_flag;
-    this->sample_rate = other.sample_rate;
-    micros_per_tick = other.micros_per_tick;
-    current_tick = other.current_tick;
-    micros_since_last_tick = other.micros_since_last_tick;
-    audio_anchor_micros = other.audio_anchor_micros;
-    total_elapsed_micros = other.total_elapsed_micros;
-    track_indices = other.track_indices;
-    active_notes = other.active_notes;
-    tempo_events = other.tempo_events;
-}
 
 void MidiSequencer::init(float sample_rate) {
     track_sequence = nullptr;

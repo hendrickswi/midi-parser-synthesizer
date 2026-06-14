@@ -306,7 +306,6 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     num_channels = resolve_hardware_num_channels(1);
     global_sample_count.store(0, std::memory_order_relaxed);
     flush_command_queue_flag.store(false, std::memory_order_relaxed);
-
     loaded_track_sequences = std::vector<TrackSequence>();
     loaded_file_names = std::vector<std::string>();
     current_track = -1;
