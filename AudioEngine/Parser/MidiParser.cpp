@@ -221,14 +221,6 @@ bool MidiParser::parse_track_event(Track& track, uint32_t& current_time, uint8_t
 }
 
 bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
-    for (int channel = 0; channel < 16; channel++) {
-        for (int pitch = 0; pitch < 128; pitch++) {
-            while (!pending_notes[channel][pitch].empty()) {
-                pending_notes[channel][pitch].pop();
-            }
-        }
-    }
-
     uint32_t current_time = 0;
     uint8_t running_status = 0;
     std::size_t end_cursor = cursor + num_bytes;
@@ -238,18 +230,6 @@ bool MidiParser::parse_track_chunk(Track& track, const long& num_bytes) {
         if (!success) {
             std::cerr << "Error: Unable to parse track event at byte " << cursor << std::endl;
             return false;
-        }
-    }
-
-    // Note cleanup (to not drop unfinished notes in poorly formatted files)
-    for (uint8_t channel = 0; channel < 16; channel++) {
-        for (uint8_t pitch = 0; pitch < 128; pitch++) {
-            while (!pending_notes[channel][pitch].empty()) {
-                auto note_data = pending_notes[channel][pitch].front();
-                pending_notes[channel][pitch].pop();
-                uint32_t duration = current_time - note_data.start_time;
-                track.add_note(Note(note_data.start_time, duration, pitch, note_data.velocity, channel));
-            }
         }
     }
 
@@ -319,6 +299,24 @@ bool MidiParser::parse(TrackSequence& sequence) {
         uint32_t chunk_length = read_uint32();
         parse_track_chunk(track, chunk_length);
         sequence.add_track(track);
+    }
+
+    // Ensure there are no unfinished notes
+    if (!sequence.get_tracks().empty()) {
+        for (uint8_t channel = 0; channel < 16; channel++) {
+            for (uint8_t pitch = 0; pitch < 128; pitch++) {
+                while (!pending_notes[channel][pitch].empty()) {
+                    auto note_data = pending_notes[channel][pitch].front();
+                    pending_notes[channel][pitch].pop();
+
+                    // Add orphaned note to track 0 with arbitrarily minimal duration
+                    uint32_t duration = 100;
+                    Note orphaned_note = Note(note_data.start_time, duration, pitch, note_data.velocity, channel);
+                    sequence.add_note_to_track(0, orphaned_note);
+                }
+            }
+        }
+        sequence.sort_track(0);
     }
 
     // Check that there are no extra track chunks (i.e., num_tracks < actual number of tracks)

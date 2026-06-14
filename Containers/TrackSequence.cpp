@@ -25,6 +25,18 @@ void TrackSequence::add_track(const Track& track) {
     tracks.push_back(track);
 }
 
+void TrackSequence::add_note_to_track(std::size_t track_idx, const Note& note) {
+    if (track_idx < tracks.size()) {
+        tracks[track_idx].add_note(note);
+    }
+}
+
+void TrackSequence::sort_track(std::size_t track_idx) {
+    if (track_idx < tracks.size()) {
+        tracks[track_idx].sort_notes();
+    }
+}
+
 void TrackSequence::clear_tracks() {
     tracks.clear();
 }
