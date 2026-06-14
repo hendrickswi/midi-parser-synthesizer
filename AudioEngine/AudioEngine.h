@@ -28,7 +28,14 @@ private:
     std::size_t current_track;
     bool file_has_switched;
 
+    // The sequencer thread that schedules midi events, etc.
     std::thread sequencer_thread;
+    void sequencer_thread_loop();
+
+    // The watchdog thread that monitors performance
+    std::thread watchdog_thread;
+    std::atomic<bool> watchdog_thread_active;
+    void watchdog_thread_loop();
 
     // Helper array of strings for get_instrument_names_of_current_track_sequence()
     const std::string GM_MELODIC_PATCH_NAMES[128] = {
@@ -97,50 +104,51 @@ private:
     };
 
     const std::string GM_DRUM_PATCH_NAMES[128] = {
-    // 0 - 34: Unmapped in GM 1.0
-    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
-    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
-    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
-    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
-    "Unmapped", "Unmapped", "Unmapped",
+        // 0 - 34: Unmapped in GM 1.0
+        "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+        "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+        "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+        "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+        "Unmapped", "Unmapped", "Unmapped",
 
-    // 35 - 42
-    "Acoustic Bass Drum", "Bass Drum 1", "Side Stick", "Acoustic Snare",
-    "Hand Clap", "Electric Snare", "Low Floor Tom", "Closed Hi-Hat",
+        // 35 - 42
+        "Acoustic Bass Drum", "Bass Drum 1", "Side Stick", "Acoustic Snare",
+        "Hand Clap", "Electric Snare", "Low Floor Tom", "Closed Hi-Hat",
 
-    // 43 - 50
-    "High Floor Tom", "Pedal Hi-Hat", "Low Tom", "Open Hi-Hat",
-    "Low-Mid Tom", "Hi-Mid Tom", "Crash Cymbal 1", "High Tom",
+        // 43 - 50
+        "High Floor Tom", "Pedal Hi-Hat", "Low Tom", "Open Hi-Hat",
+        "Low-Mid Tom", "Hi-Mid Tom", "Crash Cymbal 1", "High Tom",
 
-    // 51 - 58
-    "Ride Cymbal 1", "Chinese Cymbal", "Ride Bell", "Tambourine",
-    "Splash Cymbal", "Cowbell", "Crash Cymbal 2", "Vibraslap",
+        // 51 - 58
+        "Ride Cymbal 1", "Chinese Cymbal", "Ride Bell", "Tambourine",
+        "Splash Cymbal", "Cowbell", "Crash Cymbal 2", "Vibraslap",
 
-    // 59 - 66
-    "Ride Cymbal 2", "Hi Bongo", "Low Bongo", "Mute Hi Conga",
-    "Open Hi Conga", "Low Conga", "High Timbale", "Low Timbale",
+        // 59 - 66
+        "Ride Cymbal 2", "Hi Bongo", "Low Bongo", "Mute Hi Conga",
+        "Open Hi Conga", "Low Conga", "High Timbale", "Low Timbale",
 
-    // 67 - 74
-    "High Agogo", "Low Agogo", "Cabasa", "Maracas",
-    "Short Whistle", "Long Whistle", "Short Guiro", "Long Guiro",
+        // 67 - 74
+        "High Agogo", "Low Agogo", "Cabasa", "Maracas",
+        "Short Whistle", "Long Whistle", "Short Guiro", "Long Guiro",
 
-    // 75 - 82
-    "Claves", "Hi Wood Block", "Low Wood Block", "Mute Cuica",
-    "Open Cuica", "Mute Triangle", "Open Triangle", "Shaker",
+        // 75 - 82
+        "Claves", "Hi Wood Block", "Low Wood Block", "Mute Cuica",
+        "Open Cuica", "Mute Triangle", "Open Triangle", "Shaker",
 
-    // 83 - 127: Unmapped in GM 1.0
-    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
-    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
-    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
-    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
-    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
-    "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped"
-};
+        // 83 - 127: Unmapped in GM 1.0
+        "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+        "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+        "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+        "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+        "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped",
+        "Unmapped", "Unmapped", "Unmapped", "Unmapped", "Unmapped"
+    };
 
     static float resolve_hardware_sample_rate(float fallback_sample_rate);
     static unsigned int resolve_hardware_num_channels(unsigned int fallback_num_channels);
     static bool is_high_priority_command(SynthesizerCommandType type);
     static inline uint64_t sample_count_to_microseconds(uint64_t sample_count, float sample_rate);
+    static inline uint64_t microseconds_to_sample_count(uint64_t microseconds, float sample_rate);
 
     // RtAudio mandated callback function
     static int audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,
@@ -149,12 +157,13 @@ private:
     // Convert mono processed samples to multiple channel audio by interleaving
     static void interleave(const float* mono_buffer, unsigned int mono_num_frames, float* interleaved_buffer, unsigned int interleaved_num_frames);
 
-    // The continuous loop run by this->sequencer_thread
-    void sequencer_thread_loop();
-
     // Helper dispatcher method for processing commands
     void execute_command(const SynthesizerCommand& command);
 
+    // Audio stream controls
+    void open_audio_stream();
+    void close_audio_stream();
+    void on_device_disconnect();
 
 public:
     explicit AudioEngine(float fallback_sample_rate = 48000.0f, float global_volume = 1.0f);

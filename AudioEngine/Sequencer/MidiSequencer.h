@@ -88,6 +88,9 @@ public:
      */
     void set_synthesizer(VoiceManager* synth);
 
+    [[nodiscard]] float get_sample_rate() const;
+    void set_sample_rate(float sample_rate);
+
     /**
      * Indicates whether the sequencer is currently in the playing state.
      *

@@ -61,6 +61,8 @@ bool VoiceManager::get_peak_amplitude_normalization() const {
 
 void VoiceManager::set_sample_rate(float sample_rate) {
     this->sample_rate = sample_rate;
+    delete registry;
+    registry = new InstrumentRegistry(sample_rate);
 }
 
 void VoiceManager::set_global_volume(float global_volume) {

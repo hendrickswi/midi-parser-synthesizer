@@ -4,6 +4,69 @@
 #include <iostream>
 #include <set>
 
+void AudioEngine::sequencer_thread_loop() {
+    while (sequencer.is_playing()) {
+        uint64_t current_micros = sample_count_to_microseconds(global_sample_count.load(std::memory_order_relaxed), active_sample_rate);
+        sequencer.update(current_micros + LOOK_AHEAD_MICROS);
+        std::this_thread::sleep_for(std::chrono::microseconds(250));
+    }
+}
+
+void AudioEngine::watchdog_thread_loop() {
+    uint64_t last_sample_count = 0;
+    uint64_t last_underrun_count = 0;
+    unsigned int consecutive_underrun_count = 0;
+    auto last_progress_time = std::chrono::steady_clock::now();
+
+    while (watchdog_thread_active.load(std::memory_order_relaxed)) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        if (is_playing()) {
+            uint64_t current_sample_count = global_sample_count.load(std::memory_order_relaxed);
+            uint64_t current_underrun_count = underrun_count.load(std::memory_order_relaxed);
+
+            // Buffer underflow detection
+            if (current_underrun_count > last_underrun_count) {
+                consecutive_underrun_count += (current_underrun_count - last_underrun_count);
+                last_underrun_count = current_underrun_count;
+
+                if (consecutive_underrun_count > 0) {
+                    std::cerr << "WARNING: Audio buffer underflow detected" << std::endl;
+                }
+            }
+            else if (consecutive_underrun_count > 0) {
+                consecutive_underrun_count--;
+            }
+
+            // Stream freeze detection
+            if (current_sample_count != last_sample_count) {
+                last_sample_count = current_sample_count;
+                last_progress_time = std::chrono::steady_clock::now();
+            }
+            else {
+                auto now = std::chrono::steady_clock::now();
+                auto time_since_last_progress = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_progress_time).count();
+
+                if (time_since_last_progress > 3000) {
+                    std::cerr << "WARNING: Audio stream has frozen for " << time_since_last_progress << " ms" << std::endl;
+
+                    // Attempt to recover
+                    on_device_disconnect();
+
+                    last_underrun_count = 0;
+                    last_sample_count = global_sample_count.load(std::memory_order_relaxed);
+                    consecutive_underrun_count = 0;
+                    last_progress_time = std::chrono::steady_clock::now();
+                }
+            }
+        }
+        else {
+            last_sample_count = global_sample_count.load(std::memory_order_relaxed);
+            last_progress_time = std::chrono::steady_clock::now();
+        }
+    }
+}
+
 float AudioEngine::resolve_hardware_sample_rate(float fallback_sample_rate) {
     try {
         RtAudio rtaudio;
@@ -48,7 +111,11 @@ bool AudioEngine::is_high_priority_command(SynthesizerCommandType type) {
 }
 
 uint64_t AudioEngine::sample_count_to_microseconds(uint64_t sample_count, float sample_rate) {
-    return sample_count * 1000000 / sample_rate;
+    return static_cast<uint64_t>((static_cast<double>(sample_count) * 1000000.0) / static_cast<double>(sample_rate));
+}
+
+uint64_t AudioEngine::microseconds_to_sample_count(uint64_t microseconds, float sample_rate) {
+    return static_cast<uint64_t>(static_cast<double>(microseconds) * static_cast<double>(sample_rate) / 1000000.0);
 }
 
 int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigned int num_frames, double stream_time,
@@ -132,14 +199,6 @@ void AudioEngine::interleave(const float* mono_buffer, unsigned int mono_num_fra
     }
 }
 
-void AudioEngine::sequencer_thread_loop() {
-    while (sequencer.is_playing()) {
-        uint64_t current_micros = sample_count_to_microseconds(global_sample_count.load(std::memory_order_relaxed), active_sample_rate);
-        sequencer.update(current_micros + LOOK_AHEAD_MICROS);
-        std::this_thread::sleep_for(std::chrono::microseconds(250));
-    }
-}
-
 void AudioEngine::execute_command(const SynthesizerCommand& command) {
     switch (command.type) {
         case SynthesizerCommandType::NOTE_ON : {
@@ -178,14 +237,78 @@ void AudioEngine::execute_command(const SynthesizerCommand& command) {
     }
 }
 
+void AudioEngine::open_audio_stream() {
+    if (rt_audio.getDeviceCount() < 1) {
+        std::cerr << "Warning: No audio devices found" << std::endl;
+    }
+
+    RtAudio::StreamParameters parameters;
+    parameters.deviceId = rt_audio.getDefaultOutputDevice();
+    parameters.nChannels = num_channels;
+    parameters.firstChannel = 0;
+    unsigned int buffer_size = BUFFER_SIZE;
+
+    try {
+        rt_audio.openStream(
+            &parameters,
+            nullptr,
+            RTAUDIO_FLOAT32,
+            static_cast<unsigned int>(active_sample_rate),
+            &buffer_size,
+            &audio_callback,
+            this,
+            nullptr
+        );
+
+        // Reserve memory with potentially modified buffer_size
+        mono_buffer = std::vector<float>();
+        mono_buffer.resize(buffer_size);
+
+        rt_audio.startStream();
+        auto current_api = rt_audio.getCurrentApi();
+        std::cout << "Audio engine now running at " << active_sample_rate << " Hz, "
+            << num_channels << " channels, " << buffer_size << " frames, "
+            "using " << RtAudio::getApiDisplayName(current_api) << std::endl << std::endl;
+    }
+    catch (const std::exception& e) {
+        throw std::runtime_error(std::string("AudioEngine::open_audio_stream() failed during RtAudio stream opening/starting. Error:") += e.what());
+    }
+}
+
+void AudioEngine::close_audio_stream() {
+    stop();
+    if (!rt_audio.isStreamOpen()) return;
+    if (rt_audio.isStreamRunning()) rt_audio.stopStream();
+    rt_audio.closeStream();
+}
+
+void AudioEngine::on_device_disconnect() {
+    std::cout << "INFO: Audio device disconnected. Resetting audio engine to use new default device." << std::endl;
+
+    bool was_playing = sequencer.is_playing();
+    close_audio_stream();
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    active_sample_rate = resolve_hardware_sample_rate(active_sample_rate);
+    sequencer.set_sample_rate(active_sample_rate);
+    synth.set_sample_rate(active_sample_rate);
+    num_channels = resolve_hardware_num_channels(num_channels);
+    open_audio_stream();
+
+    if (was_playing) play();
+}
+
 AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
-    : parser(),
-    sequencer(resolve_hardware_sample_rate(fallback_sample_rate)),
-    synth(resolve_hardware_sample_rate(fallback_sample_rate), global_volume) {
+    : parser(), sequencer(), synth() {
 
     sequencer.set_synthesizer(&synth);
     underrun_count.store(0, std::memory_order_relaxed);
+
     active_sample_rate = resolve_hardware_sample_rate(fallback_sample_rate);
+    sequencer.set_sample_rate(active_sample_rate);
+    synth.set_sample_rate(active_sample_rate);
+    synth.set_global_volume(global_volume);
+
     num_channels = resolve_hardware_num_channels(1);
     global_sample_count.store(0, std::memory_order_relaxed);
     flush_command_queue_flag.store(false, std::memory_order_relaxed);
@@ -208,19 +331,9 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     try {
         rt_audio.openStream(&parameters, nullptr, RTAUDIO_FLOAT32,
             static_cast<unsigned int>(active_sample_rate), &buffer_size, &audio_callback, this);
-
-        auto current_api = rt_audio.getCurrentApi();
-        // if (current_api == RtAudio::WINDOWS_WASAPI || current_api == RtAudio::WINDOWS_DS) {
-        //     platform_requires_profiling = true;
-        // }
-        // else {
-        //     platform_requires_profiling = false;
-        // }
-
-        // Instantiate with the potentially modified buffer_size
-        mono_buffer = std::vector<float>(buffer_size);
-
+        mono_buffer.resize(buffer_size);
         rt_audio.startStream();
+        auto current_api = rt_audio.getCurrentApi();
         std::cout << "Audio engine now running at " << active_sample_rate << " Hz, "
             << num_channels << " channels, " << buffer_size << " frames, "
             "using " << RtAudio::getApiDisplayName(current_api) << std::endl << std::endl;
@@ -228,6 +341,9 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     catch (const std::exception& e) {
         throw std::runtime_error(std::string("AudioEngine::init() failed during RtAudio stream opening/starting. Error:") += e.what());
     }
+
+    watchdog_thread = std::thread(&AudioEngine::watchdog_thread_loop, this);
+    watchdog_thread_active.store(true, std::memory_order_relaxed);
 }
 
 AudioEngine::~AudioEngine() {
@@ -235,6 +351,11 @@ AudioEngine::~AudioEngine() {
     if (!rt_audio.isStreamOpen()) return;
     if (rt_audio.isStreamRunning()) rt_audio.stopStream();
     rt_audio.closeStream();
+
+    if (watchdog_thread.joinable()) {
+        watchdog_thread.join();
+    }
+    watchdog_thread_active.store(false, std::memory_order_relaxed);
 }
 
 bool AudioEngine::load_midi_file(const std::string& file_path) {
@@ -343,7 +464,6 @@ void AudioEngine::stop() {
     if (sequencer_thread.joinable()) {
         sequencer_thread.join();
     }
-
 
     if (rt_audio.isStreamRunning()) {
         // Delegate command queue flush logic to the audio thread

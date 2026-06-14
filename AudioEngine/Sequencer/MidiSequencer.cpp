@@ -476,6 +476,14 @@ void MidiSequencer::set_synthesizer(VoiceManager* synth) {
     synthesizer = synth;
 }
 
+float MidiSequencer::get_sample_rate() const {
+    return sample_rate;
+}
+
+void MidiSequencer::set_sample_rate(float sample_rate) {
+    this->sample_rate = sample_rate;
+}
+
 bool MidiSequencer::is_playing() const {
     return is_playing_flag.load(std::memory_order_relaxed);
 }
