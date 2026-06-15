@@ -2,6 +2,7 @@
 #define MIDI_PARSERSYNTHESIZER_AUDIOENGINE_H
 #include <RtAudio.h>
 #include <thread>
+#include <mutex>
 
 #include "Parser/MidiParser.h"
 #include "Sequencer/MidiSequencer.h"
@@ -22,6 +23,7 @@ private:
     // bool platform_requires_profiling;
     std::atomic<uint64_t> global_sample_count;
     std::atomic<bool> flush_command_queue_flag;
+    std::recursive_mutex transport_mutex;
 
     std::vector<TrackSequence> loaded_track_sequences;
     std::vector<std::string> loaded_file_names;
@@ -163,7 +165,7 @@ private:
     // Audio stream controls
     void open_audio_stream();
     void close_audio_stream();
-    void on_device_disconnect();
+    void recover_stream();
 
 public:
     explicit AudioEngine(float fallback_sample_rate = 48000.0f, float global_volume = 1.0f);

@@ -51,7 +51,7 @@ void AudioEngine::watchdog_thread_loop() {
                     std::cerr << "WARNING: Audio stream has frozen for " << time_since_last_progress << " ms" << std::endl;
 
                     // Attempt to recover
-                    on_device_disconnect();
+                    recover_stream();
 
                     last_underrun_count = 0;
                     last_sample_count = global_sample_count.load(std::memory_order_relaxed);
@@ -272,11 +272,22 @@ void AudioEngine::open_audio_stream() {
 void AudioEngine::close_audio_stream() {
     stop();
     if (!rt_audio.isStreamOpen()) return;
-    if (rt_audio.isStreamRunning()) rt_audio.stopStream();
-    rt_audio.closeStream();
+    try {
+        if (rt_audio.isStreamRunning()) {
+            rt_audio.stopStream();
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Warning: Failed to stop audio stream. Error: " << e.what() << std::endl;
+    }
+
+    try {
+        rt_audio.closeStream();
+    } catch (const std::exception& e) {
+        std::cerr << "Warning: Failed to close audio stream. Error: " << e.what() << std::endl;
+    }
 }
 
-void AudioEngine::on_device_disconnect() {
+void AudioEngine::recover_stream() {
     std::cout << "INFO: Audio device disconnected. Resetting audio engine to use new default device." << std::endl;
 
     bool was_playing = sequencer.is_playing();
@@ -287,9 +298,13 @@ void AudioEngine::on_device_disconnect() {
     sequencer.set_sample_rate(active_sample_rate);
     synth.set_sample_rate(active_sample_rate);
     num_channels = resolve_hardware_num_channels(num_channels);
-    open_audio_stream();
 
-    if (was_playing) play();
+    try {
+        open_audio_stream();
+        if (was_playing) play();
+    } catch (const std::exception& e) {
+        std::cerr << "Warning: Failed to recover audio stream. Error: " << e.what() << std::endl;
+    }
 }
 
 AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
@@ -299,12 +314,8 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
 
     sequencer.set_synthesizer(&synth);
     underrun_count.store(0, std::memory_order_relaxed);
-
     active_sample_rate = resolve_hardware_sample_rate(fallback_sample_rate);
-    sequencer.set_sample_rate(active_sample_rate);
-    synth.set_sample_rate(active_sample_rate);
     synth.set_global_volume(global_volume);
-
     num_channels = resolve_hardware_num_channels(1);
     global_sample_count.store(0, std::memory_order_relaxed);
     flush_command_queue_flag.store(false, std::memory_order_relaxed);
@@ -326,11 +337,6 @@ AudioEngine::~AudioEngine() {
     }
 
     close_audio_stream();
-
-    if (watchdog_thread.joinable()) {
-        watchdog_thread.join();
-    }
-    watchdog_thread_active.store(false, std::memory_order_relaxed);
 }
 
 bool AudioEngine::load_midi_file(const std::string& file_path) {
@@ -407,6 +413,8 @@ bool AudioEngine::get_peak_amplitude_normalization() const {
 }
 
 void AudioEngine::play() {
+    std::lock_guard<std::recursive_mutex> lock(transport_mutex);
+
     if (current_track >= loaded_track_sequences.size() || sequencer.is_playing()) return;
 
     // Thread cleanup
@@ -435,6 +443,8 @@ void AudioEngine::play() {
 }
 
 void AudioEngine::stop() {
+    std::lock_guard<std::recursive_mutex> lock(transport_mutex);
+
     sequencer.stop();
     if (sequencer_thread.joinable()) {
         sequencer_thread.join();
@@ -444,28 +454,41 @@ void AudioEngine::stop() {
         // Delegate command queue flush logic to the audio thread
         flush_command_queue_flag.store(true, std::memory_order_release);
 
-        // Wait until flush is done
-        while (flush_command_queue_flag.load(std::memory_order_acquire)) {
+        // Wait until flush is done, but only for a limited amount of time in case audio thread is dead
+        unsigned int timeout_counter = 0;
+        while (flush_command_queue_flag.load(std::memory_order_acquire) && timeout_counter < 1000) {
             std::this_thread::sleep_for(std::chrono::microseconds(100));
+            timeout_counter++;
+        }
+
+        if (timeout_counter >= 1000) {
+            std::cerr << "WARNING: Audio thread is dead, watchdog thread will attempt to recover the program.";
+            synth.clear_command_queue();
+            synth.stop();
+            flush_command_queue_flag.store(false, std::memory_order_release);
+        }
+        else {
+            synth.push_to_command_queue(SynthesizerCommand(SynthesizerCommandType::STOP_ALL_VOICES, 0, 0, 0, 0));
         }
     }
     else {
-        // Audio thread is not active, so can just flush from this thread
+        // Audio thread is not active, so can safely flush from this thread
         synth.clear_command_queue();
+        synth.stop();
     }
-
-    synth.stop();
 
     uint64_t current_micros = sample_count_to_microseconds(global_sample_count.load(std::memory_order_relaxed), active_sample_rate);
     uint64_t sequencer_current_micros = sequencer.get_total_elapsed_micros();
 
     if (sequencer_current_micros > current_micros) {
         float overshot_seconds = static_cast<float>(sequencer_current_micros - current_micros) / 1000000.0;
-        skip_seconds(-overshot_seconds);
+        sequencer.skip_backward(overshot_seconds);
     }
 }
 
 void AudioEngine::skip_seconds(float seconds) {
+    std::lock_guard<std::recursive_mutex> lock(transport_mutex);
+
     bool was_playing = sequencer.is_playing();
     stop(); // Prevent thread collisions
 
@@ -484,6 +507,8 @@ void AudioEngine::skip_seconds(float seconds) {
 }
 
 void AudioEngine::set_track_sequence(std::size_t index) {
+    std::lock_guard<std::recursive_mutex> lock(transport_mutex);
+
     if (index >= loaded_track_sequences.size()) return;
     current_track = index;
     file_has_switched = true;
@@ -500,6 +525,8 @@ void AudioEngine::set_peak_amplitude_normalization(bool enabled) {
 }
 
 void AudioEngine::soft_reset() {
+    std::lock_guard<std::recursive_mutex> lock(transport_mutex);
+
     stop();
 
     if (current_track >= loaded_track_sequences.size()) {
