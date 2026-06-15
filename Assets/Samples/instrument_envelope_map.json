@@ -246,8 +246,8 @@
                 "type": "ADSR",
                 "attack_time": 0.01,
                 "attack_max": 1.0,
-                "decay_time": 0.3,
-                "sustain_level": 0.9,
+                "decay_time": 0.2,
+                "sustain_level": 0.8,
                 "release_time": 0.3,
                 "release_min": 0.0
             }
