@@ -293,7 +293,9 @@ void AudioEngine::on_device_disconnect() {
 }
 
 AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
-    : parser(), sequencer(), synth() {
+    : parser(),
+    sequencer(resolve_hardware_sample_rate(fallback_sample_rate)),
+    synth(resolve_hardware_sample_rate(fallback_sample_rate)) {
 
     sequencer.set_synthesizer(&synth);
     underrun_count.store(0, std::memory_order_relaxed);
