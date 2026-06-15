@@ -308,14 +308,17 @@ void AudioEngine::recover_stream() {
 }
 
 AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
-    : parser(),
-    sequencer(resolve_hardware_sample_rate(fallback_sample_rate)),
-    synth(resolve_hardware_sample_rate(fallback_sample_rate)) {
+    : parser(), sequencer(), synth() {
 
     sequencer.set_synthesizer(&synth);
     underrun_count.store(0, std::memory_order_relaxed);
+
     active_sample_rate = resolve_hardware_sample_rate(fallback_sample_rate);
+    synth.set_sample_rate(active_sample_rate);
     synth.set_global_volume(global_volume);
+    synth.load_instrument_registry();
+    sequencer.set_sample_rate(active_sample_rate);
+
     num_channels = resolve_hardware_num_channels(1);
     global_sample_count.store(0, std::memory_order_relaxed);
     flush_command_queue_flag.store(false, std::memory_order_relaxed);

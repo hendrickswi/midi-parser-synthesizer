@@ -29,16 +29,25 @@ private:
     bool peak_amplitude_normalization_on;
 
 public:
-    explicit VoiceManager(float sample_rate = 48000.0f, float global_volume = 1.0f);
+    explicit VoiceManager(float sample_rate = 48000.0f, float global_volume = 1.0f, bool defer_instrument_registry_load = true);
     VoiceManager(const VoiceManager& other) = delete;
 
     ~VoiceManager();
 
     VoiceManager& operator=(const VoiceManager& other) = delete;
 
-    bool get_peak_amplitude_normalization() const;
+    [[nodiscard]] bool get_peak_amplitude_normalization() const;
 
+    /**
+     * Sets the current sample rate.
+     *
+     * @remarks This method does *not* update the current instrument registry.
+     * See @c load_instrument_registry() for this functionality.
+     *
+     * @param sample_rate A float value representing the new sample rate.
+     */
     void set_sample_rate(float sample_rate);
+
     void set_global_volume(float global_volume);
     void set_channel_patch(uint8_t channel, uint8_t program_number);
     void set_channel_pitch_bend(uint8_t channel, uint16_t pitch_bend);
@@ -46,6 +55,14 @@ public:
     void set_channel_cc(uint8_t channel, uint8_t cc_number, uint8_t cc_value);
     void set_static_gain(float gain);
     void set_peak_amplitude_normalization(bool enabled);
+
+    /**
+     * Ensures the instrument registry used to configure voices in @c note_on() is correct
+     * according to the current sample rate.
+     *
+     * @remarks If a current instrument registry exists, it is deleted and the memory is freed.
+     */
+    void load_instrument_registry();
 
     void note_on(uint8_t channel, uint8_t pitch, uint8_t velocity);
     void note_off(uint8_t channel, uint8_t pitch);
