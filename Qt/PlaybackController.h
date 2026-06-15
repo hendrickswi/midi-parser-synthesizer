@@ -31,7 +31,7 @@ private:
     bool first_time;
 
     // Internal delegates
-    void on_track_sequence_change(std::size_t idx, bool start_automatically, bool update_navigator);
+    void on_track_sequence_change(std::size_t idx, NavigationDirection skip_direction, bool start_automatically, bool update_navigator);
     void set_state(PlaybackState new_state);
 
 public:

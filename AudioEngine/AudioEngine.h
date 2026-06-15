@@ -12,16 +12,23 @@ constexpr uint64_t LOOK_AHEAD_MICROS = 50000;
 
 class AudioEngine {
 private:
+    // The main three custom classes for midi playback
     MidiParser parser;
     MidiSequencer sequencer;
     VoiceManager synth;
+
+    // RtAudio for OS communication
     RtAudio rt_audio;
+    std::string active_device_name;
+
+    // Audio buffer stuffs
     std::vector<float> mono_buffer;
     std::atomic<uint64_t> underrun_count;
     float active_sample_rate;
     unsigned int num_channels;
-    // bool platform_requires_profiling;
     std::atomic<uint64_t> global_sample_count;
+
+    // Helps to avoid thread collisions
     std::atomic<bool> flush_command_queue_flag;
     std::recursive_mutex transport_mutex;
 

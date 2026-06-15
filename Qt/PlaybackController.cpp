@@ -2,7 +2,7 @@
 #include "../DirectoryManipulator.h"
 #include "../AudioEngine/AudioEngine.h"
 
-void PlaybackController::on_track_sequence_change(std::size_t idx, bool start_automatically, bool update_navigator) {
+void PlaybackController::on_track_sequence_change(std::size_t idx, NavigationDirection skip_direction, bool start_automatically, bool update_navigator) {
     if (idx >= engine->get_loaded_file_names().size() && idx == engine->get_current_track_sequence_index()) return;
 
     set_state(PlaybackState::STOPPED);
@@ -13,7 +13,7 @@ void PlaybackController::on_track_sequence_change(std::size_t idx, bool start_au
     if (start_automatically) {
         set_state(PlaybackState::PLAYING);
         if (update_navigator) {
-            navigator.commit_to_history(idx);
+            navigator.commit_to_history(idx, skip_direction);
         }
     }
 
@@ -97,7 +97,7 @@ void PlaybackController::toggle_play_pause() {
     }
     else {
         if (first_time) {
-            on_track_sequence_change(0, autoplay_enabled, true);
+            on_track_sequence_change(0, NavigationDirection::JUMP_TO, autoplay_enabled, true);
             first_time = false;
         } else {
             set_state(PlaybackState::PLAYING);
@@ -106,11 +106,11 @@ void PlaybackController::toggle_play_pause() {
 }
 
 void PlaybackController::skip_forward() {
-    on_track_sequence_change(navigator.get_next_idx(true), autoplay_enabled, true);
+    on_track_sequence_change(navigator.get_next_idx(true), NavigationDirection::FORWARD, autoplay_enabled, true);
 }
 
 void PlaybackController::skip_backward() {
-    on_track_sequence_change(navigator.get_previous_idx(), autoplay_enabled, false);
+    on_track_sequence_change(navigator.get_previous_idx(), NavigationDirection::BACKWARD, autoplay_enabled, true);
 }
 
 void PlaybackController::toggle_repeat() {
@@ -195,7 +195,7 @@ void PlaybackController::load_file(const std::string& file_path) {
 
 void PlaybackController::select_track(std::size_t idx) {
     if (idx >= engine->get_loaded_file_names().size()) return;
-    on_track_sequence_change(idx, autoplay_enabled, true);
+    on_track_sequence_change(idx, NavigationDirection::JUMP_TO, autoplay_enabled, true);
 }
 
 void PlaybackController::set_volume(int volume) {
@@ -214,7 +214,7 @@ void PlaybackController::on_playback_timer_tick() {
     time_updated(engine->get_track_sequence_current_time_seconds(), engine->get_track_sequence_length_seconds());
     if (!engine->is_playing()) {
         if (autoplay_enabled && !engine->get_loaded_file_names().empty()) {
-            on_track_sequence_change(navigator.get_next_idx(), true, true);
+            on_track_sequence_change(navigator.get_next_idx(), NavigationDirection::FORWARD, true, true);
         } else {
             set_state(PlaybackState::STOPPED);
         }
