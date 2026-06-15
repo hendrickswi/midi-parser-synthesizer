@@ -337,7 +337,7 @@ bool MidiParser::parse(TrackSequence& sequence) {
     }
 
     // Debug
-    std::cout << "INFO: Sucessfully parsed " << file.get_file_path() << " as type " << format << std::endl;
+    std::cout << "INFO: Successfully parsed type " << format << " .mid file: " << file.get_file_path() << std::endl;
     return true;
 }
 

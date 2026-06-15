@@ -260,9 +260,10 @@ void AudioEngine::open_audio_stream() {
         mono_buffer.resize(buffer_size);
         rt_audio.startStream();
         auto current_api = rt_audio.getCurrentApi();
-        std::cout << "Audio engine now running at " << active_sample_rate << " Hz, "
-            << num_channels << " channels, " << buffer_size << " frames, "
-            "using " << RtAudio::getApiDisplayName(current_api) << std::endl << std::endl;
+        std::cout << "INFO: Audio engine now running at " << active_sample_rate
+            << " Hz, with " << num_channels << " channels, " << buffer_size
+            << " frames, using " << RtAudio::getApiDisplayName(current_api)
+            << " audio driver." << std::endl << std::endl;
     }
     catch (const std::exception& e) {
         throw std::runtime_error(std::string("AudioEngine::open_audio_stream() failed during RtAudio stream opening/starting. Error:") += e.what());

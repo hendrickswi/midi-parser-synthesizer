@@ -158,8 +158,8 @@
                 "attack_time": 0.01,
                 "attack_max": 0.8,
                 "decay_time": 0.1,
-                "release_time": 0.2,
-                "release_max": 0.2,
+                "release_time": 0.5,
+                "release_max": 0.5,
                 "release_min": 0.0
             }
         },
@@ -168,10 +168,10 @@
             "envelope": {
                 "type": "ADR",
                 "attack_time": 0.01,
-                "attack_max": 0.7,
+                "attack_max": 0.8,
                 "decay_time": 0.1,
-                "release_time": 0.2,
-                "release_max": 0.2,
+                "release_time": 0.5,
+                "release_max": 0.5,
                 "release_min": 0.0
             }
         },

@@ -23,9 +23,6 @@ int main(int argc, char* argv[]) {
 
     MainWindow window = MainWindow(&playback_controller);
 
-    // Initial test folder loading
-    playback_controller.load_directory(auto_test_folder);
-
     window.show();
     return app.exec();
 }

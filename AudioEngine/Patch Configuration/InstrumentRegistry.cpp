@@ -378,6 +378,8 @@ void InstrumentRegistry::parse_envelope_config(const json& config, PatchDefiniti
 }
 
 void InstrumentRegistry::init_sample_instruments() {
+    std::cout << "INFO: Starting sample loading and patch configuration..." << std::endl;
+
     std::ifstream samples_file = std::ifstream(get_sanitized_file_path(std::string(SAMPLE_MAP_FILE_PATH)));
     json samples_config;
     if (samples_file.is_open()) {
