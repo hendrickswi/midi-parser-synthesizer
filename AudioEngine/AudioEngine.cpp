@@ -318,6 +318,11 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
 }
 
 AudioEngine::~AudioEngine() {
+    watchdog_thread_active.store(false, std::memory_order_relaxed);
+    if (watchdog_thread.joinable()) {
+        watchdog_thread.join();
+    }
+
     close_audio_stream();
 
     if (watchdog_thread.joinable()) {
