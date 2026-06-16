@@ -3,7 +3,7 @@
 #include "../AudioEngine/AudioEngine.h"
 
 void PlaybackController::on_track_sequence_change(std::size_t idx, NavigationDirection skip_direction, bool start_automatically, bool update_navigator) {
-    if (idx >= engine->get_loaded_file_names().size() && idx == engine->get_current_track_sequence_index()) return;
+    if (engine->get_loaded_file_names().empty() || idx >= engine->get_loaded_file_names().size() && idx == engine->get_current_track_sequence_index()) return;
 
     set_state(PlaybackState::STOPPED);
     engine->set_track_sequence(idx);

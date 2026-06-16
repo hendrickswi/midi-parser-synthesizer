@@ -363,6 +363,9 @@ std::size_t AudioEngine::get_current_track_sequence_index() const {
 }
 
 std::vector<std::string> AudioEngine::get_instrument_names_of_current_track_sequence() const {
+    auto instrument_names = std::vector<std::string>();
+    if (loaded_track_sequences.empty()) return instrument_names;
+
     const auto& track_sequence = loaded_track_sequences[current_track];
     auto melodic_patch_ids = std::set<uint8_t>();
     auto drum_patch_ids = std::set<uint8_t>();
@@ -395,7 +398,6 @@ std::vector<std::string> AudioEngine::get_instrument_names_of_current_track_sequ
     }
 
     // Convert melodic patch IDs into instrument names
-    std::vector<std::string> instrument_names = std::vector<std::string>();
     for (auto patch_id : melodic_patch_ids) {
         if (patch_id <= 127) {
             instrument_names.push_back(GM_MELODIC_PATCH_NAMES[patch_id]);
