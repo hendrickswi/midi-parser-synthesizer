@@ -16,10 +16,36 @@ void AudioEngine::watchdog_thread_loop() {
     uint64_t last_sample_count = 0;
     uint64_t last_underrun_count = 0;
     unsigned int consecutive_underrun_count = 0;
+    unsigned int device_poll_counter = 0;
     auto last_progress_time = std::chrono::steady_clock::now();
 
     while (watchdog_thread_active.load(std::memory_order_relaxed)) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        // Device polling and automatic device switching to OS default
+        device_poll_counter++;
+        if (device_poll_counter >= 10) {
+            device_poll_counter = 0;
+            try {
+                if (rt_audio.getDeviceCount() > 0) {
+                    auto new_default_id = rt_audio.getDefaultOutputDevice();
+                    std::string new_default_name = rt_audio.getDeviceInfo(new_default_id).name;
+
+                    if (new_default_name != active_device_name) {
+                        recover_stream();
+                        active_device_name = new_default_name;
+                        std::cout << "INFO: Audio device changed to " << new_default_name << std::endl;
+
+                        last_sample_count = global_sample_count.load(std::memory_order_relaxed);
+                        last_progress_time = std::chrono::steady_clock::now();
+                        continue;
+                    }
+                }
+            }
+            catch (std::exception& e) {
+                std::cerr << "Warning: Failed to poll audio device. Error: " << e.what() << std::endl;
+            }
+        }
 
         if (is_playing()) {
             uint64_t current_sample_count = global_sample_count.load(std::memory_order_relaxed);
@@ -239,8 +265,11 @@ void AudioEngine::open_audio_stream() {
         std::cerr << "Warning: No audio devices found" << std::endl;
     }
 
+    auto default_device = rt_audio.getDefaultOutputDevice();
+    active_device_name = rt_audio.getDeviceInfo(default_device).name;
+
     RtAudio::StreamParameters parameters;
-    parameters.deviceId = rt_audio.getDefaultOutputDevice();
+    parameters.deviceId = default_device;
     parameters.nChannels = num_channels;
     parameters.firstChannel = 0;
     unsigned int buffer_size = BUFFER_SIZE;
@@ -263,7 +292,8 @@ void AudioEngine::open_audio_stream() {
         std::cout << "INFO: Audio engine now running at " << active_sample_rate
             << " Hz, with " << num_channels << " channels, " << buffer_size
             << " frames, using " << RtAudio::getApiDisplayName(current_api)
-            << " audio driver." << std::endl << std::endl;
+            << " audio driver, on device " << active_device_name
+            << std::endl << std::endl;
     }
     catch (const std::exception& e) {
         throw std::runtime_error(std::string("AudioEngine::open_audio_stream() failed during RtAudio stream opening/starting. Error:") += e.what());
