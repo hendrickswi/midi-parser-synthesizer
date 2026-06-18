@@ -194,6 +194,7 @@ public:
     void soft_reset();
 
     [[nodiscard]] bool is_playing() const;
+    [[nodiscard]] bool is_track_sequence_ended() const;
     [[nodiscard]] float get_track_sequence_current_time_seconds() const;
     [[nodiscard]] float get_track_sequence_length_seconds() const;
     [[nodiscard]] uint64_t get_underrun_count() const;

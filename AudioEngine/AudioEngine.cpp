@@ -325,16 +325,24 @@ void AudioEngine::recover_stream() {
     close_audio_stream();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
+    float old_sample_rate = active_sample_rate;
     active_sample_rate = resolve_hardware_sample_rate(active_sample_rate);
     sequencer.set_sample_rate(active_sample_rate);
     synth.set_sample_rate(active_sample_rate);
+
+    // Only do this heavy operation if the sample rate actually changed
+    if (active_sample_rate != old_sample_rate) {
+        std::cout << "INFO: Reloading samples and patch configurations due to changed sample rate..." << std::endl;
+        synth.load_instrument_registry();
+    }
+
     num_channels = resolve_hardware_num_channels(num_channels);
 
     try {
         open_audio_stream();
         if (was_playing) play();
     } catch (const std::exception& e) {
-        std::cerr << "Warning: Failed to recover audio stream. Error: " << e.what() << std::endl;
+        std::cerr << "WARNING: Failed to recover audio stream. Error: " << e.what() << std::endl;
     }
 }
 
@@ -582,6 +590,10 @@ void AudioEngine::soft_reset() {
 
 bool AudioEngine::is_playing() const {
     return sequencer.is_playing();
+}
+
+bool AudioEngine::is_track_sequence_ended() const {
+    return sequencer.midi_file_ended();
 }
 
 float AudioEngine::get_track_sequence_current_time_seconds() const {

@@ -212,7 +212,7 @@ void PlaybackController::seek_to(int pos) {
 
 void PlaybackController::on_playback_timer_tick() {
     time_updated(engine->get_track_sequence_current_time_seconds(), engine->get_track_sequence_length_seconds());
-    if (!engine->is_playing()) {
+    if (engine->is_track_sequence_ended()) {
         if (autoplay_enabled && !engine->get_loaded_file_names().empty()) {
             on_track_sequence_change(navigator.get_next_idx(), NavigationDirection::FORWARD, true, true);
         } else {
