@@ -101,6 +101,18 @@
                 "release_min": 0.0
             }
         },
+        "10": {
+            "one_shot": true,
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.002,
+                "attack_max": 1.0,
+                "decay_time": 2.5,
+                "release_time": 3.0,
+                "release_max": 0.2,
+                "release_min": 0.0
+            }
+        },
         "11": {
             "envelope": {
                 "type": "TREMOLO",
@@ -115,6 +127,18 @@
                     "release_time": 1.0,
                     "release_min": 0.0
                 }
+            }
+        },
+        "12": {
+            "one_shot": true,
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.002,
+                "attack_max": 1.0,
+                "decay_time": 0.5,
+                "release_time": 1.0,
+                "release_max": 0.3,
+                "release_min": 0.0
             }
         },
         "13": {

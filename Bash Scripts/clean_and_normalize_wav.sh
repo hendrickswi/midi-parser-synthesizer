@@ -66,7 +66,7 @@ find "$INPUT_DIR" -type f -iname "*.wav" -print0 | while IFS= read -r -d '' file
     output_file="$OUTPUT_DIR/$relative_path"
 
     # Determine the pitch using aubiopitch so can do dynamic trimming of wav files
-    RAW_HZ=$(aubiopitch "$file" -p yinfft -B 2048 -s -120 -u Hz 2>/dev/null | awk '
+    RAW_HZ=$(aubiopitch "$file" -p yinfft -B 2048 -s -45 -u Hz 2>/dev/null | awk '
         $2 > 0 {
             # Round the frequency to the nearest 5 Hz bin
             bin = int(($2 + 2.5) / 5) * 5;
@@ -109,7 +109,7 @@ find "$INPUT_DIR" -type f -iname "*.wav" -print0 | while IFS= read -r -d '' file
             octave_label="Midrange (C3-B5)"
         else
             # Notes from C6 and up (frequencies >= 988 Hz)
-            duration="0.5"
+            duration="0.9"
             threshold="0.02%"
             octave_label="Treble (C6+)"
         fi
