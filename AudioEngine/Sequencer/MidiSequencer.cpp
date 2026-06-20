@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <thread>
 
 #include "../../EventTypeEnums/MetaEventType.h"
 #include "../../EventTypeEnums/MidiEventType.h"
@@ -212,6 +213,15 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
             active_notes.emplace(note);
         }
     }
+
+    // Sysex event processing
+    const auto& sysex_events = track.get_sysex_events();
+    while (indices.sysex_idx < sysex_events.size()
+        && sysex_events[indices.sysex_idx].absolute_time <= current_tick) {
+
+        // No-op for now
+        indices.sysex_idx++;
+    }
 }
 
 void MidiSequencer::skip_microseconds(uint64_t micros_to_skip) {
@@ -272,19 +282,13 @@ void MidiSequencer::skip_microseconds(uint64_t micros_to_skip) {
 [[nodiscard]] bool MidiSequencer::has_more_events() const {
     auto& tracks = track_sequence->get_tracks();
     for (int i = 0; i < tracks.size(); i++) {
-        auto& track = tracks[i];
-        auto& indices = track_indices[i];
+        const auto& track = tracks[i];
+        const auto& indices = track_indices[i];
 
-        if (indices.note_idx < track.get_notes().size()) {
-            return true;
-        }
-        else if (indices.midi_event_idx < track.get_midi_events().size()) {
-            return true;
-        }
-        else if (indices.meta_idx < track.get_meta_events().size()) {
-            return true;
-        }
-        else if (indices.sysex_idx < track.get_sysex_events().size()) {
+        if (indices.note_idx < track.get_notes().size() ||
+            indices.midi_event_idx < track.get_midi_events().size() ||
+            indices.meta_idx < track.get_meta_events().size() ||
+            indices.sysex_idx < track.get_sysex_events().size()) {
             return true;
         }
     }
