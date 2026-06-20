@@ -102,7 +102,7 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         }
     }
 
-    uint64_t current_absolute_sample = micros_to_samples(total_elapsed_micros, sample_rate);
+    uint64_t current_absolute_sample = micros_to_samples(audio_anchor_micros + total_elapsed_micros, sample_rate);
 
     // Midi event processing
     const auto& midi_events = track.get_midi_events();
@@ -115,7 +115,7 @@ void MidiSequencer::process_events(const Track& track, TrackIndices& indices) {
         if (is_skipping_flag) {
             // Case: Audio thread is paused, meaning any events pushed to the
             // LockFreeQueue will not be processed before unpausing.
-            // => Need to process these directly, but only need the *last* state
+            // => Need to process these directly
 
             switch (midi_event.command) {
                 case PROGRAM_CHANGE: {
@@ -417,7 +417,7 @@ void MidiSequencer::update(uint64_t audio_target_micros) {
             note.channel,
             note.pitch,
             note.volume,
-            micros_to_samples(total_elapsed_micros, sample_rate)
+            micros_to_samples(audio_anchor_micros + total_elapsed_micros, sample_rate)
         };
         synthesizer->push_to_command_queue(command);
         active_notes.pop();
