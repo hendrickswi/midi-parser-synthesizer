@@ -1,13 +1,15 @@
 #ifndef MIDI_PARSERSYNTHESIZER_PLAYBACKCONTROLLER_H
 #define MIDI_PARSERSYNTHESIZER_PLAYBACKCONTROLLER_H
-#include <QString>
 #include <QTimer>
 #include "../AudioEngine/PlaylistNavigator.h"
+
+constexpr float DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS = 1.0f;
 
 enum class PlaybackState {
     STOPPED,
     PAUSED,
-    PLAYING
+    PLAYING,
+    TRANSITIONING
 };
 
 class AudioEngine;
@@ -19,6 +21,7 @@ private:
     AudioEngine* engine;
     QTimer* playback_timer;
     QTimer* underrun_timer;
+    QTimer* delay_timer;
     uint64_t prev_underrun_count;
     unsigned int underrun_warning_ticks;
 
@@ -69,6 +72,7 @@ public slots:
 private slots:
     void on_playback_timer_tick();
     void on_underrun_timer_tick();
+    void on_delay_timer_tick();
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_PLAYBACKCONTROLLER_H

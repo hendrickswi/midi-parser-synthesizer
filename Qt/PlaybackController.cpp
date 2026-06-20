@@ -11,7 +11,7 @@ void PlaybackController::on_track_sequence_change(std::size_t idx, NavigationDir
     time_updated(engine->get_track_sequence_current_time_seconds(), engine->get_track_sequence_length_seconds());
 
     if (start_automatically) {
-        set_state(PlaybackState::PLAYING);
+        set_state(PlaybackState::TRANSITIONING);
         if (update_navigator) {
             navigator.commit_to_history(idx, skip_direction);
         }
@@ -34,7 +34,13 @@ void PlaybackController::set_state(PlaybackState new_state) {
         case PlaybackState::PLAYING : {
             playback_timer->stop();
             underrun_timer->stop();
+            delay_timer->stop();
             engine->stop();
+            break;
+        }
+        case PlaybackState::TRANSITIONING : {
+            playback_timer->stop();
+            delay_timer->stop();
             break;
         }
         default: {
@@ -44,11 +50,12 @@ void PlaybackController::set_state(PlaybackState new_state) {
 
     // Set up new state
     current_state = new_state;
-    switch (current_state) {
+    switch (new_state) {
         case PlaybackState::PLAYING : {
             engine->play();
             playback_timer->start(33);
             underrun_timer->start(500);
+            delay_timer->stop();
             playback_state_changed(true);
             break;
         }
@@ -56,6 +63,7 @@ void PlaybackController::set_state(PlaybackState new_state) {
             engine->stop();
             playback_timer->stop();
             underrun_timer->stop();
+            delay_timer->stop();
             playback_state_changed(false);
             break;
         }
@@ -63,18 +71,29 @@ void PlaybackController::set_state(PlaybackState new_state) {
             engine->stop();
             playback_timer->stop();
             underrun_timer->stop();
+            delay_timer->stop();
             playback_state_changed(false);
             engine->soft_reset();
             break;
         }
+        case PlaybackState::TRANSITIONING : {
+            engine->stop();
+            playback_timer->start(33);
+            underrun_timer->stop();
+            delay_timer->start(DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS * 1000);
+            playback_state_changed(true);
+        }
+        default: {
+            break;
+        }
     }
-
 }
 
 PlaybackController::PlaybackController(AudioEngine* engine, QObject* parent)
     : QObject(parent), engine(engine) {
     playback_timer = new QTimer(this);
     underrun_timer = new QTimer(this);
+    delay_timer = new QTimer(this);
     prev_underrun_count = 0;
     underrun_warning_ticks = 0;
     current_state = PlaybackState::PLAYING; // Ensure initialization logic
@@ -85,6 +104,7 @@ PlaybackController::PlaybackController(AudioEngine* engine, QObject* parent)
 
     connect(playback_timer, &QTimer::timeout, this, &PlaybackController::on_playback_timer_tick);
     connect(underrun_timer, &QTimer::timeout, this, &PlaybackController::on_underrun_timer_tick);
+    connect(delay_timer, &QTimer::timeout, this ,&PlaybackController::on_delay_timer_tick);
 
     // Initialize first track sequence
 
@@ -211,7 +231,13 @@ void PlaybackController::seek_to(int pos) {
 }
 
 void PlaybackController::on_playback_timer_tick() {
-    time_updated(engine->get_track_sequence_current_time_seconds(), engine->get_track_sequence_length_seconds());
+    if (current_state == PlaybackState::TRANSITIONING) {
+        time_updated(DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS - static_cast<float>(delay_timer->remainingTime()) / 1000.0f, engine->get_track_sequence_length_seconds());
+    }
+    else {
+        time_updated(engine->get_track_sequence_current_time_seconds() + DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS, engine->get_track_sequence_length_seconds());
+    }
+
     if (engine->is_track_sequence_ended()) {
         if (autoplay_enabled && !engine->get_loaded_file_names().empty()) {
             on_track_sequence_change(navigator.get_next_idx(), NavigationDirection::FORWARD, true, true);
@@ -237,4 +263,8 @@ void PlaybackController::on_underrun_timer_tick() {
     }
 
     prev_underrun_count = current_underrun_count;
+}
+
+void PlaybackController::on_delay_timer_tick() {
+    set_state(PlaybackState::PLAYING);
 }
