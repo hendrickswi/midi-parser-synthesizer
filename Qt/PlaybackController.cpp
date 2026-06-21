@@ -101,6 +101,7 @@ PlaybackController::PlaybackController(AudioEngine* engine, QObject* parent)
     navigator = PlaylistNavigator();
     autoplay_enabled = true;
     first_time = true;
+    transition_interrupted = false;
 
     connect(playback_timer, &QTimer::timeout, this, &PlaybackController::on_playback_timer_tick);
     connect(underrun_timer, &QTimer::timeout, this, &PlaybackController::on_underrun_timer_tick);
@@ -111,26 +112,45 @@ PlaybackController::PlaybackController(AudioEngine* engine, QObject* parent)
 }
 
 void PlaybackController::toggle_play_pause() {
-    if (engine->is_playing()) {
-        // User pressed the pause button
-        set_state(PlaybackState::PAUSED);
-    }
-    else {
-        if (first_time) {
-            on_track_sequence_change(0, NavigationDirection::JUMP_TO, autoplay_enabled, true);
-            first_time = false;
-        } else {
-            set_state(PlaybackState::PLAYING);
+    switch (current_state) {
+        case PlaybackState::PLAYING : {
+            set_state(PlaybackState::PAUSED);
+            break;
+        }
+        case PlaybackState::TRANSITIONING : {
+            set_state(PlaybackState::PAUSED);
+            transition_interrupted = true;
+            break;
+        }
+        case PlaybackState::PAUSED :
+        case PlaybackState::STOPPED : {
+            if (first_time) {
+                on_track_sequence_change(0, NavigationDirection::JUMP_TO, autoplay_enabled, true);
+                first_time = false;
+            }
+            else if (transition_interrupted) {
+                set_state(PlaybackState::TRANSITIONING);
+                transition_interrupted = false;
+            }
+            else {
+                set_state(PlaybackState::PLAYING);
+            }
+            break;
+        }
+        default : {
+            break;
         }
     }
 }
 
 void PlaybackController::skip_forward() {
     on_track_sequence_change(navigator.get_next_idx(true), NavigationDirection::FORWARD, autoplay_enabled, true);
+    first_time = false;
 }
 
 void PlaybackController::skip_backward() {
     on_track_sequence_change(navigator.get_previous_idx(), NavigationDirection::BACKWARD, autoplay_enabled, true);
+    first_time = false;
 }
 
 void PlaybackController::toggle_repeat() {

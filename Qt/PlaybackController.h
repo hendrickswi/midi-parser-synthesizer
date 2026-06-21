@@ -32,6 +32,7 @@ private:
     PlaylistNavigator navigator;
     bool autoplay_enabled;
     bool first_time;
+    bool transition_interrupted;
 
     // Internal delegates
     void on_track_sequence_change(std::size_t idx, NavigationDirection skip_direction, bool start_automatically, bool update_navigator);
