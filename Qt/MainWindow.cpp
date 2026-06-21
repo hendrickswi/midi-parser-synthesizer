@@ -319,7 +319,7 @@ void MainWindow::on_shuffle_changed(bool shuffle_flag) {
 }
 
 void MainWindow::on_autoplay_changed(bool autoplay_flag) {
-    toggle_peak_amplitude_action->setChecked(autoplay_flag);
+    toggle_autoplay_action->setChecked(autoplay_flag);
 }
 
 void MainWindow::on_track_list_updated(const std::vector<std::string>& file_paths) {
