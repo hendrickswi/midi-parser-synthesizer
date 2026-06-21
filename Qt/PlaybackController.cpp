@@ -232,10 +232,16 @@ void PlaybackController::seek_to(int pos) {
 
 void PlaybackController::on_playback_timer_tick() {
     if (current_state == PlaybackState::TRANSITIONING) {
-        time_updated(DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS - static_cast<float>(delay_timer->remainingTime()) / 1000.0f, engine->get_track_sequence_length_seconds());
+        time_updated(
+            DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS - static_cast<float>(delay_timer->remainingTime()) / 1000.0f,
+            engine->get_track_sequence_length_seconds() + DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS
+        );
     }
     else {
-        time_updated(engine->get_track_sequence_current_time_seconds() + DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS, engine->get_track_sequence_length_seconds());
+        time_updated(
+            engine->get_track_sequence_current_time_seconds() + DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS,
+            engine->get_track_sequence_length_seconds() + DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS
+        );
     }
 
     if (engine->is_track_sequence_ended()) {

@@ -35,7 +35,6 @@ private:
     std::vector<TrackSequence> loaded_track_sequences;
     std::vector<std::string> loaded_file_names;
     std::size_t current_track;
-    bool file_has_switched;
 
     // The sequencer thread that schedules midi events, etc.
     std::thread sequencer_thread;

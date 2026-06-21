@@ -364,7 +364,6 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     loaded_track_sequences = std::vector<TrackSequence>();
     loaded_file_names = std::vector<std::string>();
     current_track = -1;
-    file_has_switched = false;
 
     open_audio_stream();
 
@@ -466,17 +465,6 @@ void AudioEngine::play() {
         sequencer_thread.join();
     }
 
-    // Track setup
-    if (file_has_switched) {
-        sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
-        file_has_switched = false;
-    }
-    else if (sequencer.midi_file_ended()) {
-        sequencer.reset();
-        sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
-        sequencer.set_synthesizer(&synth);
-    }
-
     // Start the playback
     sequencer.start(sample_count_to_microseconds(
         global_sample_count.load(std::memory_order_relaxed),
@@ -555,7 +543,7 @@ void AudioEngine::set_track_sequence(std::size_t index) {
 
     if (index >= loaded_track_sequences.size()) return;
     current_track = index;
-    file_has_switched = true;
+    sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
     global_sample_count.store(0, std::memory_order_relaxed);
     underrun_count.store(0, std::memory_order_relaxed);
 }
