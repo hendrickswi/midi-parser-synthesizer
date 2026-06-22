@@ -164,6 +164,17 @@
                 "release_min": 0.0
             }
         },
+        "19": {
+            "envelope": {
+                "type": "ADSR",
+                "attack_time": 0.05,
+                "attack_max": 1.0,
+                "decay_time": 0.1,
+                "sustain_level": 1.0,
+                "release_time": 0.6,
+                "release_min": 0.0
+            }
+        },
         "21": {
             "envelope": {
                 "type": "ADSR",
