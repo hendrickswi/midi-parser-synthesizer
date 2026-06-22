@@ -458,7 +458,7 @@ void InstrumentRegistry::set_fallbacks() {
         if (!patch.envelope_initialized) {
             patch.envelope_type = EnvelopeType::ADSR;
             patch.adsr_envelope_params = ADSREnvelopeParams(
-                sample_rate, 0.005f, 0.6f, 0.2f, 0.25f, 0.1f, 0.0f
+                sample_rate, 0.005f, 0.9f, 0.2f, 0.25f, 0.1f, 0.0f
             );
             patch.envelope_decorator_type = EnvelopeDecoratorType::NONE;
 
