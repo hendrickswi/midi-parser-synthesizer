@@ -7,7 +7,7 @@
 #include "../Patch Configuration/InstrumentRegistry.h"
 #include "../../EventTypeEnums/ContinuousControllers.h"
 
-VoiceManager::VoiceManager(float sample_rate, float global_volume, bool defer_instrument_registry_load)
+VoiceManager::VoiceManager(float sample_rate, float global_volume)
     : command_queue() {
     voices = std::array<Voice*, NUM_VOICES>();
     for (auto& voice : voices) {
@@ -17,11 +17,7 @@ VoiceManager::VoiceManager(float sample_rate, float global_volume, bool defer_in
     channel_patches = std::array<uint8_t, NUM_CHANNELS>();
     channel_patches.fill(0);
 
-    if (defer_instrument_registry_load) {
-        registry = nullptr;
-    } else {
-        registry = new InstrumentRegistry(sample_rate);
-    }
+    registry = new InstrumentRegistry(sample_rate);
 
     channel_pitch_bends = std::array<uint16_t, NUM_CHANNELS>();
     channel_pitch_bends.fill(8192);
@@ -63,8 +59,10 @@ bool VoiceManager::get_peak_amplitude_normalization() const {
     return peak_amplitude_normalization_on;
 }
 
+
 void VoiceManager::set_sample_rate(float sample_rate) {
     this->sample_rate = sample_rate;
+    registry->set_sample_rate(sample_rate);
 }
 
 void VoiceManager::set_global_volume(float global_volume) {
@@ -107,9 +105,12 @@ void VoiceManager::set_peak_amplitude_normalization(bool enabled) {
     peak_amplitude_normalization_on = enabled;
 }
 
-void VoiceManager::load_instrument_registry() {
-    delete registry;
-    registry = new InstrumentRegistry(sample_rate);
+void VoiceManager::load_patch_configs(const std::set<uint8_t>& melodic_patch_numbers, const std::set<uint8_t>& drum_patch_numbers) {
+    registry->load_patches(melodic_patch_numbers, drum_patch_numbers);
+}
+
+void VoiceManager::unload_all_patch_configs() {
+    registry->clear_patches();
 }
 
 void VoiceManager::note_on(uint8_t channel, uint8_t pitch, uint8_t velocity) {

@@ -176,6 +176,18 @@ struct PatchDefinition {
     bool is_one_shot = false;
     bool oscillator_initialized = false;
     bool envelope_initialized = false;
+
+    void clear() {
+        oscillator_type = OscillatorType::SINE;
+        oscillator_initialized = false;
+        envelope_type = EnvelopeType::ADSR;
+        envelope_initialized = false;
+        oscillator_decorator_type = OscillatorDecoratorType::NONE;
+        envelope_decorator_type = EnvelopeDecoratorType::NONE;
+        is_one_shot = false;
+
+        sample_oscillator_params.samples.clear();
+    }
 };
 
 #endif //MIDI_PARSERSYNTHESIZER_PATCHDEFINITION_H

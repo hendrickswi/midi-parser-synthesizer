@@ -333,7 +333,8 @@ void AudioEngine::recover_stream() {
     // Only do this heavy operation if the sample rate actually changed
     if (active_sample_rate != old_sample_rate) {
         std::cout << "INFO: Reloading samples and patch configurations due to changed sample rate..." << std::endl;
-        synth.load_instrument_registry();
+        synth.unload_all_patch_configs();
+        synth.load_patch_configs(current_melodic_patch_numbers, current_drum_patch_numbers);
     }
 
     num_channels = resolve_hardware_num_channels(num_channels);
@@ -346,6 +347,40 @@ void AudioEngine::recover_stream() {
     }
 }
 
+void AudioEngine::determine_all_patches_in_track_sequence(const TrackSequence& track_sequence,
+    std::set<uint8_t>* determined_melodic_patch_numbers, std::set<uint8_t>* determined_drum_patch_numbers) {
+
+    determined_melodic_patch_numbers->clear();
+    determined_drum_patch_numbers->clear();
+
+    bool has_notes = false;
+    bool explicit_program_change_found = false;
+
+    // Find unique patch IDs
+    for (const auto& track : track_sequence.get_tracks()) {
+        for (const auto& note : track.get_notes()) {
+            if (note.channel == 9) {
+                determined_drum_patch_numbers->insert(note.pitch);
+            }
+            else {
+                has_notes = true;
+            }
+        }
+
+        for (const auto& event : track.get_midi_events()) {
+            if (event.command == PROGRAM_CHANGE && event.channel != 9) {
+                determined_melodic_patch_numbers->insert(event.data1);
+                explicit_program_change_found = true;
+            }
+        }
+    }
+
+    if (has_notes && !explicit_program_change_found) {
+        // Grand piano default
+        determined_melodic_patch_numbers->insert(0);
+    }
+}
+
 AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     : parser(), sequencer(), synth() {
 
@@ -355,7 +390,6 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     active_sample_rate = resolve_hardware_sample_rate(fallback_sample_rate);
     synth.set_sample_rate(active_sample_rate);
     synth.set_global_volume(global_volume);
-    synth.load_instrument_registry();
     sequencer.set_sample_rate(active_sample_rate);
 
     num_channels = resolve_hardware_num_channels(1);
@@ -363,18 +397,26 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     flush_command_queue_flag.store(false, std::memory_order_relaxed);
     loaded_track_sequences = std::vector<TrackSequence>();
     loaded_file_names = std::vector<std::string>();
-    current_track = -1;
+    current_track_sequence = -1;
+    current_melodic_patch_numbers = std::set<uint8_t>();
+    current_drum_patch_numbers = std::set<uint8_t>();
 
     open_audio_stream();
 
     watchdog_thread = std::thread(&AudioEngine::watchdog_thread_loop, this);
     watchdog_thread_active.store(true, std::memory_order_relaxed);
+
+    is_loading_flag.store(false, std::memory_order_relaxed);
 }
 
 AudioEngine::~AudioEngine() {
     watchdog_thread_active.store(false, std::memory_order_relaxed);
     if (watchdog_thread.joinable()) {
         watchdog_thread.join();
+    }
+
+    if (registry_loader_thread.joinable()) {
+        registry_loader_thread.join();
     }
 
     close_audio_stream();
@@ -396,14 +438,14 @@ const std::vector<std::string>& AudioEngine::get_loaded_file_names() const {
 }
 
 std::size_t AudioEngine::get_current_track_sequence_index() const {
-    return current_track;
+    return current_track_sequence;
 }
 
 std::vector<std::string> AudioEngine::get_instrument_names_of_current_track_sequence() const {
     auto instrument_names = std::vector<std::string>();
     if (loaded_track_sequences.empty()) return instrument_names;
 
-    const auto& track_sequence = loaded_track_sequences[current_track];
+    const auto& track_sequence = loaded_track_sequences[current_track_sequence];
     auto melodic_patch_ids = std::set<uint8_t>();
     auto drum_patch_ids = std::set<uint8_t>();
 
@@ -458,7 +500,7 @@ bool AudioEngine::get_peak_amplitude_normalization() const {
 void AudioEngine::play() {
     std::lock_guard<std::recursive_mutex> lock(transport_mutex);
 
-    if (current_track >= loaded_track_sequences.size() || sequencer.is_playing()) return;
+    if (current_track_sequence >= loaded_track_sequences.size() || sequencer.is_playing()) return;
 
     // Thread cleanup
     if (sequencer_thread.joinable()) {
@@ -542,8 +584,22 @@ void AudioEngine::set_track_sequence(std::size_t index) {
     std::lock_guard<std::recursive_mutex> lock(transport_mutex);
 
     if (index >= loaded_track_sequences.size()) return;
-    current_track = index;
-    sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
+
+    if (registry_loader_thread.joinable()) {
+        registry_loader_thread.join();
+    }
+
+    current_track_sequence = index;
+    sequencer.set_track_sequence(&loaded_track_sequences[current_track_sequence]);
+    determine_all_patches_in_track_sequence(loaded_track_sequences[current_track_sequence], &current_melodic_patch_numbers, &current_drum_patch_numbers);
+
+    is_loading_flag.store(true, std::memory_order_release);
+    registry_loader_thread = std::thread([this]() {
+        synth.unload_all_patch_configs();
+        synth.load_patch_configs(current_melodic_patch_numbers, current_drum_patch_numbers);
+        is_loading_flag.store(false, std::memory_order_release);
+    });
+
     global_sample_count.store(0, std::memory_order_relaxed);
     underrun_count.store(0, std::memory_order_relaxed);
 }
@@ -561,19 +617,23 @@ void AudioEngine::soft_reset() {
 
     stop();
 
-    if (current_track >= loaded_track_sequences.size()) {
+    if (current_track_sequence >= loaded_track_sequences.size()) {
         return;
     }
 
     // Soft reset sequencer
     sequencer.reset();
-    sequencer.set_track_sequence(&loaded_track_sequences[current_track]);
+    sequencer.set_track_sequence(&loaded_track_sequences[current_track_sequence]);
     sequencer.set_synthesizer(&synth);
 
     // Soft reset synthesizer
     synth.reset_state();
     global_sample_count.store(0, std::memory_order_relaxed);
     underrun_count.store(0, std::memory_order_relaxed);
+}
+
+bool AudioEngine::is_loading() const {
+    return is_loading_flag.load(std::memory_order_relaxed);
 }
 
 bool AudioEngine::is_playing() const {
@@ -585,12 +645,12 @@ bool AudioEngine::is_track_sequence_ended() const {
 }
 
 float AudioEngine::get_track_sequence_current_time_seconds() const {
-    if (current_track < 0 || current_track >= loaded_track_sequences.size()) return 0.0f;
+    if (current_track_sequence < 0 || current_track_sequence >= loaded_track_sequences.size()) return 0.0f;
     return sequencer.get_current_time_seconds();
 }
 
 float AudioEngine::get_track_sequence_length_seconds() const {
-    if (current_track < 0 || current_track >= loaded_track_sequences.size()) return 0.0f;
+    if (current_track_sequence < 0 || current_track_sequence >= loaded_track_sequences.size()) return 0.0f;
     return sequencer.get_total_duration_seconds();
 }
 

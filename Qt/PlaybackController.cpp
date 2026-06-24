@@ -38,8 +38,9 @@ void PlaybackController::set_state(PlaybackState new_state) {
             engine->stop();
             break;
         }
-        case PlaybackState::TRANSITIONING : {
-            playback_timer->stop();
+        case PlaybackState::TRANSITIONING :
+        case PlaybackState::LOADING : {
+            // playback_timer->stop();
             delay_timer->stop();
             break;
         }
@@ -52,6 +53,12 @@ void PlaybackController::set_state(PlaybackState new_state) {
     current_state = new_state;
     switch (new_state) {
         case PlaybackState::PLAYING : {
+            // If the engine is still loading, then do not allow the play state yet
+            if (engine->is_loading()) {
+                set_state(PlaybackState::LOADING);
+                break;
+            }
+
             engine->play();
             playback_timer->start(33);
             underrun_timer->start(500);
@@ -82,6 +89,15 @@ void PlaybackController::set_state(PlaybackState new_state) {
             underrun_timer->stop();
             delay_timer->start(DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS * 1000);
             playback_state_changed(true);
+            break;
+        }
+        case PlaybackState::LOADING : {
+            engine->stop();
+            playback_timer->start(33);
+            underrun_timer->stop();
+            delay_timer->stop();
+            playback_state_changed(false);
+            break;
         }
         default: {
             break;
@@ -251,6 +267,13 @@ void PlaybackController::seek_to(int pos) {
 }
 
 void PlaybackController::on_playback_timer_tick() {
+    if (current_state == PlaybackState::LOADING) {
+        if (!engine->is_loading()) {
+            set_state(PlaybackState::PLAYING);
+        }
+        return;
+    }
+
     if (current_state == PlaybackState::TRANSITIONING) {
         time_updated(
             DELAY_BETWEEN_TRACK_SEQUENCES_SECONDS - static_cast<float>(delay_timer->remainingTime()) / 1000.0f,

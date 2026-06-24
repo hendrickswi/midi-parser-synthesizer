@@ -9,7 +9,8 @@ enum class PlaybackState {
     STOPPED,
     PAUSED,
     PLAYING,
-    TRANSITIONING
+    TRANSITIONING,
+    LOADING
 };
 
 class AudioEngine;

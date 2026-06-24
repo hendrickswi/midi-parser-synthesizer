@@ -29,7 +29,7 @@ private:
     bool peak_amplitude_normalization_on;
 
 public:
-    explicit VoiceManager(float sample_rate = 48000.0f, float global_volume = 1.0f, bool defer_instrument_registry_load = true);
+    explicit VoiceManager(float sample_rate = 48000.0f, float global_volume = 1.0f);
     VoiceManager(const VoiceManager& other) = delete;
 
     ~VoiceManager();
@@ -41,8 +41,9 @@ public:
     /**
      * Sets the current sample rate.
      *
-     * @remarks This method does *not* update the current instrument registry.
-     * See @c load_instrument_registry() for this functionality.
+     * @remarks This method does *not* update currently loaded samples
+     * See @c unload_all_patch_samples() and @c load_patch_samples() for
+     * this functionality.
      *
      * @param sample_rate A float value representing the new sample rate.
      */
@@ -57,12 +58,15 @@ public:
     void set_peak_amplitude_normalization(bool enabled);
 
     /**
-     * Ensures the instrument registry used to configure voices in @c note_on() is correct
-     * according to the current sample rate.
-     *
-     * @remarks If a current instrument registry exists, it is deleted and the memory is freed.
+     * Loads the requested patch configurations, represented by vectors of patch ids,
+     * into memory with the current sample rate.
      */
-    void load_instrument_registry();
+    void load_patch_configs(const std::set<uint8_t>& melodic_patch_numbers, const std::set<uint8_t>& drum_patch_numbers);
+
+    /**
+     * Unloads all the loaded patch configurations, clearing memory.
+     */
+    void unload_all_patch_configs();
 
     void note_on(uint8_t channel, uint8_t pitch, uint8_t velocity);
     void note_off(uint8_t channel, uint8_t pitch);

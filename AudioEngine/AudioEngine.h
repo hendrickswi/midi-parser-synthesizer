@@ -3,6 +3,7 @@
 #include <RtAudio.h>
 #include <thread>
 #include <mutex>
+#include <set>
 
 #include "Parser/MidiParser.h"
 #include "Sequencer/MidiSequencer.h"
@@ -34,7 +35,9 @@ private:
 
     std::vector<TrackSequence> loaded_track_sequences;
     std::vector<std::string> loaded_file_names;
-    std::size_t current_track;
+    std::size_t current_track_sequence;
+    std::set<uint8_t> current_melodic_patch_numbers;
+    std::set<uint8_t> current_drum_patch_numbers;
 
     // The sequencer thread that schedules midi events, etc.
     std::thread sequencer_thread;
@@ -44,6 +47,10 @@ private:
     std::thread watchdog_thread;
     std::atomic<bool> watchdog_thread_active;
     void watchdog_thread_loop();
+
+    // The thread that loads the instrument registry (sample data, envelope configs, etc.) in the background
+    std::thread registry_loader_thread;
+    std::atomic<bool> is_loading_flag;
 
     // Helper array of strings for get_instrument_names_of_current_track_sequence()
     const std::string GM_MELODIC_PATCH_NAMES[128] = {
@@ -173,6 +180,10 @@ private:
     void close_audio_stream();
     void recover_stream();
 
+    // Helper method for determining all patches in a track sequence
+    static void determine_all_patches_in_track_sequence(const TrackSequence& track_sequence,
+        std::set<uint8_t>* determined_melodic_patch_numbers, std::set<uint8_t>* determined_drum_patch_numbers);
+
 public:
     explicit AudioEngine(float fallback_sample_rate = 48000.0f, float global_volume = 1.0f);
     AudioEngine(const AudioEngine& other) = delete;
@@ -191,7 +202,9 @@ public:
     void set_global_volume(float volume);
     void set_peak_amplitude_normalization(bool enabled);
     void soft_reset();
+    void load_configs_for_current_track_sequence();
 
+    [[nodiscard]] bool is_loading() const;
     [[nodiscard]] bool is_playing() const;
     [[nodiscard]] bool is_track_sequence_ended() const;
     [[nodiscard]] float get_track_sequence_current_time_seconds() const;

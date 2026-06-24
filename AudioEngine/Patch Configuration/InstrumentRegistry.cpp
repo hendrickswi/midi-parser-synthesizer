@@ -12,40 +12,68 @@
 #include "../Synthesizer/Voices/Voice.h"
 #include "../../DirectoryManipulator.h"
 
-void InstrumentRegistry::parse_oscillator_map_json(const json& json_data, std::array<PatchDefinition, 128>& patches, std::array<uint8_t, 128>& aliases) {
+void InstrumentRegistry::parse_oscillator_map_json(const json& json_data, std::array<PatchDefinition, NUM_PATCHES>* patches,
+    std::array<uint8_t, NUM_PATCHES>* aliases, const std::set<uint8_t>& patch_numbers) {
+
+    if (json_data.is_null() || patches == nullptr || aliases == nullptr) {
+        std::cerr << "WARNING: Invalid parameter(s) passed into InstrumentRegistry::parse_oscillator_map_json(...)" << std::endl;
+        return;
+    }
+
     SampleLoader loader = SampleLoader();
+    auto patch_numbers_to_load = std::set<uint8_t>();
 
-    for (const auto& [patch_id_str, patch_data] : json_data.items()) {
-        int patch_id = 0;
-        try {
-            patch_id = std::stoi(patch_id_str);
-        }
-        catch (const std::invalid_argument& e) {
-            std::cerr << "WARNING: Expected an integer patch key string, but found: \""
-                      << patch_id_str << "\". Skipping entry..." << std::endl;
-            continue;
-        }
-        catch (const std::out_of_range& e) {
-            std::cerr << "WARNING: Patch key \"" << patch_id_str << "\" is out of integer bounds. Skipping..." << std::endl;
-            continue;
-        }
+    // Resolve the patches that need to actually be loaded
+    for (uint8_t requested_patch : patch_numbers) {
+        uint8_t current_patch = requested_patch;
+        std::string current_patch_str = std::to_string(current_patch);
 
-        if (patch_id < 0 || patch_id >= 128) {
-            std::cerr << "WARNING: Patch index " << patch_id << " out of bounds. Skipping..." << std::endl;
-            continue;
-        }
-
-        // Prevent loading the same samples and wasting memory
-        if (patch_data.contains("copy_from")) {
-            const auto& raw_data = patch_data["copy_from"];
-            uint8_t source_id = raw_data.is_string() ?
+        // Follow the copy_from chain down to the root patch
+        while (json_data.contains(current_patch_str) && json_data[current_patch_str].contains("copy_from")) {
+            const auto& raw_data = json_data[current_patch_str]["copy_from"];
+            current_patch = raw_data.is_string() ?
                 std::stoi(raw_data.get<std::string>()) :
                 raw_data.get<uint8_t>();
-            aliases[patch_id] = source_id;
-            continue;
+
+            current_patch_str = std::to_string(current_patch);
         }
 
-        parse_oscillator_config(patch_data, &patches[patch_id], &loader);
+        if (json_data.contains(current_patch_str)) {
+            (*aliases)[requested_patch] = current_patch;
+            patch_numbers_to_load.insert(current_patch);
+        }
+    }
+
+    // Now actually do the loading
+    for (uint8_t patch_id : patch_numbers_to_load) {
+        const auto& patch_str = std::to_string(patch_id);
+        if (json_data.contains(patch_str)) {
+            parse_oscillator_config(json_data[patch_str], &(*patches)[patch_id], &loader);
+        }
+    }
+}
+
+void InstrumentRegistry::parse_envelope_map_json(const json& json_data, std::array<PatchDefinition, NUM_PATCHES>* patches,
+    const std::set<uint8_t>& patch_numbers) {
+
+    if (json_data.is_null() || patches == nullptr) {
+        std::cerr << "WARNING: Invalid parameter(s) passed into InstrumentRegistry::parse_envelope_map_json(...)" << std::endl;
+        return;
+    }
+
+    // Envelope json does not support "copy_from" syntax for now
+
+    for (uint8_t patch_id : patch_numbers) {
+        std::string patch_str = std::to_string(patch_id);
+        if (json_data.contains(patch_str)) {
+            const auto& patch_data = json_data[patch_str];
+            PatchDefinition* patch = &(*patches)[patch_id];
+
+            patch->is_one_shot = patch_data.value("one_shot", false);
+            if (patch_data.contains("envelope")) {
+                parse_envelope_config(patch_data["envelope"], patch);
+            }
+        }
     }
 }
 
@@ -283,37 +311,6 @@ void InstrumentRegistry::parse_sample_zone_config(const json& config, PatchDefin
     );
 }
 
-void InstrumentRegistry::parse_envelope_map_json(const json& json_data, std::array<PatchDefinition, 128>& patches, std::array<uint8_t, 128>& aliases) {
-    for (const auto& [patch_id_str, patch_data] : json_data.items()) {
-        int patch_id = 0;
-        try {
-            patch_id = std::stoi(patch_id_str);
-        }
-        catch (const std::invalid_argument& e) {
-            std::cerr << "WARNING: Expected an integer patch key string, but found: \""
-                      << patch_id_str << "\". Skipping entry..." << std::endl;
-            continue;
-        }
-        catch (const std::out_of_range& e) {
-            std::cerr << "WARNING: Patch key \"" << patch_id_str << "\" is out of integer bounds. Skipping..." << std::endl;
-            continue;
-        }
-
-        if (patch_id < 0 || patch_id >= 128) {
-            std::cerr << "WARNING: Patch index " << patch_id << " out of bounds. Skipping..." << std::endl;
-            continue;
-        }
-
-        PatchDefinition* patch = &patches[patch_id];
-
-        patch->is_one_shot = patch_data.value("one_shot", false);
-        if (patch_data.contains("envelope")) {
-            parse_envelope_config(patch_data["envelope"], patch);
-            patch->envelope_initialized = true;
-        }
-    }
-}
-
 void InstrumentRegistry::parse_envelope_config(const json& config, PatchDefinition* patch) {
     if (config.is_null() || !config.contains("type")) {
         std::cerr << "WARNING: Invalid parameter 'config' in parse_envelope_config(const json& config, PatchDefinition* patch_config): "
@@ -336,6 +333,7 @@ void InstrumentRegistry::parse_envelope_config(const json& config, PatchDefiniti
             patch->adsr_envelope_params.sustain_level = config.value("sustain_level", 0.025f);
             patch->adsr_envelope_params.release_time = config.value("release_time", 0.2f);
             patch->adsr_envelope_params.release_min = config.value("release_min", 0.0f);
+            patch->envelope_initialized = true;
             break;
         }
         case ParsingEnvelopeType::ADR : {
@@ -346,6 +344,7 @@ void InstrumentRegistry::parse_envelope_config(const json& config, PatchDefiniti
             patch->adr_envelope_params.release_time = config.value("release_time", 0.1f);
             patch->adr_envelope_params.release_max = config.value("release_time", 0.1f);
             patch->adr_envelope_params.release_min = config.value("release_min", 0.0f);
+            patch->envelope_initialized = true;
             break;
         }
         case ParsingEnvelopeType::TREMOLO : {
@@ -358,91 +357,23 @@ void InstrumentRegistry::parse_envelope_config(const json& config, PatchDefiniti
                 parse_envelope_config(config["base_envelope"], patch);
             }
             else {
-                // Continue with a fallback ADSR base envelope
+                // Continue with a fallback ADSR base envelope--need initialization here as we want to keep the decorator params
                 std::cerr << "WARNING: No base envelope specified for tremolo decorator. "
                              "ADSR envelope fallback will be used." << std::endl;
                 patch->envelope_type = EnvelopeType::ADSR;
                 patch->adsr_envelope_params = ADSREnvelopeParams(0.005f, 1.0f, 1.0f, 0.025f, 0.2f, 0.0f);
             }
+
+            patch->envelope_initialized = true;
             break;
         }
         case ParsingEnvelopeType::UNKNOWN :
         default: {
             std::cerr << "WARNING: Unknown ParsingEnvelopeType enum in selected json. "
                          "ADSR envelope fallback will be used." << std::endl;
-            patch->envelope_type = EnvelopeType::ADSR;
-            patch->adsr_envelope_params = ADSREnvelopeParams(0.005f, 1.0f, 1.0f, 0.025f, 0.2f, 0.0f);
+            // Allow set_fallbacks() to dictate the default initialization
             break;
         }
-    }
-}
-
-void InstrumentRegistry::init_sample_instruments() {
-    std::cout << "INFO: Starting sample loading and patch configuration..." << std::endl;
-
-    std::ifstream samples_file = std::ifstream(get_sanitized_file_path(std::string(SAMPLE_MAP_FILE_PATH)));
-    json samples_config;
-    if (samples_file.is_open()) {
-        samples_config = json::parse(samples_file);
-    }
-    else {
-        std::cerr << "Failed to open instrument sample map file." << std::endl;
-    }
-
-    std::ifstream envelopes_file = std::ifstream(get_sanitized_file_path(std::string(ENVELOPE_MAP_FILE_PATH)));
-    json envelopes_config;
-    if (envelopes_file.is_open()) {
-        envelopes_config = json::parse(envelopes_file);
-    }
-    else {
-        std::cerr << "Failed to open instrument envelope map file." << std::endl;
-    }
-
-    // Load the sample data into memory
-    if (!samples_config.is_null()) {
-        if (samples_config.contains("melodic_instruments")) {
-            parse_oscillator_map_json(samples_config["melodic_instruments"], melodic_patches, melodic_patch_aliases);
-            std::cout << "INFO: Melodic instrument samples successfully loaded" << std::endl;
-        }
-        else {
-            std::cerr << "WARNING: No melodic instrument samples found in instrument sample map file." << std::endl;
-        }
-
-        if (samples_config.contains("drum_instruments")) {
-            parse_oscillator_map_json(samples_config["drum_instruments"], drum_patches, drum_patch_aliases);
-            std::cout << "INFO: Drum instrument samples successfully loaded" << std::endl;
-        }
-        else {
-            std::cerr << "WARNING: No drum instrument samples found in instrument sample map file." << std::endl;
-        }
-    }
-    else {
-        std::cerr << "WARNING: Parsed json samples config is null. "
-            "Instruments will use the fallback sine oscillator." << std::endl;
-    }
-
-
-    // Load the envelope data into memory
-    if (!envelopes_config.is_null()) {
-        if (envelopes_config.contains("melodic_instruments")) {
-            parse_envelope_map_json(envelopes_config["melodic_instruments"], melodic_patches, melodic_patch_aliases);
-            std::cout << "INFO: Melodic instrument envelopes successfully loaded" << std::endl;
-        }
-        else {
-            std::cerr << "WARNING: No melodic instrument envelope configs found in instrument envelope map file." << std::endl;
-        }
-
-        if (envelopes_config.contains("drum_instruments")) {
-            parse_envelope_map_json(envelopes_config["drum_instruments"], drum_patches, drum_patch_aliases);
-            std::cout << "INFO: Drum instrument envelopes successfully loaded" << std::endl;
-        }
-        else {
-            std::cerr << "WARNING: No drum instrument envelope configs found in instrument envelope map file." << std::endl;
-        }
-    }
-    else {
-        std::cerr << "WARNING: Parsed json envelopes config is null. "
-            "Instruments will use the fallback ADSR envelope." << std::endl;
     }
 }
 
@@ -489,13 +420,95 @@ void InstrumentRegistry::set_fallbacks() {
 InstrumentRegistry::InstrumentRegistry(float sample_rate) { // NOLINT
     this->sample_rate = sample_rate;
 
-    for (uint8_t i = 0; i < 128; ++i) {
+    melodic_patches = std::array<PatchDefinition, NUM_PATCHES>();
+    melodic_patch_aliases = std::array<uint8_t, NUM_PATCHES>();
+    drum_patches = std::array<PatchDefinition, NUM_PATCHES>();
+    drum_patch_aliases = std::array<uint8_t, NUM_PATCHES>();
+    for (uint8_t i = 0; i < NUM_PATCHES; ++i) {
         melodic_patch_aliases[i] = i;
         drum_patch_aliases[i] = i;
     }
+}
 
-    init_sample_instruments();
+float InstrumentRegistry::get_sample_rate() const {
+    return sample_rate;
+}
+
+void InstrumentRegistry::set_sample_rate(float sample_rate) {
+    this->sample_rate = sample_rate;
+}
+
+void InstrumentRegistry::load_patches(const std::set<uint8_t>& melodic_patch_numbers, const std::set<uint8_t>& drum_patch_numbers) {
+    std::ifstream oscillators_file = std::ifstream(get_sanitized_file_path(std::string(SAMPLE_MAP_FILE_PATH)));
+    json oscillators_config;
+    if (oscillators_file.is_open()) {
+        oscillators_config = json::parse(oscillators_file);
+    }
+    else {
+        std::cerr << "WARNING: Failed to open instrument sample map file." << std::endl;
+    }
+
+    std::ifstream envelopes_file = std::ifstream(get_sanitized_file_path(std::string(ENVELOPE_MAP_FILE_PATH)));
+    json envelopes_config;
+    if (envelopes_file.is_open()) {
+        envelopes_config = json::parse(envelopes_file);
+    }
+    else {
+        std::cerr << "WARNING: Failed to open instrument envelope map file." << std::endl;
+    }
+
+    // Load the oscillator data into memory
+    if (!oscillators_config.is_null()) {
+        if (oscillators_config.contains("melodic_instruments")) {
+            parse_oscillator_map_json(oscillators_config["melodic_instruments"],
+                &melodic_patches, &melodic_patch_aliases, melodic_patch_numbers);
+        } else {
+            std::cerr << "WARNING: No melodic instrument samples found in instrument sample map file." << std::endl;
+        }
+
+        if (oscillators_config.contains("drum_instruments")) {
+            parse_oscillator_map_json(oscillators_config["drum_instruments"],
+                &drum_patches, &drum_patch_aliases, drum_patch_numbers);
+        } else {
+            std::cerr << "WARNING: No drum instrument samples found in instrument sample map file." << std::endl;
+        }
+    }
+    else {
+        std::cerr << "WARNING: Parsed oscillator json file is null. "
+            "Instruments will use the fallback sine oscillator." << std::endl;
+    }
+
+    // Load the envelope data into memory
+    if (!envelopes_config.is_null()) {
+        if (envelopes_config.contains("melodic_instruments")) {
+            parse_envelope_map_json(envelopes_config["melodic_instruments"],
+                &melodic_patches, melodic_patch_numbers);
+        } else {
+            std::cerr << "WARNING: No melodic instrument envelope configs found in instrument envelope map file." << std::endl;
+        }
+
+        if (envelopes_config.contains("drum_instruments")) {
+            parse_envelope_map_json(envelopes_config["drum_instruments"],
+                &drum_patches, drum_patch_numbers);
+        } else {
+            std::cerr << "WARNING: No drum instrument envelope configs found in instrument envelope map file." << std::endl;
+        }
+    }
+    else {
+        std::cerr << "WARNING: Parsed json envelopes config is null. "
+            "Instruments will use the fallback ADSR envelope." << std::endl;
+    }
+
     set_fallbacks();
+}
+
+void InstrumentRegistry::clear_patches() {
+    for (auto& patch : melodic_patches) {
+        patch.clear();
+    }
+    for (auto& patch : drum_patches) {
+        patch.clear();
+    }
 }
 
 const PatchDefinition* InstrumentRegistry::get_melodic_patch_config(uint8_t patch_id) const {
