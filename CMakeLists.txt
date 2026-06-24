@@ -162,11 +162,12 @@ if(WIN32)
 endif()
 
 # Copy assets (wav samples and json configs) to the output directory
-add_custom_command(TARGET MIDI_ParserSynthesizer POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_SOURCE_DIR}/Assets"
-        "$<TARGET_FILE_DIR:MIDI_ParserSynthesizer>/Assets"
-        COMMENT "Copying runtime assets to the build directory..."
+set(ASSETS_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Assets")
+set(ASSETS_BIN_DIR "$<TARGET_FILE_DIR:MIDI_ParserSynthesizer>/Assets")
+add_custom_target(CopyRuntimeAssets
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${ASSETS_SRC_DIR}" "${ASSETS_BIN_DIR}"
+        COMMENT "Syncing updated runtime assets (wav/json) to the build directory..."
 )
+add_dependencies(MIDI_ParserSynthesizer CopyRuntimeAssets)
 
 

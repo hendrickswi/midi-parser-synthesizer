@@ -210,6 +210,62 @@
                 "release_min": 0.0
             }
         },
+        "26": {
+            "envelope": {
+                "type": "ADSR",
+                "attack_time": 0.02,
+                "attack_max": 1.0,
+                "decay_time": 1.5,
+                "sustain_level": 0.5,
+                "release_time": 0.3,
+                "release_min": 0.0
+            }
+        },
+        "27": {
+            "envelope": {
+                "type": "ADSR",
+                "attack_time": 0.002,
+                "attack_max": 1.0,
+                "decay_time": 0.8,
+                "sustain_level": 0.7,
+                "release_time": 0.25,
+                "release_min": 0.0
+            }
+        },
+        "28": {
+            "one_shot": true,
+            "envelope": {
+                "type": "ADR",
+                "attack_time": 0.02,
+                "attack_max": 1.0,
+                "decay_time": 0.3,
+                "release_time": 0.1,
+                "release_max": 0.2,
+                "release_min": 0.0
+            }
+        },
+        "32": {
+            "envelope": {
+                "type": "ADSR",
+                "attack_time": 0.005,
+                "attack_max": 0.9,
+                "decay_time": 0.25,
+                "sustain_level": 0.6,
+                "release_time": 0.1,
+                "release_min": 0.0
+            }
+        },
+        "33": {
+            "envelope": {
+                "type": "ADSR",
+                "attack_time": 0.02,
+                "attack_max": 1.0,
+                "decay_time": 0.6,
+                "sustain_level": 0.6,
+                "release_time": 0.1,
+                "release_min": 0.0
+            }
+        },
         "35": {
             "envelope": {
                 "type": "ADSR",
