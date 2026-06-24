@@ -595,6 +595,12 @@ void AudioEngine::set_track_sequence(std::size_t index) {
 
     is_loading_flag.store(true, std::memory_order_release);
     registry_loader_thread = std::thread([this]() {
+        // Only unload once all voices are idle (so they won't dereference garbage pointers)
+        while (!synth.all_voices_free()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+
+        // Now safe to unload without causing thread collisions
         synth.unload_all_patch_configs();
         synth.load_patch_configs(current_melodic_patch_numbers, current_drum_patch_numbers);
         is_loading_flag.store(false, std::memory_order_release);

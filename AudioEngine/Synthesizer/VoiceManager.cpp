@@ -59,6 +59,24 @@ bool VoiceManager::get_peak_amplitude_normalization() const {
     return peak_amplitude_normalization_on;
 }
 
+bool VoiceManager::all_voices_free() const {
+    for (const auto& voice : voices) {
+        if (!voice->is_free()) return false;
+    }
+    return true;
+}
+
+float VoiceManager::get_sample_rate() const {
+    return sample_rate;
+}
+
+float VoiceManager::get_global_volume() const {
+    return global_volume;
+}
+
+float VoiceManager::get_static_gain() const {
+    return static_gain;
+}
 
 void VoiceManager::set_sample_rate(float sample_rate) {
     this->sample_rate = sample_rate;

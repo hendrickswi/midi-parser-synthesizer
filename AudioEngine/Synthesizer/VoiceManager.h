@@ -37,6 +37,10 @@ public:
     VoiceManager& operator=(const VoiceManager& other) = delete;
 
     [[nodiscard]] bool get_peak_amplitude_normalization() const;
+    [[nodiscard]] bool all_voices_free() const;
+    [[nodiscard]] float get_sample_rate() const;
+    [[nodiscard]] float get_global_volume() const;
+    [[nodiscard]] float get_static_gain() const;
 
     /**
      * Sets the current sample rate.
