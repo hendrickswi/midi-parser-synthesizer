@@ -24,11 +24,21 @@ private:
     std::array<uint8_t, NUM_PATCHES> drum_patch_aliases;
 
     // The top level parsers ("routers")
-    void parse_oscillator_map_json(const json& json_data, std::array<PatchDefinition, NUM_PATCHES>* patches, std::array<uint8_t, NUM_PATCHES>* aliases, const std::set<uint8_t>& patch_numbers = std::set<uint8_t>());
-    void parse_envelope_map_json(const json& json_data, std::array<PatchDefinition, NUM_PATCHES>* patches, const std::set<uint8_t>& patch_numbers = std::set<uint8_t>());
+    static void parse_oscillator_map_json(
+        const json &json_data,
+        std::array<PatchDefinition, NUM_PATCHES> *patches,
+        std::array<uint8_t, NUM_PATCHES> *aliases,
+        float target_sample_rate,
+        const std::set<uint8_t> &patch_numbers = std::set<uint8_t>()
+    );
+    static void parse_envelope_map_json(
+        const json &json_data,
+        std::array<PatchDefinition, NUM_PATCHES> *patches,
+        const std::set<uint8_t> &patch_numbers = std::set<uint8_t>()
+    );
 
     // The intra-patch parsers ("workers")
-    void parse_oscillator_config(const json& config, PatchDefinition* patch, SampleLoader* loader);
+    static void parse_oscillator_config(const json& config, PatchDefinition* patch, SampleLoader* loader, float target_sample_rate);
     static void parse_sample_zone_config(const json& config, PatchDefinition* patch, SampleLoader* loader);
     static void parse_envelope_config(const json& config, PatchDefinition* patch);
 
