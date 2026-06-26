@@ -1126,7 +1126,12 @@
             ]
         },
         "80": {
-            "oscillator_type": "SQUARE"
+            "oscillator_type": "LOWPASS",
+            "cutoff_hz": 2000.0,
+            "resonance": 0.707,
+            "base_oscillator": {
+                "oscillator_type": "SQUARE"
+            }
         },
         "81": {
             "oscillator_type": "SAWTOOTH"

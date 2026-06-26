@@ -12,8 +12,9 @@
 #include "../Synthesizer/Voices/Voice.h"
 #include "../../DirectoryManipulator.h"
 
-void InstrumentRegistry::parse_oscillator_map_json(const json& json_data, std::array<PatchDefinition, NUM_PATCHES>* patches,
-    std::array<uint8_t, NUM_PATCHES>* aliases, const float target_sample_rate, const std::set<uint8_t>& patch_numbers) {
+void InstrumentRegistry::parse_oscillator_map_json(const json& json_data, const float target_sample_rate,
+    std::array<PatchDefinition, NUM_PATCHES>* patches, std::array<uint8_t, NUM_PATCHES>* aliases,
+    const std::set<uint8_t>& patch_numbers) {
 
     if (json_data.is_null() || patches == nullptr || aliases == nullptr) {
         std::cerr << "WARNING: Invalid parameter(s) passed into InstrumentRegistry::parse_oscillator_map_json(...)" << std::endl;
@@ -48,12 +49,12 @@ void InstrumentRegistry::parse_oscillator_map_json(const json& json_data, std::a
     for (uint8_t patch_id : patch_numbers_to_load) {
         const auto& patch_str = std::to_string(patch_id);
         if (json_data.contains(patch_str)) {
-            parse_oscillator_config(json_data[patch_str], &(*patches)[patch_id], &loader, target_sample_rate);
+            parse_oscillator_config(json_data[patch_str], target_sample_rate, &(*patches)[patch_id], &loader);
         }
     }
 }
 
-void InstrumentRegistry::parse_envelope_map_json(const json& json_data, std::array<PatchDefinition, NUM_PATCHES>* patches,
+void InstrumentRegistry::parse_envelope_map_json(const json& json_data, const float target_sample_rate, std::array<PatchDefinition, NUM_PATCHES>* patches,
     const std::set<uint8_t>& patch_numbers) {
 
     if (json_data.is_null() || patches == nullptr) {
@@ -71,13 +72,13 @@ void InstrumentRegistry::parse_envelope_map_json(const json& json_data, std::arr
 
             patch->is_one_shot = patch_data.value("one_shot", false);
             if (patch_data.contains("envelope")) {
-                parse_envelope_config(patch_data["envelope"], patch);
+                parse_envelope_config(patch_data["envelope"], target_sample_rate, patch);
             }
         }
     }
 }
 
-void InstrumentRegistry::parse_oscillator_config(const json& config, PatchDefinition* patch, SampleLoader* loader, float target_sample_rate) {
+void InstrumentRegistry::parse_oscillator_config(const json& config, const float target_sample_rate, PatchDefinition* patch, SampleLoader* loader) {
     OscillatorParsingType type = config.value("oscillator_type", OscillatorParsingType::UNKNOWN);
 
     switch (type) {
@@ -199,13 +200,13 @@ void InstrumentRegistry::parse_oscillator_config(const json& config, PatchDefini
         }
         case OscillatorParsingType::VIBRATO : {
             patch->oscillator_decorator_type = OscillatorDecoratorType::VIBRATO;
-            patch->vibrato_decorator_params.sample_rate = config.value("sample_rate", 48000.0f);
+            patch->vibrato_decorator_params.sample_rate = config.value("sample_rate", target_sample_rate);
             patch->vibrato_decorator_params.base_hz = config.value("base_hz", 440.0f);
             patch->vibrato_decorator_params.speed_hz = config.value("speed_hz", 5.0f);
             patch->vibrato_decorator_params.depth = config.value("depth", 0.5f);
 
             if (config.contains("base_oscillator")) {
-                parse_oscillator_config(config["base_oscillator"], patch, loader, target_sample_rate);
+                parse_oscillator_config(config["base_oscillator"], target_sample_rate, patch, loader);
             }
             else {
                 // Continue with a fallback sine oscillator
@@ -219,12 +220,12 @@ void InstrumentRegistry::parse_oscillator_config(const json& config, PatchDefini
         }
         case OscillatorParsingType::LOWPASS : {
             patch->oscillator_decorator_type = OscillatorDecoratorType::LOWPASS;
-            patch->low_pass_filter_params.sample_rate = config.value("sample_rate", 48000.0f);
+            patch->low_pass_filter_params.sample_rate = config.value("sample_rate", target_sample_rate);
             patch->low_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
             patch->low_pass_filter_params.resonance = config.value("resonance", 0.707f);
 
             if (config.contains("base_oscillator")) {
-                parse_oscillator_config(config["base_oscillator"], patch, loader, target_sample_rate);
+                parse_oscillator_config(config["base_oscillator"], target_sample_rate, patch, loader);
             }
             else {
                 // Continue with a fallback sine oscillator
@@ -238,12 +239,12 @@ void InstrumentRegistry::parse_oscillator_config(const json& config, PatchDefini
         }
         case OscillatorParsingType::BANDPASS : {
             patch->oscillator_decorator_type = OscillatorDecoratorType::BANDPASS;
-            patch->band_pass_filter_params.sample_rate = config.value("sample_rate", 48000.0f);
+            patch->band_pass_filter_params.sample_rate = config.value("sample_rate", target_sample_rate);
             patch->band_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
             patch->band_pass_filter_params.resonance = config.value("resonance", 0.707f);
 
             if (config.contains("base_oscillator")) {
-                parse_oscillator_config(config["base_oscillator"], patch, loader, target_sample_rate);
+                parse_oscillator_config(config["base_oscillator"], target_sample_rate, patch, loader);
             }
             else {
                 // Continue with a fallback sine oscillator
@@ -257,12 +258,12 @@ void InstrumentRegistry::parse_oscillator_config(const json& config, PatchDefini
         }
         case OscillatorParsingType::HIGHPASS : {
             patch->oscillator_decorator_type = OscillatorDecoratorType::HIGHPASS;
-            patch->high_pass_filter_params.sample_rate = config.value("sample_rate", 48000.0f);
+            patch->high_pass_filter_params.sample_rate = config.value("sample_rate", target_sample_rate);
             patch->high_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
             patch->high_pass_filter_params.resonance = config.value("resonance", 0.707f);
 
             if (config.contains("base_oscillator")) {
-                parse_oscillator_config(config["base_oscillator"], patch, loader, target_sample_rate);
+                parse_oscillator_config(config["base_oscillator"], target_sample_rate, patch, loader);
             }
             else {
                 // Continue with a fallback sine oscillator
@@ -311,7 +312,7 @@ void InstrumentRegistry::parse_sample_zone_config(const json& config, PatchDefin
     );
 }
 
-void InstrumentRegistry::parse_envelope_config(const json& config, PatchDefinition* patch) {
+void InstrumentRegistry::parse_envelope_config(const json& config, const float target_sample_rate, PatchDefinition* patch) {
     if (config.is_null() || !config.contains("type")) {
         std::cerr << "WARNING: Invalid parameter 'config' in parse_envelope_config(const json& config, PatchDefinition* patch_config): "
             << config.dump() << std::endl;
@@ -349,12 +350,12 @@ void InstrumentRegistry::parse_envelope_config(const json& config, PatchDefiniti
         }
         case ParsingEnvelopeType::TREMOLO : {
             patch->envelope_decorator_type = EnvelopeDecoratorType::TREMOLO;
-            patch->tremolo_decorator_params.sample_rate = config.value("sample_rate", 48000.0f);
+            patch->tremolo_decorator_params.sample_rate = config.value("sample_rate", target_sample_rate);
             patch->tremolo_decorator_params.speed_hz = config.value("speed_hz", 5.0f);
             patch->tremolo_decorator_params.depth = config.value("depth", 0.5f);
 
             if (config.contains("base_envelope")) {
-                parse_envelope_config(config["base_envelope"], patch);
+                parse_envelope_config(config["base_envelope"], target_sample_rate, patch);
             }
             else {
                 // Continue with a fallback ADSR base envelope--need initialization here as we want to keep the decorator params
@@ -460,15 +461,25 @@ void InstrumentRegistry::load_patches(const std::set<uint8_t>& melodic_patch_num
     // Load the oscillator data into memory
     if (!oscillators_config.is_null()) {
         if (oscillators_config.contains("melodic_instruments")) {
-            parse_oscillator_map_json(oscillators_config["melodic_instruments"],
-                &melodic_patches, &melodic_patch_aliases, sample_rate, melodic_patch_numbers);
+            parse_oscillator_map_json(
+                oscillators_config["melodic_instruments"],
+                sample_rate,
+                &melodic_patches,
+                &melodic_patch_aliases,
+                melodic_patch_numbers
+            );
         } else {
             std::cerr << "WARNING: No melodic instrument samples found in instrument sample map file." << std::endl;
         }
 
         if (oscillators_config.contains("drum_instruments")) {
-            parse_oscillator_map_json(oscillators_config["drum_instruments"],
-                &drum_patches, &drum_patch_aliases, sample_rate, drum_patch_numbers);
+            parse_oscillator_map_json(
+                oscillators_config["drum_instruments"],
+                sample_rate,
+                &drum_patches,
+                &drum_patch_aliases,
+                drum_patch_numbers
+            );
         } else {
             std::cerr << "WARNING: No drum instrument samples found in instrument sample map file." << std::endl;
         }
@@ -481,15 +492,23 @@ void InstrumentRegistry::load_patches(const std::set<uint8_t>& melodic_patch_num
     // Load the envelope data into memory
     if (!envelopes_config.is_null()) {
         if (envelopes_config.contains("melodic_instruments")) {
-            parse_envelope_map_json(envelopes_config["melodic_instruments"],
-                &melodic_patches, melodic_patch_numbers);
+            parse_envelope_map_json(
+                envelopes_config["melodic_instruments"],
+                sample_rate,
+                &melodic_patches,
+                melodic_patch_numbers
+            );
         } else {
             std::cerr << "WARNING: No melodic instrument envelope configs found in instrument envelope map file." << std::endl;
         }
 
         if (envelopes_config.contains("drum_instruments")) {
-            parse_envelope_map_json(envelopes_config["drum_instruments"],
-                &drum_patches, drum_patch_numbers);
+            parse_envelope_map_json(
+                envelopes_config["drum_instruments"],
+                sample_rate,
+                &drum_patches,
+                drum_patch_numbers
+            );
         } else {
             std::cerr << "WARNING: No drum instrument envelope configs found in instrument envelope map file." << std::endl;
         }
