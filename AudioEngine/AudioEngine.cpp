@@ -13,6 +13,7 @@ void AudioEngine::sequencer_thread_loop() {
         sequencer.update(current_micros + LOOK_AHEAD_MICROS);
         std::this_thread::sleep_for(std::chrono::microseconds(250));
     }
+    synth.stop();
 }
 
 void AudioEngine::watchdog_thread_loop() {
@@ -687,7 +688,7 @@ bool AudioEngine::is_playing() const {
 }
 
 bool AudioEngine::is_track_sequence_ended() const {
-    return sequencer.midi_file_ended();
+    return sequencer.midi_file_ended() && synth.all_voices_free();
 }
 
 float AudioEngine::get_track_sequence_current_time_seconds() const {

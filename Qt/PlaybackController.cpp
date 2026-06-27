@@ -199,7 +199,7 @@ void PlaybackController::load_directory(const std::string& directory_path) {
         updated_files.push_back(file);
     }
 
-    bool was_empty = engine->get_loaded_file_names().size() == 0;
+    bool was_empty = engine->get_loaded_file_names().empty();
     bool added_new_files = false;
 
     DirectoryManipulator directory_manipulator = DirectoryManipulator(directory_path);

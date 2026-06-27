@@ -35,11 +35,16 @@ private:
     std::atomic<bool> flush_command_queue_flag;
     std::recursive_mutex transport_mutex;
 
+    // Track sequences information
     std::vector<TrackSequence> loaded_track_sequences;
     std::vector<std::string> loaded_file_names;
     std::size_t current_track_sequence;
     std::set<uint8_t> current_melodic_patch_numbers;
     std::set<uint8_t> current_drum_patch_numbers;
+
+    // End condition variables
+    bool has_already_ended;
+    uint64_t hardware_sample_end_count;
 
     // The sequencer thread that schedules midi events, etc.
     std::thread sequencer_thread;
