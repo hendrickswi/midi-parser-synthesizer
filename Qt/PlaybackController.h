@@ -52,6 +52,7 @@ signals:
     void track_list_updated(const std::vector<std::string>& tracks);
     void current_track_changed(std::size_t idx);
     void volume_changed(int volume);
+    void playback_speed_changed(double speed);
     void time_updated(float current_seconds, float total_seconds);
     void first_loaded(int track_selector_start_idx = 0);
     void underrun_detected(bool status);
@@ -69,6 +70,7 @@ public slots:
     void load_file(const std::string& file_path);
     void select_track(std::size_t index);
     void set_volume(int volume);
+    void set_playback_speed(int speed);
     void seek_to(int pos);
 
 private slots:

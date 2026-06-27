@@ -25,6 +25,7 @@ void MainWindow::init_top_bar() {
     playback_menu->addAction(toggle_autoplay_action);
     playback_menu->addSeparator();
     playback_menu->addAction(toggle_peak_amplitude_action);
+    playback_menu->addAction(playback_speed_slider_action);
 }
 
 void MainWindow::init_top_ui(QHBoxLayout* layout) {
@@ -162,6 +163,19 @@ void MainWindow::init_actions() {
     toggle_peak_amplitude_action->setStatusTip("Toggle peak amplitude normalization on or off\nThis will make all tracks have similar max volume levels when on");
     toggle_peak_amplitude_action->setCheckable(true);
     toggle_peak_amplitude_action->setChecked(true);
+
+    playback_speed_slider = new QSlider(Qt::Horizontal, this);
+    playback_speed_slider->setRange(1, 200);
+    playback_speed_slider->setValue(100);
+    playback_speed_slider->setFixedWidth(200);
+    playback_speed_slider->setFixedHeight(20);
+    playback_speed_slider->setTickPosition(QSlider::TicksBelow);
+    playback_speed_slider->setTickInterval(10);
+    playback_speed_slider->setSingleStep(1);
+    playback_speed_slider->setPageStep(10);
+    playback_speed_slider->setFocusPolicy(Qt::NoFocus);
+    playback_speed_slider_action = new QWidgetAction(this);
+    playback_speed_slider_action->setDefaultWidget(playback_speed_slider);
 }
 
 void MainWindow::init_connections() {
@@ -182,7 +196,7 @@ void MainWindow::init_connections() {
     connect(playback_controller, &PlaybackController::volume_changed, this, &MainWindow::on_volume_changed);
 
     // Seek slider
-    connect(seek_slider, &QAbstractSlider::sliderMoved, this, &MainWindow::cache_new_position);
+    connect(seek_slider, &QAbstractSlider::sliderMoved, this, &MainWindow::cache_new_seek_slider_position);
     connect(seek_slider, &QAbstractSlider::sliderReleased, this, &MainWindow::on_seek_slider_released);
     connect(playback_controller, &PlaybackController::time_updated, this, &MainWindow::on_time_updated);
 
@@ -230,6 +244,11 @@ void MainWindow::init_connections() {
 
     // Toggle repeat action
     connect(toggle_repeat_action, &QAction::triggered, playback_controller, &PlaybackController::toggle_repeat);
+
+    // Playback speed slider
+    connect(playback_speed_slider, &QAbstractSlider::sliderMoved, this, &MainWindow::cache_new_playback_speed_slider_position);
+    connect(playback_speed_slider, &QAbstractSlider::sliderReleased, this, &MainWindow::on_playback_speed_slider_released);
+    connect(playback_controller, &PlaybackController::playback_speed_changed, this, &MainWindow::on_playback_speed_changed);
 }
 
 void MainWindow::on_add_directory_button_clicked() {
@@ -353,6 +372,12 @@ void MainWindow::on_volume_changed(int volume) {
     volume_slider->blockSignals(false);
 }
 
+void MainWindow::on_playback_speed_changed(double speed) {
+    playback_speed_slider->blockSignals(true);
+    playback_speed_slider->setValue(static_cast<int>(speed));
+    playback_speed_slider->blockSignals(false);
+}
+
 void MainWindow::on_time_updated(float current_seconds, float total_seconds) {
     // Timer display update logic
     QString time_str = QString::asprintf("%.1f / %.1f s", current_seconds, total_seconds);
@@ -375,10 +400,18 @@ void MainWindow::on_peak_amplitude_normalization_changed(bool status) {
     toggle_peak_amplitude_action->setChecked(status);
 }
 
-void MainWindow::cache_new_position(int pos) {
-    cached_seek_position = pos;
+void MainWindow::cache_new_seek_slider_position(int pos) {
+    cached_seek_slider_position = pos;
 }
 
 void MainWindow::on_seek_slider_released() {
-    playback_controller->seek_to(cached_seek_position);
+    playback_controller->seek_to(cached_seek_slider_position);
+}
+
+void MainWindow::cache_new_playback_speed_slider_position(int pos) {
+    cached_playback_speed_slider_position = pos;
+}
+
+void MainWindow::on_playback_speed_slider_released() {
+    playback_controller->set_playback_speed(cached_playback_speed_slider_position);
 }

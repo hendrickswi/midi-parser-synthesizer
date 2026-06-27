@@ -2,6 +2,7 @@
 #define MIDI_PARSERSYNTHESIZER_MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QWidgetAction>
 #include <QPushButton>
 #include <QComboBox>
 #include <QTimer>
@@ -61,6 +62,7 @@ private:
     QAction* toggle_shuffle_action;
     QAction* toggle_autoplay_action;
     QAction* toggle_peak_amplitude_action;
+    QWidgetAction* playback_speed_slider_action;
 
     // UI element: dropdown box for track selection
     QComboBox* track_selector;
@@ -73,7 +75,11 @@ private:
 
     // UI element: playback (seek) slider
     QSlider* seek_slider;
-    int cached_seek_position;
+    int cached_seek_slider_position;
+
+    // UI element: playback speed slider in top bar
+    QSlider* playback_speed_slider;
+    int cached_playback_speed_slider_position;
 
     void init_top_bar();
     void init_top_ui(QHBoxLayout* layout);
@@ -99,13 +105,16 @@ private slots:
     void on_track_list_updated(const std::vector<std::string>& file_paths);
     void on_current_track_changed(std::size_t index);
     void on_volume_changed(int volume);
+    void on_playback_speed_changed(double speed);
     void on_time_updated(float current_seconds, float total_seconds);
     void on_underrun_detected(bool status);
     void on_peak_amplitude_normalization_changed(bool enabled);
 
-    // Skipping helpers
-    void cache_new_position(int pos);
+    // Avoid engine method spam, causing lag, but still provide UI updates
+    void cache_new_seek_slider_position(int pos);
     void on_seek_slider_released();
+    void cache_new_playback_speed_slider_position(int pos);
+    void on_playback_speed_slider_released();
 
 public:
     explicit MainWindow(PlaybackController* controller, QWidget* parent = nullptr);

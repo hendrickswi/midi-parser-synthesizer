@@ -259,6 +259,11 @@ void PlaybackController::set_volume(int volume) {
     volume_changed(volume);
 }
 
+void PlaybackController::set_playback_speed(int speed) {
+    engine->set_playback_speed(speed / 100.0);
+    playback_speed_changed(speed);
+}
+
 void PlaybackController::seek_to(int pos) {
     float total_seconds = engine->get_track_sequence_length_seconds();
     float new_time = static_cast<float>(pos) / 1000.0f * total_seconds;

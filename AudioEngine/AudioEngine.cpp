@@ -6,7 +6,10 @@
 
 void AudioEngine::sequencer_thread_loop() {
     while (sequencer.is_playing()) {
-        uint64_t current_micros = sample_count_to_microseconds(global_sample_count.load(std::memory_order_relaxed), active_sample_rate);
+        uint64_t current_micros = sample_count_to_microseconds(
+            virtual_sample_count.load(std::memory_order_acquire),
+            active_sample_rate.load(std::memory_order_acquire)
+        );
         sequencer.update(current_micros + LOOK_AHEAD_MICROS);
         std::this_thread::sleep_for(std::chrono::microseconds(250));
     }
@@ -19,7 +22,7 @@ void AudioEngine::watchdog_thread_loop() {
     unsigned int device_poll_counter = 0;
     auto last_progress_time = std::chrono::steady_clock::now();
 
-    while (watchdog_thread_active.load(std::memory_order_relaxed)) {
+    while (watchdog_thread_active.load(std::memory_order_acquire)) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         // Device polling and automatic device switching to OS default
@@ -36,7 +39,7 @@ void AudioEngine::watchdog_thread_loop() {
                         active_device_name = new_default_name;
                         std::cout << "INFO: Audio device changed to " << new_default_name << std::endl;
 
-                        last_sample_count = global_sample_count.load(std::memory_order_relaxed);
+                        last_sample_count = hardware_sample_count.load(std::memory_order_acquire);
                         last_progress_time = std::chrono::steady_clock::now();
                         continue;
                     }
@@ -48,8 +51,8 @@ void AudioEngine::watchdog_thread_loop() {
         }
 
         if (is_playing()) {
-            uint64_t current_sample_count = global_sample_count.load(std::memory_order_relaxed);
-            uint64_t current_underrun_count = underrun_count.load(std::memory_order_relaxed);
+            uint64_t current_sample_count = hardware_sample_count.load(std::memory_order_acquire);
+            uint64_t current_underrun_count = underrun_count.load(std::memory_order_acquire);
 
             // Buffer underflow detection
             if (current_underrun_count > last_underrun_count) {
@@ -80,14 +83,14 @@ void AudioEngine::watchdog_thread_loop() {
                     recover_stream();
 
                     last_underrun_count = 0;
-                    last_sample_count = global_sample_count.load(std::memory_order_relaxed);
+                    last_sample_count = hardware_sample_count.load(std::memory_order_acquire);
                     consecutive_underrun_count = 0;
                     last_progress_time = std::chrono::steady_clock::now();
                 }
             }
         }
         else {
-            last_sample_count = global_sample_count.load(std::memory_order_relaxed);
+            last_sample_count = hardware_sample_count.load(std::memory_order_acquire);
             last_progress_time = std::chrono::steady_clock::now();
         }
     }
@@ -149,9 +152,9 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
     auto engine = static_cast<AudioEngine*>(user_data);
 
     // Do flush logic if told to do so
-    if (engine->flush_command_queue_flag.load(std::memory_order_relaxed)) {
+    if (engine->flush_command_queue_flag.load(std::memory_order_acquire)) {
         engine->synth.clear_command_queue();
-        engine->flush_command_queue_flag.store(false, std::memory_order_relaxed);
+        engine->flush_command_queue_flag.store(false, std::memory_order_release);
     }
 
     // Safety check for length
@@ -164,14 +167,17 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
     std::fill(buffer_to_use, buffer_to_use + num_frames, 0.0f);
 
     unsigned int current_frame = 0;
-    uint64_t block_end_sample = engine->global_sample_count + num_frames;
+    double speed = engine->playback_speed.load(std::memory_order_acquire);
+    double current_virtual_sample_count = engine->virtual_sample_count.load(std::memory_order_acquire);
+    double block_end_virtual_sample_count = current_virtual_sample_count + static_cast<double>(num_frames) * speed;
+
+    bool is_playing = engine->is_playing();
     SynthesizerCommand command;
     while (current_frame < num_frames) {
-        uint64_t current_absolute_sample = engine->global_sample_count + current_frame;
         while (engine->synth.peek_from_command_queue(command)) {
-            bool is_due_now = command.absolute_sample <= current_absolute_sample;
+            bool is_due_now = static_cast<double>(command.absolute_sample) <= current_virtual_sample_count;
             bool is_high_priority = is_high_priority_command(command.type);
-            bool is_due_this_block = command.absolute_sample < block_end_sample;
+            bool is_due_this_block = static_cast<double>(command.absolute_sample) < block_end_virtual_sample_count;
 
             if (is_due_now || (!is_high_priority && is_due_this_block)) {
                 engine->synth.pop_from_command_queue(command);
@@ -183,8 +189,15 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
         }
 
         unsigned int frames_to_process = num_frames - current_frame;
-        if (engine->synth.peek_from_command_queue(command) && command.absolute_sample < block_end_sample) {
-            frames_to_process = static_cast<unsigned int>(command.absolute_sample - current_absolute_sample);
+        if (is_playing
+            && engine->synth.peek_from_command_queue(command)
+            && static_cast<double>(command.absolute_sample) < block_end_virtual_sample_count) {
+
+            double virtual_frames_until_next_command = static_cast<double>(command.absolute_sample) - current_virtual_sample_count;
+            if (virtual_frames_until_next_command < 0) {
+                virtual_frames_until_next_command = 0.0;
+            }
+            frames_to_process = static_cast<unsigned int>(virtual_frames_until_next_command / speed);
         }
 
         if (frames_to_process > BUFFER_SIZE) {
@@ -195,15 +208,28 @@ int AudioEngine::audio_callback(void *output_buffer, void *input_buffer, unsigne
             frames_to_process = 32;
         }
 
-        if (frames_to_process > 0) {
-            // Pointer arithmetic to only give the part of the buffer that needs to be processed
-            engine->synth.process_audio_buffer(buffer_to_use + current_frame, frames_to_process);
-            current_frame += frames_to_process;
+        if (frames_to_process == 0) {
+            frames_to_process = 1;
+        }
+
+        // Pointer arithmetic to only give the part of the buffer that needs to be processed
+        engine->synth.process_audio_buffer(buffer_to_use + current_frame, frames_to_process);
+
+        // Advance timelines
+        current_frame += frames_to_process;
+        if (is_playing) {
+            current_virtual_sample_count += frames_to_process * speed;
         }
     }
 
-    engine->global_sample_count += num_frames;
-    interleave(buffer_to_use, num_frames, static_cast<float*>(output_buffer), num_frames * engine->num_channels);
+    // Save sample counts for the sequencer and watchdog
+    engine->hardware_sample_count.fetch_add(num_frames, std::memory_order_relaxed);
+    engine->virtual_sample_count.store(current_virtual_sample_count, std::memory_order_release);
+
+    // Interleave if necessary
+    if (engine->num_channels > 1) {
+        interleave(buffer_to_use, num_frames, static_cast<float*>(output_buffer), num_frames * engine->num_channels);
+    }
 
     if (status & RTAUDIO_OUTPUT_UNDERFLOW) {
         engine->underrun_count.fetch_add(1, std::memory_order_relaxed);
@@ -279,7 +305,7 @@ void AudioEngine::open_audio_stream() {
             &parameters,
             nullptr,
             RTAUDIO_FLOAT32,
-            static_cast<unsigned int>(active_sample_rate),
+            static_cast<unsigned int>(active_sample_rate.load(std::memory_order_acquire)),
             &buffer_size,
             &audio_callback,
             this,
@@ -289,7 +315,7 @@ void AudioEngine::open_audio_stream() {
         mono_buffer.resize(buffer_size);
         rt_audio.startStream();
         auto current_api = rt_audio.getCurrentApi();
-        std::cout << "INFO: Audio engine now running at " << active_sample_rate
+        std::cout << "INFO: Audio engine now running at " << active_sample_rate.load(std::memory_order_acquire)
             << " Hz, with " << num_channels << " channels, " << buffer_size
             << " frames, using " << RtAudio::getApiDisplayName(current_api)
             << " audio driver, on device " << active_device_name
@@ -325,13 +351,13 @@ void AudioEngine::recover_stream() {
     close_audio_stream();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-    float old_sample_rate = active_sample_rate;
-    active_sample_rate = resolve_hardware_sample_rate(active_sample_rate);
-    sequencer.set_sample_rate(active_sample_rate);
-    synth.set_sample_rate(active_sample_rate);
+    float old_sample_rate = active_sample_rate.load(std::memory_order_acquire);
+    active_sample_rate.store(resolve_hardware_sample_rate(old_sample_rate), std::memory_order_release);
+    sequencer.set_sample_rate(active_sample_rate.load(std::memory_order_acquire));
+    synth.set_sample_rate(active_sample_rate.load(std::memory_order_acquire));
 
     // Only do this heavy operation if the sample rate actually changed
-    if (active_sample_rate != old_sample_rate) {
+    if (active_sample_rate.load(std::memory_order_acquire) != old_sample_rate) {
         std::cout << "INFO: Reloading samples and patch configurations due to changed sample rate..." << std::endl;
         synth.unload_all_patch_configs();
         synth.load_patch_configs(current_melodic_patch_numbers, current_drum_patch_numbers);
@@ -385,16 +411,18 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     : parser(), sequencer(), synth() {
 
     sequencer.set_synthesizer(&synth);
-    underrun_count.store(0, std::memory_order_relaxed);
+    underrun_count.store(0, std::memory_order_release);
 
-    active_sample_rate = resolve_hardware_sample_rate(fallback_sample_rate);
-    synth.set_sample_rate(active_sample_rate);
+    active_sample_rate.store(resolve_hardware_sample_rate(fallback_sample_rate), std::memory_order_release);
+    synth.set_sample_rate(active_sample_rate.load(std::memory_order_acquire));
     synth.set_global_volume(global_volume);
-    sequencer.set_sample_rate(active_sample_rate);
+    sequencer.set_sample_rate(active_sample_rate.load(std::memory_order_acquire));
 
+    playback_speed.store(1.0f, std::memory_order_release);
     num_channels = resolve_hardware_num_channels(1);
-    global_sample_count.store(0, std::memory_order_relaxed);
-    flush_command_queue_flag.store(false, std::memory_order_relaxed);
+    hardware_sample_count.store(0, std::memory_order_release);
+    virtual_sample_count.store(0, std::memory_order_release);
+    flush_command_queue_flag.store(false, std::memory_order_release);
     loaded_track_sequences = std::vector<TrackSequence>();
     loaded_file_names = std::vector<std::string>();
     current_track_sequence = -1;
@@ -404,13 +432,13 @@ AudioEngine::AudioEngine(float fallback_sample_rate, float global_volume)
     open_audio_stream();
 
     watchdog_thread = std::thread(&AudioEngine::watchdog_thread_loop, this);
-    watchdog_thread_active.store(true, std::memory_order_relaxed);
+    watchdog_thread_active.store(true, std::memory_order_release);
 
-    is_loading_flag.store(false, std::memory_order_relaxed);
+    is_loading_flag.store(false, std::memory_order_release);
 }
 
 AudioEngine::~AudioEngine() {
-    watchdog_thread_active.store(false, std::memory_order_relaxed);
+    watchdog_thread_active.store(false, std::memory_order_release);
     if (watchdog_thread.joinable()) {
         watchdog_thread.join();
     }
@@ -509,8 +537,8 @@ void AudioEngine::play() {
 
     // Start the playback
     sequencer.start(sample_count_to_microseconds(
-        global_sample_count.load(std::memory_order_relaxed),
-        active_sample_rate
+        virtual_sample_count.load(std::memory_order_acquire),
+        active_sample_rate.load(std::memory_order_acquire)
         )
     );
     sequencer_thread = std::thread(&AudioEngine::sequencer_thread_loop, this);
@@ -551,7 +579,10 @@ void AudioEngine::stop() {
         synth.stop();
     }
 
-    uint64_t current_micros = sample_count_to_microseconds(global_sample_count.load(std::memory_order_relaxed), active_sample_rate);
+    uint64_t current_micros = sample_count_to_microseconds(
+        virtual_sample_count.load(std::memory_order_acquire),
+        active_sample_rate.load(std::memory_order_acquire)
+    );
     uint64_t sequencer_current_micros = sequencer.get_total_elapsed_micros();
 
     if (sequencer_current_micros > current_micros) {
@@ -574,8 +605,11 @@ void AudioEngine::skip_seconds(float seconds) {
         sequencer.skip_forward(seconds);
     }
 
-    uint64_t new_micros = sequencer.get_total_elapsed_micros();
-    this->global_sample_count = sample_count_to_microseconds(new_micros, active_sample_rate);
+    double new_virtual_sample_count = static_cast<double>(microseconds_to_sample_count(
+        sequencer.get_total_elapsed_micros(),
+        active_sample_rate.load(std::memory_order_acquire)
+    ));
+    this->virtual_sample_count.store(new_virtual_sample_count, std::memory_order_release);
 
     if (was_playing) play();
 }
@@ -606,8 +640,8 @@ void AudioEngine::set_track_sequence(std::size_t index) {
         is_loading_flag.store(false, std::memory_order_release);
     });
 
-    global_sample_count.store(0, std::memory_order_relaxed);
-    underrun_count.store(0, std::memory_order_relaxed);
+    hardware_sample_count.store(0, std::memory_order_release);
+    underrun_count.store(0, std::memory_order_release);
 }
 
 void AudioEngine::set_global_volume(float volume) {
@@ -616,6 +650,11 @@ void AudioEngine::set_global_volume(float volume) {
 
 void AudioEngine::set_peak_amplitude_normalization(bool enabled) {
     synth.set_peak_amplitude_normalization(enabled);
+}
+
+void AudioEngine::set_playback_speed(double speed) {
+    if (speed < 0.001 || speed > 1000.0) return;
+    playback_speed.store(speed, std::memory_order_release);
 }
 
 void AudioEngine::soft_reset() {
@@ -634,12 +673,13 @@ void AudioEngine::soft_reset() {
 
     // Soft reset synthesizer
     synth.reset_state();
-    global_sample_count.store(0, std::memory_order_relaxed);
-    underrun_count.store(0, std::memory_order_relaxed);
+    hardware_sample_count.store(0, std::memory_order_release);
+    virtual_sample_count.store(0, std::memory_order_release);
+    underrun_count.store(0, std::memory_order_release);
 }
 
 bool AudioEngine::is_loading() const {
-    return is_loading_flag.load(std::memory_order_relaxed);
+    return is_loading_flag.load(std::memory_order_acquire);
 }
 
 bool AudioEngine::is_playing() const {

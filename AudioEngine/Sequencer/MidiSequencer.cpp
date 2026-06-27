@@ -37,7 +37,7 @@ MidiSequencer::MidiSequencer(float sample_rate) { // NOLINT
 void MidiSequencer::init(float sample_rate) {
     track_sequence = nullptr;
     synthesizer = nullptr;
-    is_playing_flag.store(false, std::memory_order_relaxed);
+    is_playing_flag.store(false, std::memory_order_release);
     is_skipping_flag = false;
     midi_file_ended_flag = false;
     this->sample_rate = sample_rate;
@@ -52,7 +52,7 @@ void MidiSequencer::init(float sample_rate) {
 }
 
 void MidiSequencer::setup_for_new_track_sequence() {
-    is_playing_flag.store(false, std::memory_order_relaxed);
+    is_playing_flag.store(false, std::memory_order_release);
     is_skipping_flag = false;
     midi_file_ended_flag = false;
 
@@ -240,43 +240,6 @@ void MidiSequencer::skip_microseconds(uint64_t micros_to_skip) {
             process_events(tracks[i], track_indices[i]);
         }
     }
-
-    // uint64_t target_micros = total_elapsed_micros + micros_to_skip;
-    // uint64_t simulated_micros = 0;
-    // uint32_t simulated_ticks = 0;
-    // uint32_t current_mpt = calculate_mpt(calculate_mpqn(120), track_sequence->get_division());
-    //
-    // for (const auto& tempo_event : tempo_events) {
-    //     if (tempo_event.absolute_time > simulated_ticks) {
-    //         uint32_t ticks_to_event = tempo_event.absolute_time - simulated_ticks;
-    //         uint64_t micros_to_event = static_cast<uint64_t>(ticks_to_event) * current_mpt;
-    //
-    //         if (simulated_micros + micros_to_event >= target_micros) {
-    //             break;
-    //         }
-    //
-    //         simulated_micros += micros_to_event;
-    //         simulated_ticks += ticks_to_event;
-    //     }
-    // }
-    //
-    // if (current_mpt > 0) {
-    //     simulated_ticks += (target_micros - simulated_micros) / current_mpt;
-    // }
-    //
-    // current_tick = simulated_ticks;
-    // total_elapsed_micros = simulated_micros;
-    // micros_per_tick = current_mpt;
-    //
-    // const auto& tracks = track_sequence->get_tracks();
-    // for (int i = 0; i < tracks.size(); i++) {
-    //     process_events(tracks[i], track_indices[i]);
-    // }
-    //
-    // // Cull notes that finish playing during skipping
-    // while (!active_notes.empty() && active_notes.top().end_time <= current_tick) {
-    //     active_notes.pop();
-    // }
 }
 
 [[nodiscard]] bool MidiSequencer::has_more_events() const {
@@ -359,15 +322,21 @@ float MidiSequencer::calculate_current_track_sequence_gain() const {
 
 void MidiSequencer::start(uint64_t audio_current_micros) {
     if (!synthesizer || !track_sequence) return;
-    is_playing_flag.store(true, std::memory_order_relaxed);
+    is_playing_flag.store(true, std::memory_order_release);
 
     // Reanchor
-    audio_anchor_micros = audio_current_micros - total_elapsed_micros;
+    if (audio_current_micros < total_elapsed_micros) {
+        audio_anchor_micros = 0;
+        total_elapsed_micros = audio_current_micros;
+    }
+    else {
+        audio_anchor_micros = audio_current_micros - total_elapsed_micros;
+    }
 }
 
 void MidiSequencer::stop() {
     if (!synthesizer || !track_sequence) return;
-    is_playing_flag.store(false, std::memory_order_relaxed);
+    is_playing_flag.store(false, std::memory_order_release);
 }
 
 void MidiSequencer::skip_forward(float seconds) {
@@ -404,7 +373,7 @@ void MidiSequencer::skip_backward(float seconds) {
 }
 
 void MidiSequencer::update(uint64_t audio_target_micros) {
-    if (!is_playing_flag.load(std::memory_order_relaxed) || !synthesizer || !track_sequence || midi_file_ended_flag) return;
+    if (!is_playing_flag.load(std::memory_order_acquire) || !synthesizer || !track_sequence || midi_file_ended_flag) return;
 
     if (audio_target_micros < audio_anchor_micros) return;
     uint64_t micros_to_advance = audio_target_micros - audio_anchor_micros;
@@ -437,7 +406,7 @@ void MidiSequencer::update(uint64_t audio_target_micros) {
 
     if (!has_more_events() && active_notes.empty()) {
         midi_file_ended_flag = true;
-        is_playing_flag.store(false, std::memory_order_relaxed);
+        is_playing_flag.store(false, std::memory_order_release);
     }
 }
 
@@ -474,7 +443,7 @@ void MidiSequencer::set_sample_rate(float sample_rate) {
 }
 
 bool MidiSequencer::is_playing() const {
-    return is_playing_flag.load(std::memory_order_relaxed);
+    return is_playing_flag.load(std::memory_order_acquire);
 }
 
 bool MidiSequencer::midi_file_ended() const {

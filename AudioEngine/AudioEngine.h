@@ -25,9 +25,11 @@ private:
     // Audio buffer stuffs
     std::vector<float> mono_buffer;
     std::atomic<uint64_t> underrun_count;
-    float active_sample_rate;
+    std::atomic<float> active_sample_rate;
+    std::atomic<double> playback_speed;
     unsigned int num_channels;
-    std::atomic<uint64_t> global_sample_count;
+    std::atomic<uint64_t> hardware_sample_count;
+    std::atomic<double> virtual_sample_count;
 
     // Helps to avoid thread collisions
     std::atomic<bool> flush_command_queue_flag;
@@ -201,8 +203,8 @@ public:
     void set_track_sequence(std::size_t index);
     void set_global_volume(float volume);
     void set_peak_amplitude_normalization(bool enabled);
+    void set_playback_speed(double speed);
     void soft_reset();
-    void load_configs_for_current_track_sequence();
 
     [[nodiscard]] bool is_loading() const;
     [[nodiscard]] bool is_playing() const;
