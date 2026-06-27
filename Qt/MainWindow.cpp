@@ -23,9 +23,9 @@ void MainWindow::init_top_bar() {
     playback_menu->addAction(toggle_repeat_action);
     playback_menu->addAction(toggle_shuffle_action);
     playback_menu->addAction(toggle_autoplay_action);
-    playback_menu->addSeparator();
     playback_menu->addAction(toggle_peak_amplitude_action);
-    playback_menu->addAction(playback_speed_slider_action);
+    playback_menu->addSeparator();
+    playback_menu->addAction(playback_speed_action);
 }
 
 void MainWindow::init_top_ui(QHBoxLayout* layout) {
@@ -134,6 +134,33 @@ void MainWindow::init_status_bar() {
     statusBar()->addPermanentWidget(underrun_label);
 }
 
+void MainWindow::init_playback_speed_dialog() {
+    playback_speed_dialog = new QDialog(this);
+
+    // The label
+    QLabel* playback_speed_label = new QLabel("Set the Playback Speed", this);
+
+    // The playback speed slider
+    playback_speed_slider = new QSlider(Qt::Horizontal, this);
+    playback_speed_slider->setRange(1, 200);
+    playback_speed_slider->setValue(100);
+    playback_speed_slider->setFixedWidth(200);
+    playback_speed_slider->setFixedHeight(20);
+    playback_speed_slider->setSingleStep(1);
+    playback_speed_slider->setPageStep(10);
+
+    QVBoxLayout* playback_speed_dialog_layout = new QVBoxLayout(playback_speed_dialog);
+    playback_speed_dialog_layout->addWidget(playback_speed_label);
+    playback_speed_dialog_layout->addWidget(playback_speed_slider);
+    playback_speed_dialog_layout->addStretch();
+
+    playback_speed_dialog->setWindowTitle("Set the Playback Speed");
+    playback_speed_dialog->setLayout(playback_speed_dialog_layout);
+    playback_speed_dialog->setWindowModality(Qt::ApplicationModal);
+    playback_speed_dialog->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint);
+    playback_speed_dialog->resize(300, 100);
+}
+
 void MainWindow::init_actions() {
     add_file_action = new QAction("Add File", this);
     add_file_action->setStatusTip("Add a MIDI file to the track list");
@@ -164,18 +191,8 @@ void MainWindow::init_actions() {
     toggle_peak_amplitude_action->setCheckable(true);
     toggle_peak_amplitude_action->setChecked(true);
 
-    playback_speed_slider = new QSlider(Qt::Horizontal, this);
-    playback_speed_slider->setRange(1, 200);
-    playback_speed_slider->setValue(100);
-    playback_speed_slider->setFixedWidth(200);
-    playback_speed_slider->setFixedHeight(20);
-    playback_speed_slider->setTickPosition(QSlider::TicksBelow);
-    playback_speed_slider->setTickInterval(10);
-    playback_speed_slider->setSingleStep(1);
-    playback_speed_slider->setPageStep(10);
-    playback_speed_slider->setFocusPolicy(Qt::NoFocus);
-    playback_speed_slider_action = new QWidgetAction(this);
-    playback_speed_slider_action->setDefaultWidget(playback_speed_slider);
+    playback_speed_action = new QAction("Playback Speed...", this);
+    playback_speed_action->setStatusTip("Set the playback speed");
 }
 
 void MainWindow::init_connections() {
@@ -245,7 +262,10 @@ void MainWindow::init_connections() {
     // Toggle repeat action
     connect(toggle_repeat_action, &QAction::triggered, playback_controller, &PlaybackController::toggle_repeat);
 
-    // Playback speed slider
+    // Playback speed dialog
+    connect(playback_speed_action, &QAction::triggered, this, &MainWindow::on_playback_speed_action_triggered);
+
+    // Playback speed slider in the dialog
     connect(playback_speed_slider, &QAbstractSlider::sliderMoved, this, &MainWindow::cache_new_playback_speed_slider_position);
     connect(playback_speed_slider, &QAbstractSlider::sliderReleased, this, &MainWindow::on_playback_speed_slider_released);
     connect(playback_controller, &PlaybackController::playback_speed_changed, this, &MainWindow::on_playback_speed_changed);
@@ -259,6 +279,10 @@ void MainWindow::on_add_directory_button_clicked() {
 void MainWindow::on_add_file_button_clicked() {
     QString file_path = QFileDialog::getOpenFileName(this, "Select a File", QDir::homePath(), "MIDI Files (*.mid)");
     playback_controller->load_file(file_path.toStdString());
+}
+
+void MainWindow::on_playback_speed_action_triggered() {
+    playback_speed_dialog->show();
 }
 
 bool MainWindow::is_dark_theme() {
@@ -289,6 +313,12 @@ MainWindow::MainWindow(PlaybackController* playback_controller, QWidget *parent)
     setMinimumSize(400, 300);
     resize(600, 300);
 
+    /*
+     * Do *not* need to call delete on allocated objects as they are part of the QObject tree
+     * via method such as addLayout() or setCentralWidget().
+     * (Therefore, the allocated memory is *not* leaked, though the compiler may say otherwise)
+     */
+
     QWidget* central_widget = new QWidget(this);
     QVBoxLayout* main_layout = new QVBoxLayout(central_widget);
 
@@ -304,6 +334,7 @@ MainWindow::MainWindow(PlaybackController* playback_controller, QWidget *parent)
     init_bottom_ui(bottom_layout);
     main_layout->addLayout(bottom_layout);
 
+    init_playback_speed_dialog();
     init_actions();
     init_connections();
     init_top_bar();

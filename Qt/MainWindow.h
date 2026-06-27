@@ -62,7 +62,7 @@ private:
     QAction* toggle_shuffle_action;
     QAction* toggle_autoplay_action;
     QAction* toggle_peak_amplitude_action;
-    QWidgetAction* playback_speed_slider_action;
+    QAction* playback_speed_action;
 
     // UI element: dropdown box for track selection
     QComboBox* track_selector;
@@ -81,23 +81,24 @@ private:
     QSlider* playback_speed_slider;
     int cached_playback_speed_slider_position;
 
+    // UI element: popup dialog for adjusting playback speed
+    QDialog* playback_speed_dialog;
+
     void init_top_bar();
     void init_top_ui(QHBoxLayout* layout);
     void init_middle_ui(QHBoxLayout* layout);
     void init_bottom_ui(QHBoxLayout* layout);
     void init_status_bar();
+    void init_playback_speed_dialog();
     void init_actions();
     void init_connections();
-
-    // Prevent direct coupling of PlaybackController to QString
-    void on_add_directory_button_clicked();
-    void on_add_file_button_clicked();
 
     // Icon handling
     static bool is_dark_theme();
     QIcon load_icon(const QString& icon_name);
 
 private slots:
+    // Controller to UI
     void on_playback_state_changed(bool is_playing);
     void on_repeat_changed(bool repeat_flag);
     void on_shuffle_changed(bool shuffle_flag);
@@ -110,11 +111,16 @@ private slots:
     void on_underrun_detected(bool status);
     void on_peak_amplitude_normalization_changed(bool enabled);
 
-    // Avoid engine method spam, causing lag, but still provide UI updates
+    // UI to controller delegates are in the PlaybackController itself
+
+    // Internal delegates (UI updates, middle man methods between UI and controller for various reasons, etc.)
     void cache_new_seek_slider_position(int pos);
     void on_seek_slider_released();
     void cache_new_playback_speed_slider_position(int pos);
     void on_playback_speed_slider_released();
+    void on_add_directory_button_clicked();
+    void on_add_file_button_clicked();
+    void on_playback_speed_action_triggered();
 
 public:
     explicit MainWindow(PlaybackController* controller, QWidget* parent = nullptr);
