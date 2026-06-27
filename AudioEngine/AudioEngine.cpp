@@ -14,6 +14,7 @@ void AudioEngine::sequencer_thread_loop() {
         std::this_thread::sleep_for(std::chrono::microseconds(250));
     }
     synth.stop();
+
 }
 
 void AudioEngine::watchdog_thread_loop() {
@@ -567,7 +568,7 @@ void AudioEngine::stop() {
         if (timeout_counter >= 1000) {
             std::cerr << "WARNING: Audio thread is dead, watchdog thread will attempt to recover the program.";
             synth.clear_command_queue();
-            synth.stop();
+            // synth.stop();
             flush_command_queue_flag.store(false, std::memory_order_release);
         }
         else {
@@ -577,7 +578,7 @@ void AudioEngine::stop() {
     else {
         // Audio thread is not active, so can safely flush from this thread
         synth.clear_command_queue();
-        synth.stop();
+        // synth.stop();
     }
 
     uint64_t current_micros = sample_count_to_microseconds(
@@ -587,7 +588,7 @@ void AudioEngine::stop() {
     uint64_t sequencer_current_micros = sequencer.get_total_elapsed_micros();
 
     if (sequencer_current_micros > current_micros) {
-        float overshot_seconds = static_cast<float>(sequencer_current_micros - current_micros) / 1000000.0;
+        float overshot_seconds = static_cast<float>(sequencer_current_micros - current_micros) / 1000000.0f;
         sequencer.skip_backward(overshot_seconds);
     }
 }
@@ -625,7 +626,6 @@ void AudioEngine::set_track_sequence(std::size_t index) {
     }
 
     current_track_sequence = index;
-    sequencer.set_track_sequence(&loaded_track_sequences[current_track_sequence]);
     determine_all_patches_in_track_sequence(loaded_track_sequences[current_track_sequence], &current_melodic_patch_numbers, &current_drum_patch_numbers);
 
     is_loading_flag.store(true, std::memory_order_release);
@@ -635,9 +635,13 @@ void AudioEngine::set_track_sequence(std::size_t index) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 
+        // Do this only after all voices are free to prevent volume spiking
+        sequencer.set_track_sequence(&loaded_track_sequences[current_track_sequence]);
+
         // Now safe to unload without causing thread collisions
         synth.unload_all_patch_configs();
         synth.load_patch_configs(current_melodic_patch_numbers, current_drum_patch_numbers);
+
         is_loading_flag.store(false, std::memory_order_release);
     });
 
