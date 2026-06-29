@@ -127,7 +127,7 @@ struct VibratoDecoratorParams {
 
 struct SVFFilterParams {
     float sample_rate;
-    float cutoff_hz;
+    float cutoff_multiplier;
     float resonance;
 };
 

@@ -6,16 +6,20 @@
 #include <cmath>
 #include <iostream>
 
-static float pitch_to_hz(uint8_t pitch) {
-    return 440.0f * std::pow(2.0f, ((float)pitch - 69) / 12.0f);
+float Voice::midi_pitch_to_hz(uint8_t midi_pitch) {
+    return 440.0f * std::pow(2.0f, ((float)midi_pitch - 69) / 12.0f);
 }
 
-static float byte_to_scale_float(uint8_t value) {
+float Voice::midi_pitch_to_svf_cutoff_hz(uint8_t midi_pitch, float cutoff_multiplier) {
+    return cutoff_multiplier * midi_pitch_to_hz(midi_pitch);
+}
+
+float Voice::byte_to_scale_float(uint8_t value) {
     float normalized = (float)value / 127.0f;
     return normalized * normalized;
 }
 
-void select_sample(const std::vector<Sample> &samples, uint8_t pitch, uint8_t velocity, const Sample*& selected_sample) {
+void Voice::select_sample(const std::vector<Sample> &samples, uint8_t pitch, uint8_t velocity, const Sample*& selected_sample) {
     /*
      * Sample selection logic:
      *      1st pass: Try to find a sample with matching pitch *and* velocity
@@ -110,7 +114,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
     volume = byte_to_scale_float(velocity);
     one_shot_flag = config->is_one_shot;
 
-    float target_hz = pitch_to_hz(pitch);
+    float target_hz = midi_pitch_to_hz(pitch);
 
     switch (config->oscillator_type) {
         case OscillatorType::SAMPLE : {
@@ -215,7 +219,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::CHAMBERLIN_LOWPASS : {
             chamberlin_low_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->svf_filter_params.cutoff_hz,
+                midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
                 config->svf_filter_params.resonance
             );
             chamberlin_low_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
@@ -225,7 +229,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::LTI_LOWPASS : {
             lti_low_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->svf_filter_params.cutoff_hz,
+                midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
                 config->svf_filter_params.resonance
             );
             lti_low_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
@@ -235,7 +239,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::CHAMBERLIN_BANDPASS : {
             chamberlin_band_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->svf_filter_params.cutoff_hz,
+                midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
                 config->svf_filter_params.resonance
             );
             chamberlin_band_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
@@ -245,7 +249,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::LTI_BANDPASS : {
             lti_band_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->svf_filter_params.cutoff_hz,
+                midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
                 config->svf_filter_params.resonance
             );
             lti_band_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
@@ -254,7 +258,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::CHAMBERLIN_HIGHPASS : {
             chamberlin_high_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->svf_filter_params.cutoff_hz,
+                midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
                 config->svf_filter_params.resonance
             );
             chamberlin_high_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
@@ -264,7 +268,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::LTI_HIGHPASS : {
             lti_high_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->svf_filter_params.cutoff_hz,
+                midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
                 config->svf_filter_params.resonance
             );
             lti_high_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);

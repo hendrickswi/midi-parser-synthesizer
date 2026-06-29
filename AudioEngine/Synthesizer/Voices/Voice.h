@@ -65,6 +65,11 @@ private:
     bool sustained_flag;
     bool one_shot_flag;
 
+    static float midi_pitch_to_hz(uint8_t midi_pitch);
+    static float midi_pitch_to_svf_cutoff_hz(uint8_t midi_pitch, float cutoff_multiplier);
+    static float byte_to_scale_float(uint8_t value);
+    static void select_sample(const std::vector<Sample>& samples, uint8_t pitch, uint8_t velocity, const Sample*& selected_sample);
+
 public:
     Voice();
     Voice(const Voice& other) = delete;
