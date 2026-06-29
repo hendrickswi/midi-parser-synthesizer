@@ -1,12 +1,11 @@
 ﻿#ifndef MIDI_PARSERSYNTHESIZER_OSCILLATORDECORATOR_H
 #define MIDI_PARSERSYNTHESIZER_OSCILLATORDECORATOR_H
 
-#include "../Base Implementations/Base Oscillator/Oscillator.h"
+#include "../../Base Implementations/Base Oscillator/Oscillator.h"
 
 class OscillatorDecorator : public Oscillator {
 protected:
     Oscillator* base_oscillator;
-    float sample_rate;
 
     OscillatorDecorator();
     ~OscillatorDecorator();

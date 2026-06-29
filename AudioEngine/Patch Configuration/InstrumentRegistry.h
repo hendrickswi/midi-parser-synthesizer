@@ -3,8 +3,10 @@
 #include <array>
 #include <cstdint>
 #include <set>
+#include <unordered_map>
 #include <nlohmann/json_fwd.hpp>
 
+#include "OscillatorParsingType.h"
 #include "PatchDefinition.h"
 
 class SampleLoader;
@@ -41,6 +43,7 @@ private:
     // The intra-patch parsers ("workers")
     static void parse_oscillator_config(const json& config, float target_sample_rate, PatchDefinition* patch, SampleLoader* loader);
     static void parse_sample_zone_config(const json& config, PatchDefinition* patch, SampleLoader* loader);
+    static void parse_svf_config(const json& config, float target_sample_rate, PatchDefinition* patch, SampleLoader* loader);
     static void parse_envelope_config(const json& config, float target_sample_rate, PatchDefinition* patch);
 
     void set_fallbacks();

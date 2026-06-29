@@ -1,12 +1,13 @@
 ﻿#include "VibratoOscillator.h"
 
-#include "../../Lookup Tables/SineLookupTable.h"
+#include "../../../Lookup Tables/SineLookupTable.h"
 #include <vector>
 
 VibratoOscillator::VibratoOscillator() {
     this->base_hz = 4.0f;
     this->speed_hz = 5.0f;
     this->depth = 0.5f;
+    sample_rate = 48000.0f;
     current_phase = 0;
     phase_increment = speed_hz * TWO_PI / sample_rate;
     calculated_lfo_buffer = std::vector<float>(4096); // Safe estimate to prevent resizing

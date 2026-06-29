@@ -2,13 +2,13 @@
 #define MIDI_PARSERSYNTHESIZER_VIBRATOOSCILLATOR_H
 #include <vector>
 
-#include "OscillatorDecorator.h"
+#include "../Base/OscillatorDecorator.h"
 
 class VibratoOscillator : public OscillatorDecorator {
 private:
+    float sample_rate;
     float current_phase;
     float phase_increment;
-    float sample_rate;
 
     float base_hz;
     float speed_hz;

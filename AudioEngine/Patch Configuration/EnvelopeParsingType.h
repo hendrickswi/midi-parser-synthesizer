@@ -3,18 +3,18 @@
 
 #include <nlohmann/json.hpp>
 
-enum class ParsingEnvelopeType {
+enum class EnvelopeParsingType {
     UNKNOWN,
     ADSR,
     ADR,
     TREMOLO
 };
 
-NLOHMANN_JSON_SERIALIZE_ENUM(ParsingEnvelopeType, {
-    {ParsingEnvelopeType::UNKNOWN, nullptr},
-    {ParsingEnvelopeType::ADSR, "ADSR"},
-    {ParsingEnvelopeType::ADR, "ADR"},
-    {ParsingEnvelopeType::TREMOLO, "TREMOLO"}
+NLOHMANN_JSON_SERIALIZE_ENUM(EnvelopeParsingType, {
+    { EnvelopeParsingType::UNKNOWN, nullptr },
+    { EnvelopeParsingType::ADSR, "ADSR" },
+    { EnvelopeParsingType::ADR, "ADR" },
+    { EnvelopeParsingType::TREMOLO, "TREMOLO" }
 })
 
 

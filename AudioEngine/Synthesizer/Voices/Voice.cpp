@@ -59,7 +59,12 @@ Voice::Voice() { // NOLINT
     adr_envelope = ADREnvelope();
     adsr_envelope = ADSREnvelope();
     vibrato_oscillator_decorator = VibratoOscillator();
-    low_pass_filter_oscillator_decorator = LowpassFilterOscillator();
+    chamberlin_low_pass_filter_oscillator_decorator = ChamberlinLowpassFilterOscillator();
+    lti_low_pass_filter_oscillator_decorator = LTI_LowpassFilterOscillator();
+    chamberlin_band_pass_filter_oscillator_decorator = ChamberlinBandpassFilterOscillator();
+    lti_band_pass_filter_oscillator_decorator = LTI_BandpassFilterOscillator();
+    chamberlin_high_pass_filter_oscillator_decorator = ChamberlinHighpassFilterOscillator();
+    lti_high_pass_filter_oscillator_decorator = LTI_HighpassFilterOscillator();
     tremolo_envelope_decorator = TremoloEnvelope();
 
     active_oscillator = nullptr;
@@ -207,35 +212,63 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
             active_oscillator = &vibrato_oscillator_decorator;
             break;
         }
-        case OscillatorDecoratorType::LOWPASS : {
-            low_pass_filter_oscillator_decorator.set_params(
+        case OscillatorDecoratorType::CHAMBERLIN_LOWPASS : {
+            chamberlin_low_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
                 config->low_pass_filter_params.cutoff_hz,
                 config->low_pass_filter_params.resonance
             );
-            low_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
-            active_oscillator = &low_pass_filter_oscillator_decorator;
+            chamberlin_low_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
+            active_oscillator = &chamberlin_low_pass_filter_oscillator_decorator;
             break;
         }
-        case OscillatorDecoratorType::BANDPASS : {
-            band_pass_filter_oscillator_decorator.set_params(
+        case OscillatorDecoratorType::LTI_LOWPASS : {
+            lti_low_pass_filter_oscillator_decorator.set_params(
+                sample_rate,
+                config->low_pass_filter_params.cutoff_hz,
+                config->low_pass_filter_params.resonance
+            );
+            lti_low_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
+            active_oscillator = &lti_low_pass_filter_oscillator_decorator;
+            break;
+        }
+        case OscillatorDecoratorType::CHAMBERLIN_BANDPASS : {
+            chamberlin_band_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
                 config->band_pass_filter_params.cutoff_hz,
                 config->band_pass_filter_params.resonance
             );
-            band_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
-            active_oscillator = &band_pass_filter_oscillator_decorator;
+            chamberlin_band_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
+            active_oscillator = &chamberlin_band_pass_filter_oscillator_decorator;
             break;
         }
-        case OscillatorDecoratorType::HIGHPASS : {
-            high_pass_filter_oscillator_decorator.set_params(
+        case OscillatorDecoratorType::LTI_BANDPASS : {
+            lti_band_pass_filter_oscillator_decorator.set_params(
+                sample_rate,
+                config->band_pass_filter_params.cutoff_hz,
+                config->band_pass_filter_params.resonance
+            );
+            lti_band_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
+            active_oscillator = &lti_band_pass_filter_oscillator_decorator;
+        }
+        case OscillatorDecoratorType::CHAMBERLIN_HIGHPASS : {
+            chamberlin_high_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
                 config->high_pass_filter_params.cutoff_hz,
                 config->high_pass_filter_params.resonance
             );
-            high_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
-            active_oscillator = &high_pass_filter_oscillator_decorator;
+            chamberlin_high_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
+            active_oscillator = &chamberlin_high_pass_filter_oscillator_decorator;
             break;
+        }
+        case OscillatorDecoratorType::LTI_HIGHPASS : {
+            lti_high_pass_filter_oscillator_decorator.set_params(
+                sample_rate,
+                config->high_pass_filter_params.cutoff_hz,
+                config->high_pass_filter_params.resonance
+            );
+            lti_high_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
+            active_oscillator = &lti_high_pass_filter_oscillator_decorator;
         }
         default : {
             std::cerr << "Warning: Unknown oscillator_decorator_type in passed in PatchDefinition* config in Voice::configure(...)." << std::endl;

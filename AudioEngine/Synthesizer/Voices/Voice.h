@@ -8,10 +8,13 @@
 #include "../Oscillators/Base Implementations/Composite/CompositeOscillator.h"
 #include "../Oscillators/Base Implementations/Noise/NoiseOscillator.h"
 #include "../Oscillators/Base Implementations/Sample/SampleOscillator.h"
-#include "../Oscillators/Decorators/VibratoOscillator.h"
-#include "../Oscillators/Decorators/LowpassFilterOscillator.h"
-#include "../Oscillators/Decorators/BandpassFilterOscillator.h"
-#include "../Oscillators/Decorators/HighpassFilterOscillator.h"
+#include "../Oscillators/Decorators/Vibrato/VibratoOscillator.h"
+#include "../Oscillators/Decorators/Chamberlin Filters/ChamberlinLowpassFilterOscillator.h"
+#include "../Oscillators/Decorators/Chamberlin Filters/ChamberlinBandpassFilterOscillator.h"
+#include "../Oscillators/Decorators/Chamberlin Filters/ChamberlinHighpassFilterOscillator.h"
+#include "../Oscillators/Decorators/LTI Filters/LTI_LowpassFilterOscillator.h"
+#include "../Oscillators/Decorators/LTI Filters/LTI_BandpassFilterOscillator.h"
+#include "../Oscillators/Decorators/LTI Filters/LTI_HighpassFilterOscillator.h"
 #include "../Envelopes/Base Implementations/ADR/ADREnvelope.h"
 #include "../Envelopes/Base Implementations/ADSR/ADSREnvelope.h"
 #include "../Envelopes/Decorators/TremoloEnvelope.h"
@@ -34,9 +37,12 @@ private:
 
     // All of the possible oscillator decorators
     VibratoOscillator vibrato_oscillator_decorator;
-    LowpassFilterOscillator low_pass_filter_oscillator_decorator;
-    BandpassFilterOscillator band_pass_filter_oscillator_decorator;
-    HighpassFilterOscillator high_pass_filter_oscillator_decorator;
+    ChamberlinLowpassFilterOscillator chamberlin_low_pass_filter_oscillator_decorator;
+    LTI_LowpassFilterOscillator lti_low_pass_filter_oscillator_decorator;
+    ChamberlinBandpassFilterOscillator chamberlin_band_pass_filter_oscillator_decorator;
+    LTI_BandpassFilterOscillator lti_band_pass_filter_oscillator_decorator;
+    ChamberlinHighpassFilterOscillator chamberlin_high_pass_filter_oscillator_decorator;
+    LTI_HighpassFilterOscillator lti_high_pass_filter_oscillator_decorator;
 
     // All of the possible envelope decorators
     TremoloEnvelope tremolo_envelope_decorator;

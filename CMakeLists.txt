@@ -74,10 +74,10 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine/Synthesizer/Envelopes/Decorators/EnvelopeDecorator.h
         "AudioEngine/Synthesizer/Envelopes/Base Implementations/ADSR/ADSREnvelopeState.h"
         "AudioEngine/Synthesizer/Oscillators/Base Implementations/Base Oscillator/Oscillator.cpp"
-        AudioEngine/Synthesizer/Oscillators/Decorators/OscillatorDecorator.cpp
-        AudioEngine/Synthesizer/Oscillators/Decorators/OscillatorDecorator.h
-        AudioEngine/Synthesizer/Oscillators/Decorators/VibratoOscillator.cpp
-        AudioEngine/Synthesizer/Oscillators/Decorators/VibratoOscillator.h
+        AudioEngine/Synthesizer/Oscillators/Decorators/Base/OscillatorDecorator.cpp
+        AudioEngine/Synthesizer/Oscillators/Decorators/Base/OscillatorDecorator.h
+        AudioEngine/Synthesizer/Oscillators/Decorators/Vibrato/VibratoOscillator.cpp
+        AudioEngine/Synthesizer/Oscillators/Decorators/Vibrato/VibratoOscillator.h
         EventTypeEnums/ContinuousControllers.h
         "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/Triangle/TriangleOscillator.cpp"
         "AudioEngine/Synthesizer/Oscillators/Base Implementations/Algorithmic/Triangle/TriangleOscillator.h"
@@ -118,12 +118,20 @@ add_executable(MIDI_ParserSynthesizer main.cpp
         AudioEngine/PlaylistNavigator.h
         AudioEngine/Synthesizer/Oscillators/Filters/ChamberlinSVF.cpp
         AudioEngine/Synthesizer/Oscillators/Filters/ChamberlinSVF.h
-        AudioEngine/Synthesizer/Oscillators/Decorators/LowpassFilterOscillator.cpp
-        AudioEngine/Synthesizer/Oscillators/Decorators/LowpassFilterOscillator.h
-        AudioEngine/Synthesizer/Oscillators/Decorators/BandpassFilterOscillator.cpp
-        AudioEngine/Synthesizer/Oscillators/Decorators/BandpassFilterOscillator.h
-        AudioEngine/Synthesizer/Oscillators/Decorators/HighpassFilterOscillator.cpp
-        AudioEngine/Synthesizer/Oscillators/Decorators/HighpassFilterOscillator.h
+        "AudioEngine/Synthesizer/Oscillators/Decorators/Chamberlin Filters/ChamberlinLowpassFilterOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Decorators/Chamberlin Filters/ChamberlinLowpassFilterOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Decorators/Chamberlin Filters/ChamberlinBandpassFilterOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Decorators/Chamberlin Filters/ChamberlinBandpassFilterOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Decorators/Chamberlin Filters/ChamberlinHighpassFilterOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Decorators/Chamberlin Filters/ChamberlinHighpassFilterOscillator.h"
+        AudioEngine/Synthesizer/Oscillators/Filters/LinearTrapezoidalIntegratedSVF.cpp
+        AudioEngine/Synthesizer/Oscillators/Filters/LinearTrapezoidalIntegratedSVF.h
+        "AudioEngine/Synthesizer/Oscillators/Decorators/LTI Filters/LTI_LowpassFilterOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Decorators/LTI Filters/LTI_LowpassFilterOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Decorators/LTI Filters/LTI_BandpassFilterOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Decorators/LTI Filters/LTI_BandpassFilterOscillator.h"
+        "AudioEngine/Synthesizer/Oscillators/Decorators/LTI Filters/LTI_HighpassFilterOscillator.cpp"
+        "AudioEngine/Synthesizer/Oscillators/Decorators/LTI Filters/LTI_HighpassFilterOscillator.h"
 )
 
 target_link_libraries(MIDI_ParserSynthesizer PRIVATE

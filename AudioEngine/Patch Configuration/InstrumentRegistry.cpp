@@ -218,61 +218,35 @@ void InstrumentRegistry::parse_oscillator_config(const json& config, const float
             }
             break;
         }
-        case OscillatorParsingType::LOWPASS : {
-            patch->oscillator_decorator_type = OscillatorDecoratorType::LOWPASS;
-            patch->low_pass_filter_params.sample_rate = config.value("sample_rate", target_sample_rate);
-            patch->low_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
-            patch->low_pass_filter_params.resonance = config.value("resonance", 0.707f);
-
-            if (config.contains("base_oscillator")) {
-                parse_oscillator_config(config["base_oscillator"], target_sample_rate, patch, loader);
-            }
-            else {
-                // Continue with a fallback sine oscillator
-                std::cerr << "WARNING: No base oscillator specified for lowpass decorator. "
-                             "Sine oscillator fallback will be used." << std::endl;
-                patch->oscillator_type = OscillatorType::SINE;
-                patch->sine_oscillator_params = SineOscillatorParams(440.0f, target_sample_rate);
-                patch->oscillator_initialized = true;
-            }
+        case OscillatorParsingType::CHAMBERLIN_SVF_LOWPASS : {
+            patch->oscillator_decorator_type = OscillatorDecoratorType::CHAMBERLIN_LOWPASS;
+            parse_svf_config(config, target_sample_rate, patch, loader);
             break;
         }
-        case OscillatorParsingType::BANDPASS : {
-            patch->oscillator_decorator_type = OscillatorDecoratorType::BANDPASS;
-            patch->band_pass_filter_params.sample_rate = config.value("sample_rate", target_sample_rate);
-            patch->band_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
-            patch->band_pass_filter_params.resonance = config.value("resonance", 0.707f);
-
-            if (config.contains("base_oscillator")) {
-                parse_oscillator_config(config["base_oscillator"], target_sample_rate, patch, loader);
-            }
-            else {
-                // Continue with a fallback sine oscillator
-                std::cerr << "WARNING: No base oscillator specified for lowpass decorator. "
-                             "Sine oscillator fallback will be used." << std::endl;
-                patch->oscillator_type = OscillatorType::SINE;
-                patch->sine_oscillator_params = SineOscillatorParams(440.0f, target_sample_rate);
-                patch->oscillator_initialized = true;
-            }
+        case OscillatorParsingType::CHAMBERLIN_SVF_BANDPASS : {
+            patch->oscillator_decorator_type = OscillatorDecoratorType::CHAMBERLIN_BANDPASS;
+            parse_svf_config(config, target_sample_rate, patch, loader);
             break;
         }
-        case OscillatorParsingType::HIGHPASS : {
-            patch->oscillator_decorator_type = OscillatorDecoratorType::HIGHPASS;
-            patch->high_pass_filter_params.sample_rate = config.value("sample_rate", target_sample_rate);
-            patch->high_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
-            patch->high_pass_filter_params.resonance = config.value("resonance", 0.707f);
-
-            if (config.contains("base_oscillator")) {
-                parse_oscillator_config(config["base_oscillator"], target_sample_rate, patch, loader);
-            }
-            else {
-                // Continue with a fallback sine oscillator
-                std::cerr << "WARNING: No base oscillator specified for lowpass decorator. "
-                             "Sine oscillator fallback will be used." << std::endl;
-                patch->oscillator_type = OscillatorType::SINE;
-                patch->sine_oscillator_params = SineOscillatorParams(440.0f, target_sample_rate);
-                patch->oscillator_initialized = true;
-            }
+        case OscillatorParsingType::CHAMBERLIN_SVF_HIGHPASS : {
+            patch->oscillator_decorator_type = OscillatorDecoratorType::CHAMBERLIN_HIGHPASS;
+            parse_svf_config(config, target_sample_rate, patch, loader);
+            break;
+        }
+        case OscillatorParsingType::LTI_SVF_LOWPASS : {
+            patch->oscillator_decorator_type = OscillatorDecoratorType::LTI_LOWPASS;
+            parse_svf_config(config, target_sample_rate, patch, loader);
+            break;
+        }
+        case OscillatorParsingType::LTI_SVF_BANDPASS : {
+            patch->oscillator_decorator_type = OscillatorDecoratorType::LTI_BANDPASS;
+            parse_svf_config(config, target_sample_rate, patch, loader);
+            break;
+        }
+        case OscillatorParsingType::LTI_SVF_HIGHPASS : {
+            patch->oscillator_decorator_type = OscillatorDecoratorType::LTI_HIGHPASS;
+            parse_svf_config(config, target_sample_rate, patch, loader);
+            break;
         }
         case OscillatorParsingType::UNKNOWN :
         default : {
@@ -312,6 +286,30 @@ void InstrumentRegistry::parse_sample_zone_config(const json& config, PatchDefin
     );
 }
 
+void InstrumentRegistry::parse_svf_config(const json& config, const float target_sample_rate, PatchDefinition* patch, SampleLoader* loader) {
+    if (config.is_null()) {
+        std::cerr << "WARNING: Invalid parameter 'config' in parse_svf_config(const json& config, PatchDefinition* patch_config): "
+            << config.dump() << std::endl;
+        return;
+    }
+
+    patch->high_pass_filter_params.sample_rate = config.value("sample_rate", target_sample_rate);
+    patch->high_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
+    patch->high_pass_filter_params.resonance = config.value("resonance", 0.707f);
+
+    if (config.contains("base_oscillator")) {
+        parse_oscillator_config(config["base_oscillator"], target_sample_rate, patch, loader);
+    }
+    else {
+        // Continue with a fallback sine oscillator
+        std::cerr << "WARNING: No base oscillator specified for lowpass decorator. "
+                     "Sine oscillator fallback will be used." << std::endl;
+        patch->oscillator_type = OscillatorType::SINE;
+        patch->sine_oscillator_params = SineOscillatorParams(440.0f, target_sample_rate);
+        patch->oscillator_initialized = true;
+    }
+}
+
 void InstrumentRegistry::parse_envelope_config(const json& config, const float target_sample_rate, PatchDefinition* patch) {
     if (config.is_null() || !config.contains("type")) {
         std::cerr << "WARNING: Invalid parameter 'config' in parse_envelope_config(const json& config, PatchDefinition* patch_config): "
@@ -324,9 +322,9 @@ void InstrumentRegistry::parse_envelope_config(const json& config, const float t
         return;
     }
 
-    ParsingEnvelopeType type = config["type"];
+    EnvelopeParsingType type = config["type"];
     switch (type) {
-        case ParsingEnvelopeType::ADSR : {
+        case EnvelopeParsingType::ADSR : {
             patch->envelope_type = EnvelopeType::ADSR;
             patch->adsr_envelope_params.attack_time = config.value("attack_time", 0.005f);
             patch->adsr_envelope_params.attack_max = config.value("attack_max", 1.0f);
@@ -337,7 +335,7 @@ void InstrumentRegistry::parse_envelope_config(const json& config, const float t
             patch->envelope_initialized = true;
             break;
         }
-        case ParsingEnvelopeType::ADR : {
+        case EnvelopeParsingType::ADR : {
             patch->envelope_type = EnvelopeType::ADR;
             patch->adr_envelope_params.attack_time = config.value("attack_time", 0.005f);
             patch->adr_envelope_params.attack_max = config.value("attack_max", 1.0f);
@@ -348,7 +346,7 @@ void InstrumentRegistry::parse_envelope_config(const json& config, const float t
             patch->envelope_initialized = true;
             break;
         }
-        case ParsingEnvelopeType::TREMOLO : {
+        case EnvelopeParsingType::TREMOLO : {
             patch->envelope_decorator_type = EnvelopeDecoratorType::TREMOLO;
             patch->tremolo_decorator_params.sample_rate = config.value("sample_rate", target_sample_rate);
             patch->tremolo_decorator_params.speed_hz = config.value("speed_hz", 5.0f);
@@ -368,7 +366,7 @@ void InstrumentRegistry::parse_envelope_config(const json& config, const float t
             patch->envelope_initialized = true;
             break;
         }
-        case ParsingEnvelopeType::UNKNOWN :
+        case EnvelopeParsingType::UNKNOWN :
         default: {
             std::cerr << "WARNING: Unknown ParsingEnvelopeType enum in selected json. "
                          "ADSR envelope fallback will be used." << std::endl;

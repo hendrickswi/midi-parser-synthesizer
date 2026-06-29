@@ -45,7 +45,7 @@ void SquareOscillator::process_sample_block(float* buffer, unsigned int num_fram
 
         // 1/sqrt(2) attenuation to align RMS power with other algorithmic oscillators
         // Also prevents PolyBLEP overshoot causing clicks during playback
-        buffer[i] = raw_wave + correction_up - correction_down * 0.707f;
+        buffer[i] = (raw_wave + correction_up - correction_down) * 0.707f;
 
         // Increment logic
         current_phase += new_phase_increment;

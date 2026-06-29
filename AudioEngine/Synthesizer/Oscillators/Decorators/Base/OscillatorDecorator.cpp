@@ -2,7 +2,6 @@
 
 OscillatorDecorator::OscillatorDecorator() {
     base_oscillator = nullptr;
-    sample_rate = 48000.0f;
 }
 
 OscillatorDecorator::~OscillatorDecorator() = default;

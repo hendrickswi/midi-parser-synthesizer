@@ -24,9 +24,12 @@ enum class EnvelopeType {
 enum class OscillatorDecoratorType {
     NONE,
     VIBRATO,
-    LOWPASS,
-    BANDPASS,
-    HIGHPASS
+    CHAMBERLIN_LOWPASS,
+    LTI_LOWPASS,
+    CHAMBERLIN_BANDPASS,
+    LTI_BANDPASS,
+    CHAMBERLIN_HIGHPASS,
+    LTI_HIGHPASS
 };
 
 enum class EnvelopeDecoratorType {
@@ -122,19 +125,19 @@ struct VibratoDecoratorParams {
     float depth;
 };
 
-struct LowpassFilterParams {
+struct SVFLowpassFilterParams {
     float sample_rate;
     float cutoff_hz;
     float resonance;
 };
 
-struct BandpassFilterParams {
+struct SVFBandpassFilterParams {
     float sample_rate;
     float cutoff_hz;
     float resonance;
 };
 
-struct HighpassFilterParams {
+struct SVFHighpassFilterParams {
     float sample_rate;
     float cutoff_hz;
     float resonance;
@@ -165,9 +168,9 @@ struct PatchDefinition {
     // Oscillator decorator params
     OscillatorDecoratorType oscillator_decorator_type = OscillatorDecoratorType::NONE;
     VibratoDecoratorParams vibrato_decorator_params;
-    LowpassFilterParams low_pass_filter_params;
-    BandpassFilterParams band_pass_filter_params;
-    HighpassFilterParams high_pass_filter_params;
+    SVFLowpassFilterParams low_pass_filter_params;
+    SVFBandpassFilterParams band_pass_filter_params;
+    SVFHighpassFilterParams high_pass_filter_params;
 
     // Envelope decorator params
     EnvelopeDecoratorType envelope_decorator_type = EnvelopeDecoratorType::NONE;
