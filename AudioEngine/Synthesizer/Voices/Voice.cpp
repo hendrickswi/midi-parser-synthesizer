@@ -215,8 +215,8 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::CHAMBERLIN_LOWPASS : {
             chamberlin_low_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->low_pass_filter_params.cutoff_hz,
-                config->low_pass_filter_params.resonance
+                config->svf_filter_params.cutoff_hz,
+                config->svf_filter_params.resonance
             );
             chamberlin_low_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &chamberlin_low_pass_filter_oscillator_decorator;
@@ -225,8 +225,8 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::LTI_LOWPASS : {
             lti_low_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->low_pass_filter_params.cutoff_hz,
-                config->low_pass_filter_params.resonance
+                config->svf_filter_params.cutoff_hz,
+                config->svf_filter_params.resonance
             );
             lti_low_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &lti_low_pass_filter_oscillator_decorator;
@@ -235,8 +235,8 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::CHAMBERLIN_BANDPASS : {
             chamberlin_band_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->band_pass_filter_params.cutoff_hz,
-                config->band_pass_filter_params.resonance
+                config->svf_filter_params.cutoff_hz,
+                config->svf_filter_params.resonance
             );
             chamberlin_band_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &chamberlin_band_pass_filter_oscillator_decorator;
@@ -245,8 +245,8 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::LTI_BANDPASS : {
             lti_band_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->band_pass_filter_params.cutoff_hz,
-                config->band_pass_filter_params.resonance
+                config->svf_filter_params.cutoff_hz,
+                config->svf_filter_params.resonance
             );
             lti_band_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &lti_band_pass_filter_oscillator_decorator;
@@ -254,8 +254,8 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::CHAMBERLIN_HIGHPASS : {
             chamberlin_high_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->high_pass_filter_params.cutoff_hz,
-                config->high_pass_filter_params.resonance
+                config->svf_filter_params.cutoff_hz,
+                config->svf_filter_params.resonance
             );
             chamberlin_high_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &chamberlin_high_pass_filter_oscillator_decorator;
@@ -264,8 +264,8 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
         case OscillatorDecoratorType::LTI_HIGHPASS : {
             lti_high_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
-                config->high_pass_filter_params.cutoff_hz,
-                config->high_pass_filter_params.resonance
+                config->svf_filter_params.cutoff_hz,
+                config->svf_filter_params.resonance
             );
             lti_high_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &lti_high_pass_filter_oscillator_decorator;

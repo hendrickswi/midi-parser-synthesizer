@@ -1127,8 +1127,8 @@
         },
         "80": {
             "oscillator_type": "LTI_SVF_LOWPASS",
-            "cutoff_hz": 2000.0,
-            "resonance": 0.707,
+            "cutoff_hz": 3000,
+            "resonance": 2.0,
             "base_oscillator": {
                 "oscillator_type": "SQUARE"
             }

@@ -293,9 +293,9 @@ void InstrumentRegistry::parse_svf_config(const json& config, const float target
         return;
     }
 
-    patch->high_pass_filter_params.sample_rate = config.value("sample_rate", target_sample_rate);
-    patch->high_pass_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
-    patch->high_pass_filter_params.resonance = config.value("resonance", 0.707f);
+    patch->svf_filter_params.sample_rate = config.value("sample_rate", target_sample_rate);
+    patch->svf_filter_params.cutoff_hz = config.value("cutoff_hz", 2000.0f);
+    patch->svf_filter_params.resonance = config.value("resonance", 0.707f);
 
     if (config.contains("base_oscillator")) {
         parse_oscillator_config(config["base_oscillator"], target_sample_rate, patch, loader);

@@ -125,19 +125,7 @@ struct VibratoDecoratorParams {
     float depth;
 };
 
-struct SVFLowpassFilterParams {
-    float sample_rate;
-    float cutoff_hz;
-    float resonance;
-};
-
-struct SVFBandpassFilterParams {
-    float sample_rate;
-    float cutoff_hz;
-    float resonance;
-};
-
-struct SVFHighpassFilterParams {
+struct SVFFilterParams {
     float sample_rate;
     float cutoff_hz;
     float resonance;
@@ -168,9 +156,7 @@ struct PatchDefinition {
     // Oscillator decorator params
     OscillatorDecoratorType oscillator_decorator_type = OscillatorDecoratorType::NONE;
     VibratoDecoratorParams vibrato_decorator_params;
-    SVFLowpassFilterParams low_pass_filter_params;
-    SVFBandpassFilterParams band_pass_filter_params;
-    SVFHighpassFilterParams high_pass_filter_params;
+    SVFFilterParams svf_filter_params;
 
     // Envelope decorator params
     EnvelopeDecoratorType envelope_decorator_type = EnvelopeDecoratorType::NONE;
