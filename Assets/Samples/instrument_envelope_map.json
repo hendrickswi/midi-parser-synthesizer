@@ -575,6 +575,50 @@
                 "release_time": 0.25,
                 "release_min": 0.0
             }
+        },
+        "80": {
+            "envelope": {
+                "type": "ADSR",
+                "attack_time": 0.005,
+                "attack_max": 1.0,
+                "decay_time": 1.5,
+                "sustain_level": 0.1,
+                "release_time": 0.075,
+                "release_min": 0.0
+            }
+        },
+        "81": {
+            "envelope": {
+                "type": "ADSR",
+                "attack_time": 0.005,
+                "attack_max": 1.0,
+                "decay_time": 1.5,
+                "sustain_level": 0.1,
+                "release_time": 0.075,
+                "release_min": 0.0
+            }
+        },
+        "82": {
+            "envelope": {
+                "type": "ADSR",
+                "attack_time": 0.005,
+                "attack_max": 1.0,
+                "decay_time": 1.5,
+                "sustain_level": 0.1,
+                "release_time": 0.075,
+                "release_min": 0.0
+            }
+        },
+        "83": {
+            "envelope": {
+                "type": "ADSR",
+                "attack_time": 0.005,
+                "attack_max": 1.0,
+                "decay_time": 1.5,
+                "sustain_level": 0.1,
+                "release_time": 0.075,
+                "release_min": 0.0
+            }
         }
     },
     "drum_instruments": {
