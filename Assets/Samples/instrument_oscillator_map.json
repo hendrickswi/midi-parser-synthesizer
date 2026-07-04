@@ -1127,16 +1127,18 @@
         },
         "80": {
             "oscillator_type": "LTI_SVF_LOWPASS",
-            "cutoff_multiplier": 8.0,
-            "resonance": 1.0,
+            "cutoff_multiplier": 16.0,
+            "resonance": 1.25,
+            "resonance_tracking": -0.03,
             "base_oscillator": {
                 "oscillator_type": "SQUARE"
             }
         },
         "81": {
             "oscillator_type": "LTI_SVF_LOWPASS",
-            "cutoff_multiplier": 8.0,
-            "resonance": 1.0,
+            "cutoff_multiplier": 4.0,
+            "resonance": 1.5,
+            "resonance_tracking": -0.03,
             "base_oscillator": {
                 "oscillator_type": "SAWTOOTH"
             }

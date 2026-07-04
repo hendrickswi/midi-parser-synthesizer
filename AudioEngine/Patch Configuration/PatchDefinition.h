@@ -129,6 +129,7 @@ struct SVFFilterParams {
     float sample_rate;
     float cutoff_multiplier;
     float resonance;
+    float resonance_tracking;
 };
 
 struct TremoloDecoratorParams {

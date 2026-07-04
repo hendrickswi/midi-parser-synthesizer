@@ -20,6 +20,8 @@
 #include "../Envelopes/Decorators/TremoloEnvelope.h"
 #include "../../Patch Configuration/PatchDefinition.h"
 
+constexpr float PIVOT_MIDI_PITCH = 60.0f;
+
 class Voice {
 private:
     // All of the possible oscillators
@@ -67,6 +69,8 @@ private:
 
     static float midi_pitch_to_hz(uint8_t midi_pitch);
     static float midi_pitch_to_svf_cutoff_hz(uint8_t midi_pitch, float cutoff_multiplier);
+    static float calculate_LTI_dynamic_resonance(uint8_t midi_pitch, float static_resonance, float resonance_tracking);
+    static float calculate_chamberlin_dynamic_resonance(uint8_t midi_pitch, float static_resonance, float resonance_tracking);
     static float byte_to_scale_float(uint8_t value);
     static void select_sample(const std::vector<Sample>& samples, uint8_t pitch, uint8_t velocity, const Sample*& selected_sample);
 

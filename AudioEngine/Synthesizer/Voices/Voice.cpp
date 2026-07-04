@@ -14,6 +14,18 @@ float Voice::midi_pitch_to_svf_cutoff_hz(uint8_t midi_pitch, float cutoff_multip
     return cutoff_multiplier * midi_pitch_to_hz(midi_pitch);
 }
 
+float Voice::calculate_LTI_dynamic_resonance(uint8_t midi_pitch, float static_resonance, float resonance_tracking) {
+    float pitch_delta = static_cast<float>(midi_pitch) - PIVOT_MIDI_PITCH;
+    float raw_dynamic_resonance = static_resonance + pitch_delta * resonance_tracking;
+    return std::clamp(raw_dynamic_resonance, 0.1f, 19.9f);
+}
+
+float Voice::calculate_chamberlin_dynamic_resonance(uint8_t midi_pitch, float static_resonance, float resonance_tracking) {
+    float pitch_delta = static_cast<float>(midi_pitch) - PIVOT_MIDI_PITCH;
+    float raw_dynamic_resonance = static_resonance + pitch_delta * resonance_tracking;
+    return std::clamp(raw_dynamic_resonance, 0.01f, 0.99f);
+}
+
 float Voice::byte_to_scale_float(uint8_t value) {
     float normalized = (float)value / 127.0f;
     return normalized * normalized;
@@ -220,7 +232,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
             chamberlin_low_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
                 midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
-                config->svf_filter_params.resonance
+                calculate_chamberlin_dynamic_resonance(pitch, config->svf_filter_params.resonance, config->svf_filter_params.resonance_tracking)
             );
             chamberlin_low_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &chamberlin_low_pass_filter_oscillator_decorator;
@@ -230,7 +242,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
             lti_low_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
                 midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
-                config->svf_filter_params.resonance
+                calculate_LTI_dynamic_resonance(pitch, config->svf_filter_params.resonance, config->svf_filter_params.resonance_tracking)
             );
             lti_low_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &lti_low_pass_filter_oscillator_decorator;
@@ -240,7 +252,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
             chamberlin_band_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
                 midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
-                config->svf_filter_params.resonance
+                calculate_chamberlin_dynamic_resonance(pitch, config->svf_filter_params.resonance, config->svf_filter_params.resonance_tracking)
             );
             chamberlin_band_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &chamberlin_band_pass_filter_oscillator_decorator;
@@ -250,7 +262,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
             lti_band_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
                 midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
-                config->svf_filter_params.resonance
+                calculate_LTI_dynamic_resonance(pitch, config->svf_filter_params.resonance, config->svf_filter_params.resonance_tracking)
             );
             lti_band_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &lti_band_pass_filter_oscillator_decorator;
@@ -259,7 +271,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
             chamberlin_high_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
                 midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
-                config->svf_filter_params.resonance
+                calculate_chamberlin_dynamic_resonance(pitch, config->svf_filter_params.resonance, config->svf_filter_params.resonance_tracking)
             );
             chamberlin_high_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &chamberlin_high_pass_filter_oscillator_decorator;
@@ -269,7 +281,7 @@ void Voice::configure_and_note_on(const PatchDefinition* config, uint8_t channel
             lti_high_pass_filter_oscillator_decorator.set_params(
                 sample_rate,
                 midi_pitch_to_svf_cutoff_hz(pitch, config->svf_filter_params.cutoff_multiplier),
-                config->svf_filter_params.resonance
+                calculate_LTI_dynamic_resonance(pitch, config->svf_filter_params.resonance, config->svf_filter_params.resonance_tracking)
             );
             lti_high_pass_filter_oscillator_decorator.set_base_oscillator(active_oscillator);
             active_oscillator = &lti_high_pass_filter_oscillator_decorator;
