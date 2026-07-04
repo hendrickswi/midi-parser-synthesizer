@@ -81,6 +81,9 @@ private:
     QSlider* playback_speed_slider;
     int cached_playback_speed_slider_position;
 
+    // UI element: playback speed reset button
+    QPushButton* playback_speed_reset_button;
+
     // UI element: Slow speed icon
     QIcon slow_speed_icon;
     QLabel* slow_speed_label;
@@ -129,6 +132,7 @@ private slots:
     void on_add_directory_button_clicked();
     void on_add_file_button_clicked();
     void on_playback_speed_action_triggered();
+    void on_playback_speed_reset_button_clicked();
 
 public:
     explicit MainWindow(PlaybackController* controller, QWidget* parent = nullptr);

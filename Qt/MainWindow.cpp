@@ -158,9 +158,13 @@ void MainWindow::init_playback_speed_dialog() {
     fast_speed_label = new QLabel(this);
     fast_speed_label->setPixmap(fast_speed_icon.pixmap(30, 30));
 
+    // The reset button
+    playback_speed_reset_button = new QPushButton("Reset", this);
+
     QVBoxLayout* dialog_layout = new QVBoxLayout(playback_speed_dialog);
     QHBoxLayout* prompt_layout = new QHBoxLayout();
     QHBoxLayout* slider_layout = new QHBoxLayout();
+    QHBoxLayout* button_layout = new QHBoxLayout();
 
     prompt_layout->addWidget(prompt_label);
 
@@ -172,11 +176,15 @@ void MainWindow::init_playback_speed_dialog() {
     slider_layout->addSpacing(25);
     slider_layout->addStretch();
 
+    button_layout->addStretch();
+    button_layout->addWidget(playback_speed_reset_button);
+
     dialog_layout->addStretch();
     dialog_layout->addLayout(prompt_layout);
     dialog_layout->addSpacing(20);
     dialog_layout->addLayout(slider_layout);
     dialog_layout->addStretch();
+    dialog_layout->addLayout(button_layout);
 
     playback_speed_dialog->setWindowTitle("Playback Speed");
     playback_speed_dialog->setLayout(dialog_layout);
@@ -293,6 +301,9 @@ void MainWindow::init_connections() {
     connect(playback_speed_slider, &QAbstractSlider::sliderMoved, this, &MainWindow::cache_new_playback_speed_slider_position);
     connect(playback_speed_slider, &QAbstractSlider::sliderReleased, this, &MainWindow::on_playback_speed_slider_released);
     connect(playback_controller, &PlaybackController::playback_speed_changed, this, &MainWindow::on_playback_speed_changed);
+
+    // Playback speed reset button
+    connect(playback_speed_reset_button, &QPushButton::clicked, this, &MainWindow::on_playback_speed_reset_button_clicked);
 }
 
 void MainWindow::on_add_directory_button_clicked() {
@@ -469,4 +480,8 @@ void MainWindow::cache_new_playback_speed_slider_position(int pos) {
 
 void MainWindow::on_playback_speed_slider_released() {
     playback_controller->set_playback_speed(cached_playback_speed_slider_position);
+}
+
+void MainWindow::on_playback_speed_reset_button_clicked() {
+    playback_controller->set_playback_speed(playback_speed_slider->maximum() / 2);
 }
