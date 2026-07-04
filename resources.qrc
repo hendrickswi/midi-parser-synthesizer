@@ -14,5 +14,7 @@
         <file>Assets/img/volume_mute.png</file>
         <file>Assets/img/autoplay.png</file>
         <file>Assets/img/autoplay_on.png</file>
+        <file>Assets/img/speed_slow.png</file>
+        <file>Assets/img/speed_fast.png</file>
     </qresource>
 </RCC>

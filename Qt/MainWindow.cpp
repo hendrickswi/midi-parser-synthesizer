@@ -137,8 +137,8 @@ void MainWindow::init_status_bar() {
 void MainWindow::init_playback_speed_dialog() {
     playback_speed_dialog = new QDialog(this);
 
-    // The label
-    QLabel* playback_speed_label = new QLabel("Set the Playback Speed", this);
+    // The prompt
+    QLabel* prompt_label = new QLabel("Set the Playback Speed", this);
 
     // The playback speed slider
     playback_speed_slider = new QSlider(Qt::Horizontal, this);
@@ -149,13 +149,37 @@ void MainWindow::init_playback_speed_dialog() {
     playback_speed_slider->setSingleStep(1);
     playback_speed_slider->setPageStep(10);
 
-    QVBoxLayout* playback_speed_dialog_layout = new QVBoxLayout(playback_speed_dialog);
-    playback_speed_dialog_layout->addWidget(playback_speed_label);
-    playback_speed_dialog_layout->addWidget(playback_speed_slider);
-    playback_speed_dialog_layout->addStretch();
+    // The speed icons
+    slow_speed_icon = load_icon(":/Assets/img/speed_slow.png");
+    slow_speed_label = new QLabel(this);
+    slow_speed_label->setPixmap(slow_speed_icon.pixmap(30, 30));
 
-    playback_speed_dialog->setWindowTitle("Set the Playback Speed");
-    playback_speed_dialog->setLayout(playback_speed_dialog_layout);
+    fast_speed_icon = load_icon(":/Assets/img/speed_fast.png");
+    fast_speed_label = new QLabel(this);
+    fast_speed_label->setPixmap(fast_speed_icon.pixmap(30, 30));
+
+    QVBoxLayout* dialog_layout = new QVBoxLayout(playback_speed_dialog);
+    QHBoxLayout* prompt_layout = new QHBoxLayout();
+    QHBoxLayout* slider_layout = new QHBoxLayout();
+
+    prompt_layout->addWidget(prompt_label);
+
+    slider_layout->addStretch();
+    slider_layout->addWidget(slow_speed_label);
+    slider_layout->addSpacing(5);
+    slider_layout->addWidget(playback_speed_slider);
+    slider_layout->addWidget(fast_speed_label);
+    slider_layout->addSpacing(25);
+    slider_layout->addStretch();
+
+    dialog_layout->addStretch();
+    dialog_layout->addLayout(prompt_layout);
+    dialog_layout->addSpacing(20);
+    dialog_layout->addLayout(slider_layout);
+    dialog_layout->addStretch();
+
+    playback_speed_dialog->setWindowTitle("Playback Speed");
+    playback_speed_dialog->setLayout(dialog_layout);
     playback_speed_dialog->setWindowModality(Qt::ApplicationModal);
     playback_speed_dialog->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint);
     playback_speed_dialog->resize(300, 100);

@@ -81,6 +81,14 @@ private:
     QSlider* playback_speed_slider;
     int cached_playback_speed_slider_position;
 
+    // UI element: Slow speed icon
+    QIcon slow_speed_icon;
+    QLabel* slow_speed_label;
+
+    // UI element: Fast speed icon
+    QIcon fast_speed_icon;
+    QLabel* fast_speed_label;
+
     // UI element: popup dialog for adjusting playback speed
     QDialog* playback_speed_dialog;
 
